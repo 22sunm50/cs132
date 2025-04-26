@@ -1,31 +1,19 @@
-// public class Type {
-//     private final String type;
-//     public static final Type INT = new Type ("int");
-//     public static final Type BOOLEAN = new Type ("boolean");
-//     public static final Type INT_ARRAY = new Type ("int[]");
-//     public static final Type CLASS = new Type ("class");
-
-//     public Type (String type) {
-//         this.type = type;
-//     }
-// }
-
-public class Type {
+public class MyType {
     public enum BaseType {
         BOOLEAN,
         INT,
         INT_ARRAY,
-        CLASS
+        ID
     }
 
     private final BaseType baseType;
     private final String className; // only used if baseType == CLASS
 
-    public Type(BaseType baseType) {
+    public MyType(BaseType baseType) {
         this(baseType, null);
     }
 
-    public Type(BaseType baseType, String className) {
+    public MyType(BaseType baseType, String className) {
         this.baseType = baseType;
         this.className = className;
     }
@@ -38,9 +26,9 @@ public class Type {
         return className;
     }
 
-    public boolean equals(Type other) {
+    public boolean equals(MyType other) {
         if (this.baseType != other.baseType) return false;
-        if (this.baseType == BaseType.CLASS) {
+        if (this.baseType == BaseType.ID) {
             return this.className != null && this.className.equals(other.className);
         }
         return true;
@@ -48,8 +36,8 @@ public class Type {
 
     @Override
     public String toString() {
-        if (baseType == BaseType.CLASS) {
-            return "class " + className;
+        if (baseType == BaseType.ID) {
+            return "ID : " + className;
         }
         return baseType.toString().toLowerCase();
     }
