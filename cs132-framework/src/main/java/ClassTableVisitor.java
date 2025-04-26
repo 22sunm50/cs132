@@ -17,6 +17,10 @@ public class ClassTableVisitor extends GJDepthFirst < MyType, SymbolTable > {
     }
 
     // 🔄 🔄 🔄 🔄 🔄 🔄 🔄 CYCLE DETECTION 🔄 🔄 🔄 🔄 🔄 🔄 🔄
+    // get subtype outside of this class
+    public HashMap< String, HashMap < String,Boolean > > get_is_subtype() {
+        return is_subtype;
+    }
     // list of class names
     public List<String> getClassNames() {
         return new ArrayList<>(is_subtype.keySet());
@@ -57,6 +61,80 @@ public class ClassTableVisitor extends GJDepthFirst < MyType, SymbolTable > {
         }
     }
 
+    // 🌴 🌴 🌴 🌴 🌴 🌴 🌴 INHERITANCE 🌴 🌴 🌴 🌴 🌴 🌴 🌴 🌴
+    public void inheritFields(SymbolTable s_table) { // basically goes thru all ancestors and puts into curr class (starting at closest parent)
+        for (String className : s_table.class_table.keySet()) {     // loop thru all classes
+            ClassInfo classInfo = s_table.getClassInfo(className);  // get its ClassInfo
+            String parent = classInfo.getParentClassName();         // get its parent name (if any)
+    
+            // recursively inherit fields
+            while (parent != null) {                                        // while class has parents
+                ClassInfo parentInfo = s_table.getClassInfo(parent);        // get parent's ClassInfo
+                for (String parentField : parentInfo.fields_map.keySet()) { // for each field in parent
+                    if (!classInfo.fields_map.containsKey(parentField)) {   // inherit if not overshadowed
+                        classInfo.fields_map.put(parentField, parentInfo.fields_map.get(parentField));
+                    }
+                }
+                parent = parentInfo.getParentClassName(); // move up to grandparents and repeat
+            }
+        }
+    }
+
+    // compare 2 methods for same ret type & param types
+    private boolean areMethodsEqual(MethodInfo m1, MethodInfo m2) {
+        // Check return type
+        if (!m1.getReturnType().equals(m2.getReturnType())) {
+            return false;
+        }
+    
+        // Check number of parameters
+        if (m1.getArgCount() != m2.getArgCount()) {
+            return false;
+        }
+    
+        // Check parameter types
+        for (int i = 0; i < m1.getArgCount(); i++) {
+            if (!m1.getArgsTypeList().get(i).equals(m2.getArgsTypeList().get(i))) {
+                return false;
+            }
+        }
+    
+        return true; // They are equal
+    }
+
+    // method inheritance & overriding
+    public void inheritMethods(SymbolTable s_table) {
+        for (String className : s_table.class_table.keySet()) {
+            ClassInfo classInfo = s_table.getClassInfo(className);
+            String parent = classInfo.getParentClassName();
+    
+            // recursively inherit methods
+            while (parent != null) {
+                ClassInfo parentInfo = s_table.getClassInfo(parent);
+                for (String parentMethod : parentInfo.methods_map.keySet()) {
+                    MethodInfo parentMethodInfo = parentInfo.getMethodInfo(parentMethod);
+    
+                    if (!classInfo.methods_map.containsKey(parentMethod)) {
+                        // inherit the method if not overridden
+                        classInfo.methods_map.put(parentMethod, parentMethodInfo);
+                    } else {
+                        // method exists in subclass -> check for valid overriding
+                        MethodInfo childMethodInfo = classInfo.getMethodInfo(parentMethod);
+    
+                        if (!areMethodsEqual(childMethodInfo, parentMethodInfo)) {
+                            System.err.println("🚨 Method overloading not allowed in class " + className + ": " + parentMethod);
+                            printFailureAndExit();
+                        }
+    
+                        // valid override: do nothing, child already overrides it properly
+                    }
+                }
+                parent = parentInfo.getParentClassName(); // move up the chain
+            }
+        }
+    }
+
+    // 🏖️ 🏖️ 🏖️ 🏖️ 🏖️ 🏖️ 🏖️ 🏖️ VISIT FUNCTIONS 🏖️ 🏖️ 🏖️ 🏖️ 🏖️ 🏖️ 🏖️ 🏖️ 🏖️
     @Override
     public MyType visit(ClassExtendsDeclaration n, SymbolTable s_table) {
         String class_name = n.f1.f0.toString();
@@ -64,14 +142,15 @@ public class ClassTableVisitor extends GJDepthFirst < MyType, SymbolTable > {
 
         is_subtype.putIfAbsent(class_name, new HashMap<>());
         is_subtype.putIfAbsent(parent_name, new HashMap<>());
-
         is_subtype.get(class_name).put(parent_name, true);
 
         // class stuff
         curr_class = class_name;
         curr_method = null;
         ClassInfo this_classinfo = new ClassInfo();
+        this_classinfo.setParentClassName(parent_name);
         s_table.addClass(class_name, this_classinfo);
+
         n.f5.accept(this, s_table); // var dec list
         n.f6.accept(this, s_table); // method dec list
 
@@ -144,7 +223,7 @@ public class ClassTableVisitor extends GJDepthFirst < MyType, SymbolTable > {
 
         // add as a method local var
         else {
-            s_table.getClassInfo(curr_class).getMethodInfo(curr_method);
+            s_table.getClassInfo(curr_class).getMethodInfo(curr_method).addVar(var_name, var_type);;
         }
 
         // 🍅 🍅 🍅 🍅 🍅: check if type ID, then handle it as a var and check symbol table
@@ -155,9 +234,6 @@ public class ClassTableVisitor extends GJDepthFirst < MyType, SymbolTable > {
     public MyType visit (MethodDeclaration n, SymbolTable s_table) {
         String method_name = n.f2.f0.toString();
         MyType ret_type = n.f1.f0.accept(this, s_table);
-
-        System.out.println("🍇 🍇 🍇 🍇 🍇 : method name = " + method_name);
-        System.out.println("🍇 🍇 🍇 🍇 🍇 : ret type = " + ret_type);
 
         MethodInfo this_methodinfo = new MethodInfo(ret_type);
 
@@ -177,7 +253,7 @@ public class ClassTableVisitor extends GJDepthFirst < MyType, SymbolTable > {
         MyType param_type = n.f0.f0.accept(this, s_table);
         String param_name = n.f1.f0.toString();
 
-        s_table.getClassInfo(curr_class).getMethodInfo(curr_method).addArg(param_type);
+        s_table.getClassInfo(curr_class).getMethodInfo(curr_method).addArg(param_name, param_type);
 
         return param_type;
     }

@@ -1,5 +1,4 @@
 import java.io.InputStream;
-import java.util.HashMap;
 
 import minijava.MiniJavaParser;
 import minijava.MiniJavaParserConstants;
@@ -19,13 +18,19 @@ public class Typecheck extends GJDepthFirst<String, String> implements MiniJavaP
                 ClassTableVisitor cv = new ClassTableVisitor();
                 cv.visit(root, s_table);
                 cv.checkCycle();
+                cv.inheritFields(s_table);
+                cv.inheritMethods(s_table);
                 s_table.printClassTable();
+
+                // second pass
+                // MethodVisitor mv = new MethodVisitor();
+                // mv.visit(root, s_table);
 
                 // third pass
                 // ExpressionVisitor ev = new ExpressionVisitor();
                 // ev.visit(root, s_table); // REPLACE SYMBOLTABLE W CLASSTABLE
 
-                System.out.println("CLASS TABLE" + s_table.class_table);
+                System.err.println("CLASS TABLE" + s_table.class_table);
 
                 System.out.println("Program type checked successfully");
         }

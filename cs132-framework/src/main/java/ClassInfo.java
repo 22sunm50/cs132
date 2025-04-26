@@ -3,10 +3,20 @@ import java.util.HashMap;
 public class ClassInfo {
     HashMap<String, MyType> fields_map;
     HashMap<String, MethodInfo> methods_map;
+    String parent_name;
 
     public ClassInfo() {
         fields_map = new HashMap<>();
         methods_map = new HashMap<>();
+        parent_name = null;
+    }
+
+    public void setParentClassName(String parent) {
+        this.parent_name = parent;
+    }
+
+    public String getParentClassName() {
+        return parent_name;
     }
 
     public void addField(String fieldName, MyType typeName) {
