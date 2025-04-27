@@ -258,6 +258,11 @@ public class ClassTableVisitor extends GJDepthFirst < MyType, SymbolTable > {
         String method_name = n.f2.f0.toString();
         MyType ret_type = n.f1.f0.accept(this, s_table);
 
+        // ret type ID -> CLASS
+        if (ret_type.isOfType(MyType.BaseType.ID)){
+            ret_type.changeBaseType(MyType.BaseType.CLASS);
+        }
+
         MethodInfo this_methodinfo = new MethodInfo(ret_type);
 
         s_table.getClassInfo(curr_class).addMethod(method_name, this_methodinfo);

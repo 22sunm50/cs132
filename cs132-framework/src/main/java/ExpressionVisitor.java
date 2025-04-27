@@ -119,7 +119,6 @@ public class ExpressionVisitor extends GJDepthFirst<MyType, SymbolTable> {
     @Override
     public MyType visit(PrimaryExpression n, SymbolTable s_table) {
         MyType prim_expr_type = n.f0.accept(this, s_table);
-        System.err.println("🧮 🧮 🧮 🧮 🧮 Called primary expr (" + prim_expr_type.getClassName() +"): is of type = " + prim_expr_type.toString());
 
         // if it is an identifier --> ret as var's type
         if (prim_expr_type.getBaseType() == MyType.BaseType.ID){ 
@@ -152,6 +151,13 @@ public class ExpressionVisitor extends GJDepthFirst<MyType, SymbolTable> {
             printFailureAndExit();
         }
         return expr_type;
+    }
+
+    @Override
+    public MyType visit(MessageSend n, SymbolTable s_table) {
+        MyType obj_type = n.f0.f0.accept(this, s_table);
+        // return ret_type;
+        return null;
     }
 
     // 🗺️ 🗺️ 🗺️ 🗺️ 🗺️ 🗺️ 🗺️ 🗺️ 🗺️ 🗺️ SYMBOL TABLE 🗺️ 🗺️ 🗺️ 🗺️ 🗺️ 🗺️ 🗺️ 🗺️ 🗺️ 🗺️ 🗺️ 🗺️
@@ -221,13 +227,20 @@ public class ExpressionVisitor extends GJDepthFirst<MyType, SymbolTable> {
     @Override
     public MyType visit(MethodDeclaration n, SymbolTable s_table) {
         String method_name = n.f2.f0.toString();
-        // MyType ret_type = n.f1.f0.accept(this, s_table);
+        MyType ret_type = s_table.getClassInfo(curr_class).getMethodInfo(method_name).getReturnType();
 
         curr_method = method_name; // set global method state
         n.f4.accept(this, s_table); // param list
         n.f7.accept(this, s_table); // var dec list
         n.f8.accept(this, s_table); // statements list
-        n.f10.accept(this, s_table); // return expression
+        // n.f10.accept(this, s_table); // return expression
+        MyType ret_type_final = n.f10.f0.accept(this, s_table); // return expression
+        if (!ret_type_final.equals(ret_type)) { // return type does not match!
+            System.err.println("🚨 Method (" + method_name + "): ret type does not match. Expected: " + ret_type + " | Actual: " + ret_type_final);
+            printFailureAndExit();
+        }
+
+        System.err.println("📝 📝 📝 📝 📝 Method Dec: expected ret type = " + ret_type.toString() + " | final ret type = " + ret_type_final.toString());
 
         return null;
     }

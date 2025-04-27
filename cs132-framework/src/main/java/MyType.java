@@ -7,8 +7,8 @@ public class MyType {
         CLASS
     }
 
-    private final BaseType baseType;
-    private final String className; // only used if baseType == CLASS
+    private BaseType baseType;
+    private String className; // only used if baseType == CLASS
 
     public MyType(BaseType baseType) {
         this(baseType, null);
@@ -31,9 +31,28 @@ public class MyType {
         return this.baseType == type;
     }
 
+    // change baseType
+    public void changeBaseType(BaseType newBaseType) {
+        this.baseType = newBaseType;
+        // reset className to NULL if baseType is not CLASS or ID
+        if (newBaseType != BaseType.CLASS && newBaseType != BaseType.ID) {
+            this.className = null;
+        }
+    }
+
+    // change baseType AND classname
+    public void changeBaseType(BaseType newBaseType, String newClassName) {
+        this.baseType = newBaseType;
+        this.className = newClassName;
+    }
+
     public boolean equals(MyType other) {
         if (this.baseType != other.baseType) return false;
         if (this.baseType == BaseType.ID) {
+            return this.className != null && this.className.equals(other.className);
+        }
+
+        else if (this.baseType == BaseType.CLASS) {
             return this.className != null && this.className.equals(other.className);
         }
         return true;
@@ -44,6 +63,10 @@ public class MyType {
         if (baseType == BaseType.ID) {
             return "ID : " + className;
         }
+
+        // else if (baseType == BaseType.CLASS) {
+        //     return "CLASS : " + className;
+        // }
         return baseType.toString().toLowerCase();
     }
 }
