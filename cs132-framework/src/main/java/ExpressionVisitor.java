@@ -161,11 +161,21 @@ public class ExpressionVisitor extends GJDepthFirst<MyType, SymbolTable> {
     }
 
     @Override
+    public MyType visit(IfStatement n, SymbolTable s_table) {
+        MyType cond_type = n.f2.f0.accept(this, s_table);
+        if (!cond_type.isOfType(MyType.BaseType.BOOLEAN)){
+            System.err.println("🚨: If condition type = " + cond_type);
+            printFailureAndExit();
+        }
+        return cond_type;
+    }
+
+
+    @Override
     public MyType visit(MessageSend n, SymbolTable s_table) {
         MyType raw_obj_type = n.f0.f0.accept(this, s_table);
-        System.err.println("💬 Message: called on RAW object type = " + raw_obj_type.toString());
-
         MyType actual_obj_type = raw_obj_type;
+
         // 📦 📦 📦 📦 📦 CHECK OBJ TYPE 📦 📦 📦 📦 📦
         // called on a variable
         if (raw_obj_type.isOfType(MyType.BaseType.ID)){
@@ -176,7 +186,6 @@ public class ExpressionVisitor extends GJDepthFirst<MyType, SymbolTable> {
             else {  // get type of object from method vars
                 actual_obj_type = s_table.getClassInfo(curr_class).getMethodInfo(curr_method).getVarOrArgType(raw_obj_name);
             }
-            System.err.println("💬 Message: called on ID object type(" + raw_obj_name + ") = " + actual_obj_type.toString());
         }
 
         // call method on literal
@@ -269,10 +278,21 @@ public class ExpressionVisitor extends GJDepthFirst<MyType, SymbolTable> {
         return nextType;
     }
 
-    // @Override
-    // public MyType visit(IfStatement n, SymbolTable s_table) {
-    //     MyType nextType = 
-    // }
+    @Override
+    public MyType visit(VarDeclaration n, SymbolTable s_table) { // 🍅 🍅 🍅 🍅 🍅: later, this will have to handle shadowing etc.
+        MyType var_type = n.f0.f0.accept(this, s_table);
+
+        // if custom class type
+        if (var_type.isOfType(MyType.BaseType.ID)){
+            String var_type_name = var_type.getClassName();
+            // check if class exists yet:
+            if (!s_table.hasClass(var_type_name)){
+                System.err.println("🚨 Var Dec: declare of type class that DNE = " + var_type_name);
+                printFailureAndExit();
+            }
+        }
+        return null;
+    }
 
     // 🗺️ 🗺️ 🗺️ 🗺️ 🗺️ 🗺️ 🗺️ 🗺️ 🗺️ 🗺️ SYMBOL TABLE 🗺️ 🗺️ 🗺️ 🗺️ 🗺️ 🗺️ 🗺️ 🗺️ 🗺️ 🗺️ 🗺️ 🗺️
     // ALL POSSIBLE Type()
