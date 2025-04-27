@@ -170,6 +170,16 @@ public class ExpressionVisitor extends GJDepthFirst<MyType, SymbolTable> {
         return cond_type;
     }
 
+    @Override
+    public MyType visit(WhileStatement n, SymbolTable s_table) {
+        MyType cond_type = n.f2.f0.accept(this, s_table);
+        if (!cond_type.isOfType(MyType.BaseType.BOOLEAN)){
+            System.err.println("🚨: while condition type = " + cond_type);
+            printFailureAndExit();
+        }
+        return cond_type;
+    }
+
 
     @Override
     public MyType visit(MessageSend n, SymbolTable s_table) {
@@ -255,9 +265,6 @@ public class ExpressionVisitor extends GJDepthFirst<MyType, SymbolTable> {
         MyType firstType = n.f0.f0.accept(this, s_table);
         typeList.add(firstType);
 
-        // MyType restType = n.f1.accept(this, s_table);
-        // typeList.add(restType);
-
         // Manually iterate over each ExpressionRest in NodeListOptional
         if (n.f1.present()) {
             for (Enumeration<Node> e = n.f1.elements(); e.hasMoreElements(); ) {
@@ -267,7 +274,6 @@ public class ExpressionVisitor extends GJDepthFirst<MyType, SymbolTable> {
             }
         }
 
-        // System.err.println("📋 Expression List: " + lastExpressionListTypes);
         return null;
     }
 
@@ -279,7 +285,7 @@ public class ExpressionVisitor extends GJDepthFirst<MyType, SymbolTable> {
     }
 
     @Override
-    public MyType visit(VarDeclaration n, SymbolTable s_table) { // 🍅 🍅 🍅 🍅 🍅: later, this will have to handle shadowing etc.
+    public MyType visit(VarDeclaration n, SymbolTable s_table) {
         MyType var_type = n.f0.f0.accept(this, s_table);
 
         // if custom class type
