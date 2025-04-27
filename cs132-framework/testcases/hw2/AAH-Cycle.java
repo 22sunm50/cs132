@@ -23,7 +23,7 @@ class A {
     int to_be_overidden;
     public boolean i_miss_snoopy(boolean b){ 
         boolean to_be_overidden; // shadowing
-        b = 2;
+        b = false;
         return b;
     }
 }

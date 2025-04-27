@@ -3,7 +3,8 @@ public class MyType {
         BOOLEAN,
         INT,
         INT_ARRAY,
-        ID
+        ID,
+        CLASS
     }
 
     private final BaseType baseType;
@@ -24,6 +25,10 @@ public class MyType {
 
     public String getClassName() {
         return className;
+    }
+
+    public boolean isOfType(BaseType type) {
+        return this.baseType == type;
     }
 
     public boolean equals(MyType other) {

@@ -71,7 +71,12 @@ public class SymbolTable {
             System.out.println("  Fields:");
             for (String fieldName : info.fields_map.keySet()) {
                 MyType fieldType = info.fields_map.get(fieldName);
-                System.out.println("    " + fieldName + " : " + fieldType.toString());
+                if (fieldType.isOfType(MyType.BaseType.CLASS)){ // print out class type too
+                    System.out.println("    " + fieldName + " : " + fieldType.toString() + " : " + fieldType.getClassName());
+                }
+                else {
+                    System.out.println("    " + fieldName + " : " + fieldType.toString());
+                }
             }
     
             // Print Methods
@@ -84,14 +89,26 @@ public class SymbolTable {
                 System.out.println("      Arguments:");
                 for (String argName : methodInfo.args_map.keySet()) {
                     MyType argType = methodInfo.args_map.get(argName);
-                    System.out.println("        " + argName + " : " + argType.toString());
+                    // System.out.println("        " + argName + " : " + argType.toString());
+                    if (argType.isOfType(MyType.BaseType.CLASS)){ // print out class type too
+                        System.out.println("        " + argName + " : " + argType.toString() + " : " + argType.getClassName());
+                    }
+                    else {
+                        System.out.println("        " + argName + " : " + argType.toString());
+                    }
                 }
     
                 // Print Variables Map
                 System.out.println("      Variables:");
                 for (String varName : methodInfo.vars_map.keySet()) {
                     MyType varType = methodInfo.vars_map.get(varName);
-                    System.out.println("        " + varName + " : " + varType.toString());
+                    // System.out.println("        " + varName + " : " + varType.toString());
+                    if (varType.isOfType(MyType.BaseType.CLASS)){ // print out class type too
+                        System.out.println("        " + varName + " : " + varType.toString() + " : " + varType.getClassName());
+                    }
+                    else {
+                        System.out.println("        " + varName + " : " + varType.toString());
+                    }
                 }
             }
     

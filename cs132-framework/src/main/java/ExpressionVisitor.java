@@ -2,6 +2,9 @@ import minijava.syntaxtree.*;
 import minijava.visitor.GJDepthFirst;
 
 public class ExpressionVisitor extends GJDepthFirst<MyType, SymbolTable> {
+    String curr_class;
+    String curr_method;
+
     public void printFailureAndExit() { 
         System.out.println("Type error");
         System.exit(1);
@@ -9,151 +12,272 @@ public class ExpressionVisitor extends GJDepthFirst<MyType, SymbolTable> {
 
     // 🧮 🧮 🧮 🧮 🧮 🧮 🧮 LITERALS 🧮 🧮 🧮 🧮 🧮 🧮 🧮 🧮
     @Override
-    public MyType visit(IntegerLiteral n, SymbolTable table) {
+    public MyType visit(IntegerLiteral n, SymbolTable s_table) {
         // n.f0 gives the actual integer value
         return new MyType(MyType.BaseType.INT);
     }
 
     @Override
-    public MyType visit(TrueLiteral n, SymbolTable table) {
+    public MyType visit(TrueLiteral n, SymbolTable s_table) {
         return new MyType(MyType.BaseType.BOOLEAN);
     }
 
     @Override
-    public MyType visit(FalseLiteral n, SymbolTable table) {
+    public MyType visit(FalseLiteral n, SymbolTable s_table) {
         return new MyType(MyType.BaseType.BOOLEAN);
     }
 
     // 📣 📣 📣 📣 📣 📣 📣 📣 📣 EXPRESSIONS 📣 📣 📣 📣 📣 📣 📣 📣 📣
     @Override
-    public MyType visit(PlusExpression n, SymbolTable table) {
-        MyType lhs = n.f0.accept(this, table); // should equal INTEGER_LITERAL (AKA 43)
-        MyType rhs = n.f2.accept(this, table); // should equal INTEGER_LITERAL (AKA 43)
+    public MyType visit(PlusExpression n, SymbolTable s_table) {
+        MyType lhs = n.f0.accept(this, s_table);
+        MyType rhs = n.f2.accept(this, s_table);
 
         MyType intType = new MyType(MyType.BaseType.INT);
 
         if (!lhs.equals(intType) || !rhs.equals(intType)) {
+            System.err.println("🚨: plus expr error --> lhs type = " + lhs + "rhs type = " + rhs);
             printFailureAndExit();
         }
         return lhs;
     }
 
     @Override
-    public MyType visit(MinusExpression n, SymbolTable table) {
-        MyType lhs = n.f0.accept(this, table);
-        MyType rhs = n.f2.accept(this, table);
+    public MyType visit(MinusExpression n, SymbolTable s_table) {
+        MyType lhs = n.f0.accept(this, s_table);
+        MyType rhs = n.f2.accept(this, s_table);
 
         MyType intType = new MyType(MyType.BaseType.INT);
 
         if (!lhs.equals(intType) || !rhs.equals(intType)) {
+            System.err.println("🚨: minus expr error --> lhs type = " + lhs + "rhs type = " + rhs);
             printFailureAndExit();
         }
         return lhs;
     }
 
     @Override
-    public MyType visit(AndExpression n, SymbolTable table) {
-        MyType lhs = n.f0.accept(this, table);
-        MyType rhs = n.f2.accept(this, table);
+    public MyType visit(AndExpression n, SymbolTable s_table) {
+        MyType lhs = n.f0.accept(this, s_table);
+        MyType rhs = n.f2.accept(this, s_table);
 
         MyType boolType = new MyType(MyType.BaseType.BOOLEAN);
 
         if (lhs.equals(boolType) && rhs.equals(boolType)) { return boolType; }
+        System.err.println("🚨: and expr error --> lhs type = " + lhs + "rhs type = " + rhs);
         printFailureAndExit();
         return null;
     }
 
     @Override
-    public MyType visit(TimesExpression n, SymbolTable table) {
-        MyType lhs = n.f0.accept(this, table);
-        MyType rhs = n.f2.accept(this, table);
+    public MyType visit(TimesExpression n, SymbolTable s_table) {
+        MyType lhs = n.f0.accept(this, s_table);
+        MyType rhs = n.f2.accept(this, s_table);
 
         MyType intType = new MyType(MyType.BaseType.INT);
 
         if (!lhs.equals(intType) || !rhs.equals(intType)) {
+            System.err.println("🚨: times expr error --> lhs type = " + lhs + "rhs type = " + rhs);
             printFailureAndExit();
         }
         return lhs; // return INTEGER_LITERAL (AKA 43)
     }
 
     @Override
-    public MyType visit(NotExpression n, SymbolTable table) {
-        MyType expr = n.f1.accept(this, table);
+    public MyType visit(NotExpression n, SymbolTable s_table) {
+        MyType expr = n.f1.accept(this, s_table);
 
         MyType boolType = new MyType(MyType.BaseType.BOOLEAN);
 
-        if (!expr.equals(boolType)){ printFailureAndExit(); }
+        if (!expr.equals(boolType)){ 
+            System.err.println("🚨: not expr error --> expr type = " + expr);
+            printFailureAndExit(); 
+        }
         return boolType;
     }
 
     @Override
-    public MyType visit(CompareExpression n, SymbolTable table) {
-        MyType lhs = n.f0.accept(this, table);
-        MyType rhs = n.f2.accept(this, table);
+    public MyType visit(CompareExpression n, SymbolTable s_table) {
+        MyType lhs = n.f0.accept(this, s_table);
+        MyType rhs = n.f2.accept(this, s_table);
 
         MyType intType = new MyType(MyType.BaseType.INT);
 
         if (!lhs.equals(intType) || !rhs.equals(intType)) {
+            System.err.println("🚨: compare expr error --> lhs type = " + lhs + "rhs type = " + rhs);
             printFailureAndExit();
         }
         return new MyType(MyType.BaseType.BOOLEAN);
     }
 
     @Override
-    public MyType visit(BracketExpression n, SymbolTable table) {
-        MyType expr = n.f1.accept(this, table); // some type
+    public MyType visit(BracketExpression n, SymbolTable s_table) { // 🍅 🍅 🍅 🍅 🍅
+        MyType expr = n.f1.accept(this, s_table); // some type
         return expr;
     }
 
-    // Auxiliary methods 🍅 🍅 🍅 🍅 🍅 🍅 🍅 🍅 🍅 🍅 🍅 🍅 🍅 🍅 🍅 🍅 🍅 🍅 🍅
-    // Need to override this otherwise there will be a null pointer access
     @Override
-    public MyType visit(PrimaryExpression n, SymbolTable table) {
-        // System.out.println("🌷(visit(PrimaryExpression)) n.f0 = " + n.f0);
-        return n.f0.accept(this, table);
+    public MyType visit(PrimaryExpression n, SymbolTable s_table) {
+        MyType prim_expr_type = n.f0.accept(this, s_table);
+        System.err.println("🧮 🧮 🧮 🧮 🧮 Called primary expr (" + prim_expr_type.getClassName() +"): is of type = " + prim_expr_type.toString());
+
+        // if it is an identifier --> ret as var's type
+        if (prim_expr_type.getBaseType() == MyType.BaseType.ID){ 
+            String id_name = prim_expr_type.getClassName();
+            if (curr_method == null){ // get field's type
+                prim_expr_type = s_table.getClassInfo(curr_class).getFieldType(id_name);
+            }
+            else { // get local var's type
+                prim_expr_type = s_table.getClassInfo(curr_class).getMethodInfo(curr_method).getVarOrArgType(id_name);
+            }
+        }
+
+        // it is a CLASS (new allocation) -> ret as class's type
+        if (prim_expr_type.getBaseType() == MyType.BaseType.CLASS){
+            String class_name = prim_expr_type.getClassName();
+            if (!s_table.hasClass(class_name)) { // non existent class
+                System.err.println("🚨 Primary Expr: This class does not exist -> " + class_name);
+                printFailureAndExit();
+            }
+            prim_expr_type = new MyType(MyType.BaseType.CLASS, class_name);
+        }
+        return prim_expr_type;
+    }
+
+    @Override
+    public MyType visit(PrintStatement n, SymbolTable s_table) {
+        MyType expr_type = n.f2.f0.accept(this, s_table);
+        if (!expr_type.isOfType(MyType.BaseType.INT)){
+            System.err.println("🚨: Print Expression not int, instead is: " + expr_type.getBaseType());
+            printFailureAndExit();
+        }
+        return expr_type;
     }
 
     // 🗺️ 🗺️ 🗺️ 🗺️ 🗺️ 🗺️ 🗺️ 🗺️ 🗺️ 🗺️ SYMBOL TABLE 🗺️ 🗺️ 🗺️ 🗺️ 🗺️ 🗺️ 🗺️ 🗺️ 🗺️ 🗺️ 🗺️ 🗺️
     // ALL POSSIBLE Type()
     @Override
-    public MyType visit (ArrayType n, SymbolTable table) {
+    public MyType visit(ArrayType n, SymbolTable s_table) {
         return new MyType(MyType.BaseType.INT_ARRAY);
     }
 
     @Override
-    public MyType visit (BooleanType n, SymbolTable table) {
+    public MyType visit(BooleanType n, SymbolTable s_table) {
         // String var_type = n.f0.toString(); // gives "boolean"
         return new MyType(MyType.BaseType.BOOLEAN);
     }
 
     @Override
-    public MyType visit (IntegerType n, SymbolTable table) {
+    public MyType visit(IntegerType n, SymbolTable s_table) {
         return new MyType(MyType.BaseType.INT);
     }
 
     @Override
-    public MyType visit (Identifier n, SymbolTable table) {
+    public MyType visit(Identifier n, SymbolTable s_table) {
         String var_name = n.f0.toString();
         return new MyType(MyType.BaseType.ID, var_name);
     }
 
     @Override
-    public MyType visit (VarDeclaration n, SymbolTable table) { // 🍅 🍅 🍅 🍅 🍅: later, this will have to handle shadowing etc.
-        String var_name = n.f1.f0.toString();
-        MyType var_type = n.f0.f0.accept(this, table);
-        System.out.println("🌷 🌷 🌷 🌷 🌷: var name = " + var_name);
-        System.out.println("🌷 🌷 🌷 🌷 🌷: var type = " + var_type);
-        table.addVar(var_name, var_type);
+    public MyType visit(ClassDeclaration n, SymbolTable s_table) {
+        String class_name = n.f1.f0.toString();
+
+        curr_class = class_name;
+        curr_method = null;
+
+        n.f3.accept(this, s_table); // var dec list
+        n.f4.accept(this, s_table); // method dec list
+
         return null;
     }
 
-    // @Override
-    // public MyType visit (AssignmentStatement n, SymbolTable table) {
-    //     String var_name = n.f0.f0.toString();
-    //     if (table.lookup(var_name) == null){ // triying to assign to a non-existent var
-    //         printFailureAndExit();
-    //     }
-    //     return null;
-    // }
+    @Override
+    public MyType visit(ClassExtendsDeclaration n, SymbolTable s_table) {
+        String class_name = n.f1.f0.toString();
+
+        curr_class = class_name;
+        curr_method = null;
+
+        n.f5.accept(this, s_table); // var dec list
+        n.f6.accept(this, s_table); // method dec list
+
+        return null;
+    }
+
+    @Override
+    public MyType visit(MainClass n, SymbolTable s_table) {
+        String class_name = n.f1.f0.toString(); // "Main"
+
+        curr_class = class_name;
+        curr_method = null;
+
+        n.f11.accept(this, s_table); // main arg? "String[] a" --> not sure if this is ever needed
+        n.f14.accept(this, s_table); // var dec list
+        n.f15.accept(this, s_table); // statement list
+
+        return null;
+    }
+
+    @Override
+    public MyType visit(MethodDeclaration n, SymbolTable s_table) {
+        String method_name = n.f2.f0.toString();
+        // MyType ret_type = n.f1.f0.accept(this, s_table);
+
+        curr_method = method_name; // set global method state
+        n.f4.accept(this, s_table); // param list
+        n.f7.accept(this, s_table); // var dec list
+        n.f8.accept(this, s_table); // statements list
+        n.f10.accept(this, s_table); // return expression
+
+        return null;
+    }
+
+    @Override
+    public MyType visit(AssignmentStatement n, SymbolTable s_table) {
+
+        String var_name = n.f0.f0.toString();
+        MyType expr_type = n.f2.f0.accept(this, s_table);
+
+        // add as a class field
+        if (curr_method == null){
+            if (!s_table.getClassInfo(curr_class).hasField(var_name)){ // field doesn't exist
+                System.err.println("🚨 Assignment: Class " + curr_class + " does not have field " + var_name);
+                printFailureAndExit();
+            }
+            MyType expected_type = s_table.getClassInfo(curr_class).getFieldType(var_name);
+            System.err.println("🧮 🧮 🧮 🧮 🧮 Assignment of (" + var_name + "): expected type = " + expected_type.toString() + "|| expr type = " + expr_type.toString());
+            if (!expected_type.equals(expr_type)){                           // expected type doesn't match
+                System.err.println("🚨 Assignment of " + var_name + ": expected type: " + expected_type + " || assigned type: " + expr_type);
+                printFailureAndExit();
+            }
+        }
+
+        // add as a method local var
+        else {
+            if (!s_table.getClassInfo(curr_class).getMethodInfo(curr_method).hasVarsOrArgs(var_name)){ // var doesn't exist in method
+                System.err.println("🚨 Assignment: Class " + curr_class + " and Method " + curr_method + " does not have var " + var_name);
+                printFailureAndExit();
+            }
+            MyType expected_type = s_table.getClassInfo(curr_class).getMethodInfo(curr_method).getVarOrArgType(var_name);
+            if (!expected_type.equals(expr_type)){ // expected type doesn't match
+                System.err.println("🚨 Assignment of (" + var_name + "): expected type: " + expected_type + " || assigned type: " + expr_type);
+                printFailureAndExit();
+            }
+        }
+
+        return null;
+    }
+
+    @Override
+    public MyType visit(AllocationExpression n, SymbolTable s_table) {
+        String class_obj_name = n.f1.f0.toString();
+        System.err.println("🤖 🤖 🤖 🤖 🤖 : allocation class object name = " + class_obj_name);
+        if (!s_table.hasClass(class_obj_name)) {
+            System.err.println("🚨 Allocation: " + class_obj_name + "is not an existing custom class");
+            printFailureAndExit();
+        }
+        
+        return new MyType(MyType.BaseType.CLASS, class_obj_name);
+    }
 
 }

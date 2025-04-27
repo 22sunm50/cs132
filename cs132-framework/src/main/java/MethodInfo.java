@@ -11,8 +11,8 @@ public class MethodInfo {
     public MethodInfo(MyType return_type) {
         this.return_type = return_type;
         this.args_type_list = new ArrayList<>();
-        this.vars_map = new HashMap<>();
-        this.args_map = new HashMap<>();
+        this.vars_map = new HashMap<>(); // contain vars & args
+        this.args_map = new HashMap<>(); // just args
     }
 
     public MyType getReturnType() {
@@ -23,7 +23,7 @@ public class MethodInfo {
         return args_type_list;
     }
 
-    // add arg w name & check uniqueness
+    // add arg w name to both arg map and var map & check uniqueness 
     public void addArg(String argName, MyType argType) {
         if (args_map.containsKey(argName)) {
             System.err.println("🚨 Argument already exists: " + argName);
@@ -35,6 +35,7 @@ public class MethodInfo {
         }
         args_type_list.add(argType);
         args_map.put(argName, argType);
+        vars_map.put(argName, argType);
     }
 
     // add var & check uniqueness
@@ -53,6 +54,20 @@ public class MethodInfo {
     // get number of arguments
     public int getArgCount() {
         return args_type_list.size();
+    }
+
+    // check if a specific name exists as either an argument or a variable
+    public boolean hasVarsOrArgs(String name) {
+        return vars_map.containsKey(name);
+    }
+
+    // Returns the type of a variable (or argument) given its name, or null if not found
+    public MyType getVarOrArgType(String varName) {
+        if (vars_map.get(varName) == null){
+            System.err.println("🚨: the method variable does not exist: " + varName);
+            printFailureAndExit();
+        }
+        return vars_map.get(varName);
     }
 
     @Override

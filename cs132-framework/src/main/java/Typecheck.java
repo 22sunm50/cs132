@@ -20,17 +20,14 @@ public class Typecheck extends GJDepthFirst<String, String> implements MiniJavaP
                 cv.checkCycle();
                 cv.inheritFields(s_table);
                 cv.inheritMethods(s_table);
+                cv.addFieldsToMethodVars(s_table); // do after inheritance
                 s_table.printClassTable();
 
-                // second pass
-                // MethodVisitor mv = new MethodVisitor();
-                // mv.visit(root, s_table);
-
                 // third pass
-                // ExpressionVisitor ev = new ExpressionVisitor();
-                // ev.visit(root, s_table); // REPLACE SYMBOLTABLE W CLASSTABLE
+                ExpressionVisitor ev = new ExpressionVisitor();
+                ev.visit(root, s_table);
 
-                System.err.println("CLASS TABLE" + s_table.class_table);
+                s_table.printClassTable();
 
                 System.out.println("Program type checked successfully");
         }

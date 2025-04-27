@@ -134,6 +134,24 @@ public class ClassTableVisitor extends GJDepthFirst < MyType, SymbolTable > {
         }
     }
 
+    // add class fields to method vars if not shadowed (CALL AFTER INHERITANCE)
+    public void addFieldsToMethodVars(SymbolTable s_table) {
+        for (String className : s_table.class_table.keySet()) {
+            ClassInfo classInfo = s_table.getClassInfo(className);
+
+            for (String methodName : classInfo.methods_map.keySet()) {
+                MethodInfo methodInfo = classInfo.getMethodInfo(methodName);
+
+                for (String fieldName : classInfo.fields_map.keySet()) {
+                    if (!methodInfo.vars_map.containsKey(fieldName)) {
+                        // add class field to method's vars_map if not shadowed
+                        methodInfo.vars_map.put(fieldName, classInfo.fields_map.get(fieldName));
+                    }
+                }
+            }
+        }
+    }
+
     // 🏖️ 🏖️ 🏖️ 🏖️ 🏖️ 🏖️ 🏖️ 🏖️ VISIT FUNCTIONS 🏖️ 🏖️ 🏖️ 🏖️ 🏖️ 🏖️ 🏖️ 🏖️ 🏖️
     @Override
     public MyType visit(ClassExtendsDeclaration n, SymbolTable s_table) {
@@ -154,7 +172,7 @@ public class ClassTableVisitor extends GJDepthFirst < MyType, SymbolTable > {
         n.f5.accept(this, s_table); // var dec list
         n.f6.accept(this, s_table); // method dec list
 
-        return new MyType(MyType.BaseType.ID, class_name);
+        return new MyType(MyType.BaseType.CLASS, class_name);
     }
 
     @Override
@@ -169,7 +187,7 @@ public class ClassTableVisitor extends GJDepthFirst < MyType, SymbolTable > {
         n.f3.accept(this, s_table); // var dec list
         n.f4.accept(this, s_table); // method dec list
 
-        return new MyType(MyType.BaseType.ID, class_name);
+        return new MyType(MyType.BaseType.CLASS, class_name);
     }
 
     @Override
@@ -185,37 +203,42 @@ public class ClassTableVisitor extends GJDepthFirst < MyType, SymbolTable > {
         n.f14.accept(this, s_table); // var dec list
         n.f15.accept(this, s_table); // statement list
 
-        return new MyType(MyType.BaseType.ID, class_name);
+        return new MyType(MyType.BaseType.CLASS, class_name);
     }
 
     // ALL POSSIBLE Type()
     @Override
-    public MyType visit (ArrayType n, SymbolTable s_table) {
+    public MyType visit(ArrayType n, SymbolTable s_table) {
         return new MyType(MyType.BaseType.INT_ARRAY);
     }
 
     @Override
-    public MyType visit (BooleanType n, SymbolTable s_table) {
+    public MyType visit(BooleanType n, SymbolTable s_table) {
         // String var_type = n.f0.toString(); // gives "boolean"
         return new MyType(MyType.BaseType.BOOLEAN);
     }
 
     @Override
-    public MyType visit (IntegerType n, SymbolTable s_table) {
+    public MyType visit(IntegerType n, SymbolTable s_table) {
         return new MyType(MyType.BaseType.INT);
     }
 
     @Override
-    public MyType visit (Identifier n, SymbolTable s_table) {
+    public MyType visit(Identifier n, SymbolTable s_table) {
         String var_name = n.f0.toString();
         return new MyType(MyType.BaseType.ID, var_name);
     }
 
     @Override
-    public MyType visit (VarDeclaration n, SymbolTable s_table) { // 🍅 🍅 🍅 🍅 🍅: later, this will have to handle shadowing etc.
+    public MyType visit(VarDeclaration n, SymbolTable s_table) { // 🍅 🍅 🍅 🍅 🍅: later, this will have to handle shadowing etc.
         String var_name = n.f1.f0.toString();
         MyType var_type = n.f0.f0.accept(this, s_table);
 
+        // if type is a custom class, change from ID to CLASS
+        if (var_type.isOfType(MyType.BaseType.ID)){
+            String var_type_name = var_type.getClassName();
+            var_type = new MyType(MyType.BaseType.CLASS, var_type_name);
+        }
         // add as a class field
         if (curr_method == null){
             s_table.getClassInfo(curr_class).addField(var_name, var_type);
@@ -231,7 +254,7 @@ public class ClassTableVisitor extends GJDepthFirst < MyType, SymbolTable > {
     }
 
     @Override
-    public MyType visit (MethodDeclaration n, SymbolTable s_table) {
+    public MyType visit(MethodDeclaration n, SymbolTable s_table) {
         String method_name = n.f2.f0.toString();
         MyType ret_type = n.f1.f0.accept(this, s_table);
 
@@ -249,7 +272,7 @@ public class ClassTableVisitor extends GJDepthFirst < MyType, SymbolTable > {
     }
 
     @Override
-    public MyType visit (FormalParameter n, SymbolTable s_table) {
+    public MyType visit(FormalParameter n, SymbolTable s_table) {
         MyType param_type = n.f0.f0.accept(this, s_table);
         String param_name = n.f1.f0.toString();
 
