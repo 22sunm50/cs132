@@ -1,51 +1,10 @@
-import java.util.Stack;
 import java.util.HashMap;
 
 public class SymbolTable {
-    public Stack < HashMap < String, MyType >> env; // for local vars and args
     public HashMap < String, ClassInfo > class_table; // for class info
 
     public SymbolTable() {
-        env = new Stack<>();
         class_table = new HashMap<>();
-    }
-
-    //  🪑 🪑 🪑 🪑 🪑 🪑 🪑 🪑 🪑 🪑 SYMBOL TABLE FUNCS 🪑 🪑 🪑 🪑 🪑 🪑 🪑 🪑 🪑 🪑 🪑
-    public void pushScope() {
-        env.push(new HashMap<>());
-    }
-    
-    public void popScope() {
-        if (!env.isEmpty()) {
-            env.pop();
-        } else {
-            throw new RuntimeException("No scope to pop.");
-        }
-    }
-
-    // add var (curr scope)
-    public void addVar(String varName, MyType varType) {
-        if (env.isEmpty()) {
-            pushScope();
-        }
-        env.peek().put(varName, varType);
-    }
-    
-    // look up var (from innermost to outtermost)
-    public MyType lookupVar(String varName) {
-        for (int i = env.size() - 1; i >= 0; i--) {
-            if (env.get(i).containsKey(varName)) {
-                return env.get(i).get(varName);
-            }
-        }
-        return null; // variable not found
-    }
-
-    public void printEnv() {
-        System.out.println("Environment Stack:");
-        for (HashMap<String, MyType> scope : env) {
-            System.out.println(scope);
-        }
     }
     
     // 👩‍🏫 👩‍🏫 👩‍🏫 👩‍🏫 👩‍🏫 👩‍🏫 👩‍🏫 👩‍🏫 👩‍🏫 CLASS TABLE FUNCS 👩‍🏫 👩‍🏫 👩‍🏫 👩‍🏫 👩‍🏫 👩‍🏫 👩‍🏫 👩‍🏫 👩‍🏫 👩‍🏫
