@@ -35,6 +35,10 @@ public class ClassInfo {
 
     // get type of a field
     public MyType getFieldType(String fieldName) {
+        if (!this.hasField(fieldName)){
+            System.err.println("🚨: Fetching a field (" + fieldName + ") that DNE");
+            printFailureAndExit();
+        }
         return fields_map.get(fieldName);
     }
 

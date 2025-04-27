@@ -1,17 +1,30 @@
 class Main {
     public static void main(String[] a) {
-        int x;
+        int num;
+        Dog zelda;
+        Cat lanmei;
+        // zelda = zelda.i_miss_snoopy(num);
     }
 }
 
-class A {
+class Cat {
     int b;
     int c;
     int[] d;
-    public A i_miss_snoopy(int snoopy){
+    public Dog meow(int num, Dog snoopy){
         boolean b;
-        A object;
+        Dog parker;
+        Cat lanmei;
         b = true;
-        return object; // type checks!
+        lanmei = (lanmei.meow(snoopy, num, num, snoopy)).bark(b, num); // Dog.bark()
+        return new Dog();
+    }
+    
+}
+
+class Dog {
+    boolean pooped;
+    public Cat bark(boolean hasFur, int num){
+        return new Cat();
     }
 }

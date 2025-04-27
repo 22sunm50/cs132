@@ -1,3 +1,7 @@
+import java.util.ArrayList;
+import java.util.Enumeration;
+import java.util.List;
+
 import minijava.syntaxtree.*;
 import minijava.visitor.GJDepthFirst;
 
@@ -112,7 +116,7 @@ public class ExpressionVisitor extends GJDepthFirst<MyType, SymbolTable> {
 
     @Override
     public MyType visit(BracketExpression n, SymbolTable s_table) { // 🍅 🍅 🍅 🍅 🍅
-        MyType expr = n.f1.accept(this, s_table); // some type
+        MyType expr = n.f1.f0.accept(this, s_table); // some type
         return expr;
     }
 
@@ -155,10 +159,95 @@ public class ExpressionVisitor extends GJDepthFirst<MyType, SymbolTable> {
 
     @Override
     public MyType visit(MessageSend n, SymbolTable s_table) {
-        MyType obj_type = n.f0.f0.accept(this, s_table);
-        // return ret_type;
+        MyType raw_obj_type = n.f0.f0.accept(this, s_table);
+        System.err.println("💬 Message: called on RAW object type = " + raw_obj_type.toString());
+
+        MyType actual_obj_type = raw_obj_type;
+        // 📦 📦 📦 📦 📦 CHECK OBJ TYPE 📦 📦 📦 📦 📦
+        // called on a variable
+        if (raw_obj_type.isOfType(MyType.BaseType.ID)){
+            String raw_obj_name = raw_obj_type.getClassName();
+            if (curr_method == null) {  // get type of object from fields
+                actual_obj_type = s_table.getClassInfo(curr_class).getFieldType(raw_obj_name);
+            }
+            else {  // get type of object from method vars
+                actual_obj_type = s_table.getClassInfo(curr_class).getMethodInfo(curr_method).getVarOrArgType(raw_obj_name);
+            }
+            System.err.println("💬 Message: called on ID object type(" + raw_obj_name + ") = " + actual_obj_type.toString());
+        }
+
+        // called on this --> don't need to change actual_obj_type
+
+        // called on expression --> bracket expr --> should be handled
+            // 🍅: check that it can handle method calls in brackets once you have implemented return ret_type here!
+
+        // call method on literal
+        if (!actual_obj_type.isOfType(MyType.BaseType.CLASS)){ 
+            System.err.println("🚨 Method Call: Can't call method on non-class type: " + actual_obj_type);
+            printFailureAndExit();
+        }
+
+        String obj_class_name = actual_obj_type.getClassName();
+        if (!s_table.hasClass(obj_class_name)) { // call method on non-existent class
+            System.err.println("🚨 Method Call: non-existent class type: " + actual_obj_type);
+            printFailureAndExit();
+        }
+        // CHECK METHOD CALLED
+        // 🍅 Passed In Params: delete later
+        n.f4.accept(this, s_table); // calls ExpressionList
+        // check if method for the class exists
+        String called_method_name = n.f2.f0.toString();
+        System.err.println("🤙 Message: Called Method = " + called_method_name);
+        if (!s_table.getClassInfo(obj_class_name).hasMethod(called_method_name)){   // method DNE
+            System.err.println("🚨 Method Call: non-existent method: " + called_method_name);
+            printFailureAndExit();
+        }
+        // get ret type
+        MyType ret_type = s_table.getClassInfo(obj_class_name).getMethodInfo(called_method_name).getReturnType();
+
+        return ret_type;
+    }
+
+    @Override
+    public MyType visit(ThisExpression n, SymbolTable s_table) {
+        return new MyType(MyType.BaseType.CLASS, curr_class);
+    }
+    
+    @Override
+    public MyType visit(ExpressionList n, SymbolTable s_table) {
+        List<MyType> typeList = new ArrayList<>();
+
+        // Visit the first expression and add its type
+        MyType firstType = n.f0.f0.accept(this, s_table);
+        typeList.add(firstType);
+
+        // MyType restType = n.f1.accept(this, s_table);
+        // typeList.add(restType);
+
+        // Manually iterate over each ExpressionRest in NodeListOptional
+        if (n.f1.present()) {
+            for (Enumeration<Node> e = n.f1.elements(); e.hasMoreElements(); ) {
+                ExpressionRest exprRest = (ExpressionRest) e.nextElement();
+                MyType restType = exprRest.accept(this, s_table); // Uses your ExpressionRest visitor
+                typeList.add(restType);
+            }
+        }
+
+        System.err.println("📋 Expression List: " + typeList);
         return null;
     }
+
+    @Override
+    public MyType visit(ExpressionRest n, SymbolTable s_table) {
+        // Visit the first expression and add its type
+        MyType nextType = n.f1.f0.accept(this, s_table);        
+        return nextType;
+    }
+
+    // @Override
+    // public MyType visit(IfStatement n, SymbolTable s_table) {
+    //     MyType nextType = 
+    // }
 
     // 🗺️ 🗺️ 🗺️ 🗺️ 🗺️ 🗺️ 🗺️ 🗺️ 🗺️ 🗺️ SYMBOL TABLE 🗺️ 🗺️ 🗺️ 🗺️ 🗺️ 🗺️ 🗺️ 🗺️ 🗺️ 🗺️ 🗺️ 🗺️
     // ALL POSSIBLE Type()
@@ -239,9 +328,6 @@ public class ExpressionVisitor extends GJDepthFirst<MyType, SymbolTable> {
             System.err.println("🚨 Method (" + method_name + "): ret type does not match. Expected: " + ret_type + " | Actual: " + ret_type_final);
             printFailureAndExit();
         }
-
-        System.err.println("📝 📝 📝 📝 📝 Method Dec: expected ret type = " + ret_type.toString() + " | final ret type = " + ret_type_final.toString());
-
         return null;
     }
 
@@ -284,9 +370,9 @@ public class ExpressionVisitor extends GJDepthFirst<MyType, SymbolTable> {
     @Override
     public MyType visit(AllocationExpression n, SymbolTable s_table) {
         String class_obj_name = n.f1.f0.toString();
-        System.err.println("🤖 🤖 🤖 🤖 🤖 : allocation class object name = " + class_obj_name);
+        System.err.println("🤖 Allocation: allocate new = " + class_obj_name);
         if (!s_table.hasClass(class_obj_name)) {
-            System.err.println("🚨 Allocation: " + class_obj_name + "is not an existing custom class");
+            System.err.println("🚨 Allocation: " + class_obj_name + " is not an existing custom class");
             printFailureAndExit();
         }
         

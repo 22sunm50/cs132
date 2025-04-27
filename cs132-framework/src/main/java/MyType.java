@@ -63,10 +63,9 @@ public class MyType {
         if (baseType == BaseType.ID) {
             return "ID : " + className;
         }
-
-        // else if (baseType == BaseType.CLASS) {
-        //     return "CLASS : " + className;
-        // }
+        else if (baseType == BaseType.CLASS) {
+            return "CLASS : " + className;
+        }
         return baseType.toString().toLowerCase();
     }
 }
