@@ -281,6 +281,10 @@ public class ClassTableVisitor extends GJDepthFirst < MyType, SymbolTable > {
         MyType param_type = n.f0.f0.accept(this, s_table);
         String param_name = n.f1.f0.toString();
 
+        if (param_type.getBaseType() == (MyType.BaseType.ID)){
+            param_type.changeBaseType(MyType.BaseType.CLASS);
+        }
+
         s_table.getClassInfo(curr_class).getMethodInfo(curr_method).addArg(param_name, param_type);
 
         return param_type;

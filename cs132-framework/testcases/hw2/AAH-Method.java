@@ -16,7 +16,12 @@ class Cat {
         Dog parker;
         Cat lanmei;
         b = true;
-        lanmei = (lanmei.meow(snoopy, num, num, snoopy)).bark(b, num); // Dog.bark()
+        // lanmei = (lanmei.meow(num, snoopy)).bark(b, snoopy); // ✅
+        // parker = lanmei.meow(num, lanmei.meow(num, num)); // ❌
+        // parker = lanmei.meow(num, parker.barkbark(b, snoopy)); // ✅
+        // parker = lanmei.meow(num, parker.bark(b, snoopy)); // ❌
+        // parker = lanmei.meow(num, parker.barkbark(b, parker.barkbark(b, parker.bark(b, snoopy)))); // ❌
+        parker = lanmei.meow(num, parker.barkbark(b, parker.barkbark(b, parker.barkbark(b, snoopy)))); // ✅
         return new Dog();
     }
     
@@ -24,7 +29,11 @@ class Cat {
 
 class Dog {
     boolean pooped;
-    public Cat bark(boolean hasFur, int num){
+    public Cat bark(boolean hasFur, Dog pup){
         return new Cat();
     }
+    public Dog barkbark(boolean hasFur, Dog pup){
+        return new Dog();
+    }
+
 }

@@ -58,6 +58,15 @@ public class MyType {
         return true;
     }
 
+    public boolean passedParamEquals(MyType other) {
+        // if both are either CLASS or ID
+        if ((this.baseType == BaseType.ID || this.baseType == BaseType.CLASS) && (other.baseType == BaseType.ID || other.baseType == BaseType.CLASS)) {
+            return this.className != null && this.className.equals(other.className);
+        }
+        else if (this.baseType != other.baseType) return false;
+        return true;
+    }
+
     @Override
     public String toString() {
         if (baseType == BaseType.ID) {

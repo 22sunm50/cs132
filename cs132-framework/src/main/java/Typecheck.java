@@ -21,7 +21,7 @@ public class Typecheck extends GJDepthFirst<String, String> implements MiniJavaP
                 cv.inheritFields(s_table);
                 cv.inheritMethods(s_table);
                 cv.addFieldsToMethodVars(s_table); // do after inheritance
-                s_table.printClassTable();
+                // s_table.printClassTable();
 
                 // third pass
                 ExpressionVisitor ev = new ExpressionVisitor();

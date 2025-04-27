@@ -1,6 +1,7 @@
 import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.List;
+import java.util.Stack;
 
 import minijava.syntaxtree.*;
 import minijava.visitor.GJDepthFirst;
@@ -8,6 +9,8 @@ import minijava.visitor.GJDepthFirst;
 public class ExpressionVisitor extends GJDepthFirst<MyType, SymbolTable> {
     String curr_class;
     String curr_method;
+
+    private Stack<List<MyType>> expressionListStack = new Stack<>();
 
     public void printFailureAndExit() { 
         System.out.println("Type error");
@@ -176,11 +179,6 @@ public class ExpressionVisitor extends GJDepthFirst<MyType, SymbolTable> {
             System.err.println("💬 Message: called on ID object type(" + raw_obj_name + ") = " + actual_obj_type.toString());
         }
 
-        // called on this --> don't need to change actual_obj_type
-
-        // called on expression --> bracket expr --> should be handled
-            // 🍅: check that it can handle method calls in brackets once you have implemented return ret_type here!
-
         // call method on literal
         if (!actual_obj_type.isOfType(MyType.BaseType.CLASS)){ 
             System.err.println("🚨 Method Call: Can't call method on non-class type: " + actual_obj_type);
@@ -192,19 +190,45 @@ public class ExpressionVisitor extends GJDepthFirst<MyType, SymbolTable> {
             System.err.println("🚨 Method Call: non-existent class type: " + actual_obj_type);
             printFailureAndExit();
         }
+        
         // CHECK METHOD CALLED
-        // 🍅 Passed In Params: delete later
-        n.f4.accept(this, s_table); // calls ExpressionList
-        // check if method for the class exists
         String called_method_name = n.f2.f0.toString();
         System.err.println("🤙 Message: Called Method = " + called_method_name);
+        // check if method for the class exists
         if (!s_table.getClassInfo(obj_class_name).hasMethod(called_method_name)){   // method DNE
             System.err.println("🚨 Method Call: non-existent method: " + called_method_name);
             printFailureAndExit();
         }
+
+        MethodInfo method_info = s_table.getClassInfo(obj_class_name).getMethodInfo(called_method_name);
+        List<MyType> expectedArgTypes = method_info.getArgsTypeList();
+    
+        // Visit ExpressionList to push a new list onto the stack
+        if (n.f4.present()) {
+            n.f4.accept(this, s_table); // This fills the top of the stack
+        } else {
+            expressionListStack.push(new ArrayList<>()); // No params, push empty
+        }
+
+        List<MyType> actualArgTypes = expressionListStack.pop(); // Retrieve the correct list
+        System.err.println("📋 Message: for method call (" + called_method_name + "): this is the 📋 Expression List: " + actualArgTypes);
+
+        // Check argument count
+        if (expectedArgTypes.size() != actualArgTypes.size()) {
+            System.err.println("🚨 Method Call: argument count mismatch for method: " + called_method_name);
+            printFailureAndExit();
+        }
+
+        // Check each argument type
+        for (int i = 0; i < expectedArgTypes.size(); i++) {
+            if (!expectedArgTypes.get(i).equals(actualArgTypes.get(i))) {
+                System.err.println("🚨 Method Call (" + called_method_name + "): argument type mismatch at position " + i + ". Expected: " + expectedArgTypes.get(i) + ", Got: " + actualArgTypes.get(i));
+                printFailureAndExit();
+            }
+        }
+
         // get ret type
         MyType ret_type = s_table.getClassInfo(obj_class_name).getMethodInfo(called_method_name).getReturnType();
-
         return ret_type;
     }
 
@@ -216,7 +240,8 @@ public class ExpressionVisitor extends GJDepthFirst<MyType, SymbolTable> {
     @Override
     public MyType visit(ExpressionList n, SymbolTable s_table) {
         List<MyType> typeList = new ArrayList<>();
-
+        expressionListStack.push(typeList); // Push a new list for this context
+    
         // Visit the first expression and add its type
         MyType firstType = n.f0.f0.accept(this, s_table);
         typeList.add(firstType);
@@ -233,7 +258,7 @@ public class ExpressionVisitor extends GJDepthFirst<MyType, SymbolTable> {
             }
         }
 
-        System.err.println("📋 Expression List: " + typeList);
+        // System.err.println("📋 Expression List: " + lastExpressionListTypes);
         return null;
     }
 
