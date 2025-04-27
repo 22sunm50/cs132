@@ -54,6 +54,11 @@ public class SymbolTable {
     }
 
     public ClassInfo getClassInfo(String className) {
+        if (!this.hasClass(className)){
+            System.err.println("🚨 SymbolTable: tried getting non-existent class: " + className);
+            System.out.println("Type error");
+            System.exit(1);
+        }
         return class_table.get(className);
     }
 

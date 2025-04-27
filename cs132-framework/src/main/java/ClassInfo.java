@@ -63,6 +63,10 @@ public class ClassInfo {
 
     // get method info
     public MethodInfo getMethodInfo(String methodName) {
+        if (!this.hasMethod(methodName)){
+            System.err.println("🚨 MethodInfo: tried getting non-existent method: " + methodName);
+            printFailureAndExit();
+        }
         return methods_map.get(methodName);
     }
 
