@@ -333,6 +333,34 @@ public class ExpressionVisitor extends GJDepthFirst<MyType, SymbolTable> {
         return new MyType(MyType.BaseType.INT_ARRAY);
     }
 
+    @Override
+    public MyType visit(ArrayLength n, SymbolTable s_table) {
+        MyType expr_type = n.f0.accept(this, s_table);
+        if (!expr_type.isOfType(MyType.BaseType.INT_ARRAY)){
+            System.err.println("🚨 Array Length: (" + expr_type.getClassName() + ") expr type (not int_arr) type = " + expr_type);
+            printFailureAndExit();
+        }
+        return new MyType(MyType.BaseType.INT);
+    }
+
+    @Override
+    public MyType visit(ArrayLookup n, SymbolTable s_table) {
+        MyType id_type = n.f0.accept(this, s_table);
+
+        if (!id_type.isOfType(MyType.BaseType.INT_ARRAY)){
+            System.err.println("🚨 Array Lookup: id type (not int_arr) type = " + id_type);
+            printFailureAndExit();
+        }
+
+        MyType index_type = n.f2.accept(this, s_table);
+        if (!index_type.isOfType(MyType.BaseType.INT)){
+            System.err.println("🚨 Array Lookup: index type (not int_arr) type = " + index_type);
+            printFailureAndExit();
+        }
+
+        return new MyType(MyType.BaseType.INT);
+    }
+
     // 🗺️ 🗺️ 🗺️ 🗺️ 🗺️ 🗺️ 🗺️ 🗺️ 🗺️ 🗺️ SYMBOL TABLE 🗺️ 🗺️ 🗺️ 🗺️ 🗺️ 🗺️ 🗺️ 🗺️ 🗺️ 🗺️ 🗺️ 🗺️
     // ALL POSSIBLE Type()
     @Override
@@ -430,7 +458,7 @@ public class ExpressionVisitor extends GJDepthFirst<MyType, SymbolTable> {
             MyType expected_type = s_table.getClassInfo(curr_class).getFieldType(var_name);
             System.err.println("🧮 🧮 🧮 🧮 🧮 Assignment of (" + var_name + "): expected type = " + expected_type.toString() + "|| expr type = " + expr_type.toString());
             if (!expected_type.equals(expr_type)){                           // expected type doesn't match
-                System.err.println("🚨 Assignment of " + var_name + ": expected type: " + expected_type + " || assigned type: " + expr_type);
+                System.err.println("🚨 Assignment of (" + var_name + "): expected type: " + expected_type + " || assigned type: " + expr_type);
                 printFailureAndExit();
             }
         }

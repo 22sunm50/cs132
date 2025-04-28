@@ -4,7 +4,7 @@ class Main {
         int sum;
         boolean b;
         Dog snoopy;
-        numz = new int[sum];
+        sum = numz[(1 < 5)];
     }
 }
 
