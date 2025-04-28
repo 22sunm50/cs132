@@ -323,6 +323,16 @@ public class ExpressionVisitor extends GJDepthFirst<MyType, SymbolTable> {
         return new MyType(MyType.BaseType.INT_ARRAY);
     }
 
+    @Override
+    public MyType visit(ArrayAllocationExpression n, SymbolTable s_table) {
+        MyType expr_type = n.f3.f0.accept(this, s_table);
+        if (!expr_type.isOfType(MyType.BaseType.INT)){
+            System.err.println("🚨 Array Alloc: expr type (not int) type = " + expr_type);
+            printFailureAndExit();
+        }
+        return new MyType(MyType.BaseType.INT_ARRAY);
+    }
+
     // 🗺️ 🗺️ 🗺️ 🗺️ 🗺️ 🗺️ 🗺️ 🗺️ 🗺️ 🗺️ SYMBOL TABLE 🗺️ 🗺️ 🗺️ 🗺️ 🗺️ 🗺️ 🗺️ 🗺️ 🗺️ 🗺️ 🗺️ 🗺️
     // ALL POSSIBLE Type()
     @Override
