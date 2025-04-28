@@ -77,7 +77,7 @@ public class ClassTableVisitor extends GJDepthFirst < MyType, SymbolTable > {
                     }
                 }
                 parent = parentInfo.getParentClassName(); // move up to grandparents and repeat
-            }
+            } 
         }
     }
 
