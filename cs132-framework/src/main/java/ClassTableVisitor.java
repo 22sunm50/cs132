@@ -72,7 +72,8 @@ public class ClassTableVisitor extends GJDepthFirst < MyType, SymbolTable > {
                 ClassInfo parentInfo = s_table.getClassInfo(parent);        // get parent's ClassInfo
                 for (String parentField : parentInfo.fields_map.keySet()) { // for each field in parent
                     if (!classInfo.fields_map.containsKey(parentField)) {   // inherit if not overshadowed
-                        classInfo.fields_map.put(parentField, parentInfo.fields_map.get(parentField));
+                        MyType parentField_type = parentInfo.fields_map.get(parentField);
+                        classInfo.addField(parentField, parentField_type);
                     }
                 }
                 parent = parentInfo.getParentClassName(); // move up to grandparents and repeat
@@ -114,11 +115,11 @@ public class ClassTableVisitor extends GJDepthFirst < MyType, SymbolTable > {
                 for (String parentMethod : parentInfo.methods_map.keySet()) {
                     MethodInfo parentMethodInfo = parentInfo.getMethodInfo(parentMethod);
     
-                    if (!classInfo.methods_map.containsKey(parentMethod)) {
-                        // inherit the method if not overridden
-                        classInfo.methods_map.put(parentMethod, parentMethodInfo);
-                    } else {
-                        // method exists in subclass -> check for valid overriding
+                    if (!classInfo.hasMethod(parentMethod)) { // inherit the method if not overridden
+                        // 😱 😱 😱 😱 😱: make a copy to not link methodInfo objs
+                        MethodInfo copy_parentMethodInfo = new MethodInfo(parentMethodInfo);
+                        classInfo.methods_map.put(parentMethod, copy_parentMethodInfo);
+                    } else {    // method exists in subclass -> check for valid overriding
                         MethodInfo childMethodInfo = classInfo.getMethodInfo(parentMethod);
     
                         if (!areMethodsEqual(childMethodInfo, parentMethodInfo)) {
@@ -136,16 +137,22 @@ public class ClassTableVisitor extends GJDepthFirst < MyType, SymbolTable > {
 
     // add class fields to method vars if not shadowed (CALL AFTER INHERITANCE)
     public void addFieldsToMethodVars(SymbolTable s_table) {
-        for (String className : s_table.class_table.keySet()) {
-            ClassInfo classInfo = s_table.getClassInfo(className);
+        for (String className : s_table.class_table.keySet()) {                 // loop thru all classes in the symbol table
+            ClassInfo classInfo = s_table.getClassInfo(className);              // get classInfo of this class
+            System.err.println("🌷: Looking at Class = " + className);
 
-            for (String methodName : classInfo.methods_map.keySet()) {
-                MethodInfo methodInfo = classInfo.getMethodInfo(methodName);
+            for (String methodName : classInfo.methods_map.keySet()) {          // loop thru all methods in the class
+                MethodInfo methodInfo = classInfo.getMethodInfo(methodName);    // get methodInfo of this method
+                System.err.println("   🌼: Looking at method = " + methodName);
 
-                for (String fieldName : classInfo.fields_map.keySet()) {
-                    if (!methodInfo.vars_map.containsKey(fieldName)) {
+                for (String fieldName : classInfo.fields_map.keySet()) {        // loop thru all fields in this class
+                    System.err.println("     🌸: Looking at field = " + fieldName);
+                    if (!methodInfo.vars_map.containsKey(fieldName)) {          // if fieldname not a method var yet
                         // add class field to method's vars_map if not shadowed
-                        methodInfo.vars_map.put(fieldName, classInfo.fields_map.get(fieldName));
+                        methodInfo.addVar(fieldName, classInfo.getFieldType(fieldName));
+                        System.err.println("        💮: Adding field to var = " + fieldName);
+                        System.err.println("        💮: To method = " + methodName);
+                        System.err.println("        💮: In class = " + className);
                     }
                 }
             }

@@ -15,6 +15,14 @@ public class MethodInfo {
         this.args_map = new HashMap<>(); // just args
     }
 
+    // copy constructor (deep copy)
+    public MethodInfo(MethodInfo other) {
+        this.return_type = other.return_type; // assuming immutable or fine to share
+        this.args_map = new HashMap<>(other.args_map); // shallow copy, or deep copy if needed
+        this.vars_map = new HashMap<>(other.vars_map); // shallow copy, or deep copy if needed
+        this.args_type_list = new ArrayList<>(other.args_type_list); // copy list
+    }
+
     public MyType getReturnType() {
         return return_type;
     }

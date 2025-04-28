@@ -285,19 +285,28 @@ public class ExpressionVisitor extends GJDepthFirst<MyType, SymbolTable> {
     }
 
     @Override
-    public MyType visit(VarDeclaration n, SymbolTable s_table) {
-        MyType var_type = n.f0.f0.accept(this, s_table);
-
-        // if custom class type
-        if (var_type.isOfType(MyType.BaseType.ID)){
-            String var_type_name = var_type.getClassName();
-            // check if class exists yet:
-            if (!s_table.hasClass(var_type_name)){
-                System.err.println("🚨 Var Dec: declare of type class that DNE = " + var_type_name);
+    public MyType visit(ArrayAssignmentStatement n, SymbolTable s_table) {
+        String id_string = n.f0.f0.toString();
+        
+        // check ID is an int_array
+        if (curr_method == null){
+            MyType id_type = s_table.getClassInfo(curr_class).getFieldType(id_string);
+            // ID exists + ID type is int_array
+            if (!id_type.isOfType(MyType.BaseType.INT_ARRAY)){
+                System.err.println("🚨 Array Assignment: ID (" + id_string + ") is actually type = " + id_type);
                 printFailureAndExit();
             }
         }
-        return null;
+        else {
+            MyType id_type = s_table.getClassInfo(curr_class).getMethodInfo(curr_method).getVarOrArgType(id_string);
+            // if var exists + var type is int_array
+            if (!id_type.isOfType(MyType.BaseType.INT_ARRAY)){
+                System.err.println("🚨 Array Assignment: ID (" + id_string + ") is actually type = " + id_type);
+                printFailureAndExit();
+            }
+        }
+
+        return new MyType(MyType.BaseType.INT_ARRAY);
     }
 
     // 🗺️ 🗺️ 🗺️ 🗺️ 🗺️ 🗺️ 🗺️ 🗺️ 🗺️ 🗺️ SYMBOL TABLE 🗺️ 🗺️ 🗺️ 🗺️ 🗺️ 🗺️ 🗺️ 🗺️ 🗺️ 🗺️ 🗺️ 🗺️
@@ -428,6 +437,22 @@ public class ExpressionVisitor extends GJDepthFirst<MyType, SymbolTable> {
         }
         
         return new MyType(MyType.BaseType.CLASS, class_obj_name);
+    }
+
+    @Override
+    public MyType visit(VarDeclaration n, SymbolTable s_table) {
+        MyType var_type = n.f0.f0.accept(this, s_table);
+
+        // if custom class type
+        if (var_type.isOfType(MyType.BaseType.ID)){
+            String var_type_name = var_type.getClassName();
+            // check if class exists yet:
+            if (!s_table.hasClass(var_type_name)){
+                System.err.println("🚨 Var Dec: declare of type class that DNE = " + var_type_name);
+                printFailureAndExit();
+            }
+        }
+        return null;
     }
 
 }

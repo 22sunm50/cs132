@@ -12,8 +12,7 @@ public class Typecheck extends GJDepthFirst<String, String> implements MiniJavaP
                 Goal root = MiniJavaParser.Goal();
 
                 SymbolTable s_table = new SymbolTable();
-                // HashMap<String, ClassInfo> c_table = new HashMap<>(); // table of class info
-
+                
                 // first pass
                 ClassTableVisitor cv = new ClassTableVisitor();
                 cv.visit(root, s_table);
