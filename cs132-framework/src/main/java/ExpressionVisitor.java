@@ -306,6 +306,20 @@ public class ExpressionVisitor extends GJDepthFirst<MyType, SymbolTable> {
             }
         }
 
+        // check index = int
+        MyType index_type = n.f2.f0.accept(this, s_table);
+        if (!index_type.isOfType(MyType.BaseType.INT)){
+            System.err.println("🚨 Array Assignment: index type (not int) type = " + index_type);
+            printFailureAndExit();
+        }
+
+        // check assigned = int
+        MyType assigned_type = n.f5.f0.accept(this, s_table);
+        if (!assigned_type.isOfType(MyType.BaseType.INT)){
+            System.err.println("🚨 Array Assignment: assigned type (not int) type = " + assigned_type);
+            printFailureAndExit();
+        }
+
         return new MyType(MyType.BaseType.INT_ARRAY);
     }
 

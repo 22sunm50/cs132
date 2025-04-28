@@ -139,20 +139,14 @@ public class ClassTableVisitor extends GJDepthFirst < MyType, SymbolTable > {
     public void addFieldsToMethodVars(SymbolTable s_table) {
         for (String className : s_table.class_table.keySet()) {                 // loop thru all classes in the symbol table
             ClassInfo classInfo = s_table.getClassInfo(className);              // get classInfo of this class
-            System.err.println("🌷: Looking at Class = " + className);
 
             for (String methodName : classInfo.methods_map.keySet()) {          // loop thru all methods in the class
                 MethodInfo methodInfo = classInfo.getMethodInfo(methodName);    // get methodInfo of this method
-                System.err.println("   🌼: Looking at method = " + methodName);
 
                 for (String fieldName : classInfo.fields_map.keySet()) {        // loop thru all fields in this class
-                    System.err.println("     🌸: Looking at field = " + fieldName);
                     if (!methodInfo.vars_map.containsKey(fieldName)) {          // if fieldname not a method var yet
                         // add class field to method's vars_map if not shadowed
                         methodInfo.addVar(fieldName, classInfo.getFieldType(fieldName));
-                        System.err.println("        💮: Adding field to var = " + fieldName);
-                        System.err.println("        💮: To method = " + methodName);
-                        System.err.println("        💮: In class = " + className);
                     }
                 }
             }
