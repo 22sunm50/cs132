@@ -457,7 +457,13 @@ public class ExpressionVisitor extends GJDepthFirst<MyType, SymbolTable> {
             }
             MyType expected_type = s_table.getClassInfo(curr_class).getFieldType(var_name);
             System.err.println("🧮 🧮 🧮 🧮 🧮 Assignment of (" + var_name + "): expected type = " + expected_type.toString() + "|| expr type = " + expr_type.toString());
-            if (!expected_type.equals(expr_type)){                           // expected type doesn't match
+            
+            // if equals OR subtype --> ret null
+            // else -> fail
+            if (expected_type.equals(expr_type) || s_table.isSubtype(expr_type.getClassName(), expected_type.getClassName())){  // expr type is not subtype
+                return null;
+            }
+            else{
                 System.err.println("🚨 Assignment of (" + var_name + "): expected type: " + expected_type + " || assigned type: " + expr_type);
                 printFailureAndExit();
             }
@@ -470,7 +476,13 @@ public class ExpressionVisitor extends GJDepthFirst<MyType, SymbolTable> {
                 printFailureAndExit();
             }
             MyType expected_type = s_table.getClassInfo(curr_class).getMethodInfo(curr_method).getVarOrArgType(var_name);
-            if (!expected_type.equals(expr_type)){ // expected type doesn't match
+            System.err.println("🧮 🧮 🧮 🧮 🧮 Assignment of (" + var_name + "): expected type = " + expected_type.toString() + "|| expr type = " + expr_type.toString());
+            // if not equals OR not subtype
+            // if (!expected_type.equals(expr_type)){ // expected type doesn't match
+            if (expected_type.equals(expr_type) || s_table.isSubtype(expr_type.getClassName(), expected_type.getClassName())){
+                return null;
+            }
+            else{
                 System.err.println("🚨 Assignment of (" + var_name + "): expected type: " + expected_type + " || assigned type: " + expr_type);
                 printFailureAndExit();
             }

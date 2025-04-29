@@ -17,10 +17,16 @@ public class ClassTableVisitor extends GJDepthFirst < MyType, SymbolTable > {
     }
 
     // 🔄 🔄 🔄 🔄 🔄 🔄 🔄 CYCLE DETECTION 🔄 🔄 🔄 🔄 🔄 🔄 🔄
+    // set is_subtype to the s_table is_subtype
+    public void setSymbolTableSubtype(SymbolTable s_table) {
+        s_table.setIsSubtypeMap(this.is_subtype);
+    }
+
     // get subtype outside of this class
     public HashMap< String, HashMap < String,Boolean > > get_is_subtype() {
         return is_subtype;
     }
+
     // list of class names
     public List<String> getClassNames() {
         return new ArrayList<>(is_subtype.keySet());

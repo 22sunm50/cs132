@@ -1,9 +1,9 @@
 class Main {
     public static void main(String[] a) {
-        // int x;
-        // C c;
-        // int[] sum_arr;
-        // sum_arr[0] = b;
+        A a;
+        B b;
+        C c;
+        c = new A();
     }
 }
 

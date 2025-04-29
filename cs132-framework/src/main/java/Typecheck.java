@@ -16,7 +16,9 @@ public class Typecheck extends GJDepthFirst<String, String> implements MiniJavaP
                 // first pass
                 ClassTableVisitor cv = new ClassTableVisitor();
                 cv.visit(root, s_table);
+                cv.computeTransitiveSubtypes();
                 cv.checkCycle();
+                cv.setSymbolTableSubtype(s_table);
                 cv.inheritFields(s_table);
                 cv.inheritMethods(s_table);
                 cv.addFieldsToMethodVars(s_table); // do after inheritance

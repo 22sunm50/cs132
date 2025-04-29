@@ -2,9 +2,20 @@ import java.util.HashMap;
 
 public class SymbolTable {
     public HashMap < String, ClassInfo > class_table; // for class info
+    public HashMap<String, HashMap<String, Boolean>> is_subtype; // move from ClassTableVisitor
 
     public SymbolTable() {
         class_table = new HashMap<>();
+        is_subtype = new HashMap<>();
+    }
+
+    // 🤰 🤰 🤰 🤰 🤰 🤰 SUBTYPING🤰 🤰 🤰 🤰 🤰 🤰
+    public void setIsSubtypeMap(HashMap<String, HashMap<String, Boolean>> is_subtype) {
+        this.is_subtype = is_subtype;
+    }
+    
+    public boolean isSubtype(String a, String b) {
+        return is_subtype.containsKey(a) && is_subtype.get(a).getOrDefault(b, false);
     }
     
     // 👩‍🏫 👩‍🏫 👩‍🏫 👩‍🏫 👩‍🏫 👩‍🏫 👩‍🏫 👩‍🏫 👩‍🏫 CLASS TABLE FUNCS 👩‍🏫 👩‍🏫 👩‍🏫 👩‍🏫 👩‍🏫 👩‍🏫 👩‍🏫 👩‍🏫 👩‍🏫 👩‍🏫
