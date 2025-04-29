@@ -455,7 +455,12 @@ public class ExpressionVisitor extends GJDepthFirst<MyType, SymbolTable> {
         n.f8.accept(this, s_table); // statements list
         // n.f10.accept(this, s_table); // return expression
         MyType ret_type_final = n.f10.f0.accept(this, s_table); // return expression
-        if (!ret_type_final.equals(ret_type)) { // return type does not match!
+        // if ret type equals or subtype -> good!
+        // else -> bad :(
+        if (ret_type_final.equals(ret_type) || s_table.isSubtype(ret_type_final.getClassName(), ret_type.getClassName())) { // return type does not match!
+            return null;
+        }
+        else {
             System.err.println("🚨 Method (" + method_name + "): ret type does not match. Expected: " + ret_type + " | Actual: " + ret_type_final);
             printFailureAndExit();
         }
