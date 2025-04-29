@@ -120,8 +120,8 @@ public class ExpressionVisitor extends GJDepthFirst<MyType, SymbolTable> {
     }
 
     @Override
-    public MyType visit(BracketExpression n, SymbolTable s_table) { // 🍅 🍅 🍅 🍅 🍅
-        MyType expr = n.f1.f0.accept(this, s_table); // some type
+    public MyType visit(BracketExpression n, SymbolTable s_table) {
+        MyType expr = n.f1.f0.accept(this, s_table);
         return expr;
     }
 
