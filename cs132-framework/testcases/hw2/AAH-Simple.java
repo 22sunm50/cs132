@@ -1,21 +1,34 @@
 class Main {
     public static void main(String[] a) {
-        int x;
-        int y;
-        A bonk;
-        boolean b;
-        // b = ((bonk.ret_int()) < y);
-        b = (!(bonk.ret_int()));
+
     }
 }
 
-class A {
-    public int ret_int(){
-        int b;
-        return b;
+class Visitor {
+    Tree l ;
+    //Tree r ;
+
+    public int visit(Tree n){
+        int nti ;
+
+        if (n.GetHas_Right()){
+            r = n.GetRight() ; //TE
+            nti = r.accept(this) ; }
+        else nti = 0 ;
+
+        return 0;
     }
-    public boolean ret_bool(){
-        boolean b;
-        return b;
+
+}
+
+class Tree {
+    public boolean GetHas_Right(){
+        return true;
+    }
+    public Tree GetRight(){
+        return new Tree();
+    }
+    public int accept(Visitor v){
+        return 1;
     }
 }

@@ -170,6 +170,10 @@ public class ExpressionVisitor extends GJDepthFirst<MyType, SymbolTable> {
             System.err.println("🚨: If condition type = " + cond_type);
             printFailureAndExit();
         }
+
+        n.f4.accept(this, s_table); // statements after if
+        n.f6.accept(this, s_table); // statements after else
+
         return cond_type;
     }
 
@@ -180,6 +184,9 @@ public class ExpressionVisitor extends GJDepthFirst<MyType, SymbolTable> {
             System.err.println("🚨: while condition type = " + cond_type);
             printFailureAndExit();
         }
+
+        n.f4.accept(this, s_table); // statements after while
+
         return cond_type;
     }
 
@@ -399,6 +406,7 @@ public class ExpressionVisitor extends GJDepthFirst<MyType, SymbolTable> {
     @Override
     public MyType visit(ClassDeclaration n, SymbolTable s_table) {
         String class_name = n.f1.f0.toString();
+        System.err.println("🥕 🥕 🥕 🥕 🥕 Class Dec (" + class_name + ")");
 
         curr_class = class_name;
         curr_method = null;
@@ -469,7 +477,7 @@ public class ExpressionVisitor extends GJDepthFirst<MyType, SymbolTable> {
                 printFailureAndExit();
             }
             MyType expected_type = s_table.getClassInfo(curr_class).getFieldType(var_name);
-            System.err.println("🧮 🧮 🧮 🧮 🧮 Assignment of (" + var_name + "): expected type = " + expected_type.toString() + "|| expr type = " + expr_type.toString());
+            System.err.println("🧮 Assignment of (" + var_name + "): expected type = " + expected_type.toString() + "|| expr type = " + expr_type.toString());
             
             // if equals OR subtype --> ret null
             // else -> fail
