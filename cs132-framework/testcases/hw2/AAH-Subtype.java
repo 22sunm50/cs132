@@ -1,14 +1,18 @@
 class Main {
     public static void main(String[] a) {
         Snoopy snoop;
+        Dog pup;
         Animal a;
         int num;
-        num = 1;
+        pup = pup.bark(snoop);
     }
 }
 
 class Animal {
     int pup;
+    public Dog bark(Dog a){
+        return new Dog();
+    }
 }
 
 class Dog extends Animal {

@@ -73,7 +73,7 @@ public class ExpressionVisitor extends GJDepthFirst<MyType, SymbolTable> {
         if (lhs.equals(boolType) && rhs.equals(boolType)) { return boolType; }
         System.err.println("🚨: and expr error --> lhs type = " + lhs + "rhs type = " + rhs);
         printFailureAndExit();
-        return null;
+        return new MyType(MyType.BaseType.BOOLEAN);
     }
 
     @Override
@@ -87,14 +87,16 @@ public class ExpressionVisitor extends GJDepthFirst<MyType, SymbolTable> {
             System.err.println("🚨: times expr error --> lhs type = " + lhs + "rhs type = " + rhs);
             printFailureAndExit();
         }
-        return lhs; // return INTEGER_LITERAL (AKA 43)
+        return lhs;
     }
 
     @Override
     public MyType visit(NotExpression n, SymbolTable s_table) {
-        MyType expr = n.f1.accept(this, s_table);
+        MyType expr = n.f1.f0.accept(this, s_table);
 
         MyType boolType = new MyType(MyType.BaseType.BOOLEAN);
+
+        System.err.println("! ! ! ! ! NOT EXPR: the expr = " + expr);
 
         if (!expr.equals(boolType)){ 
             System.err.println("🚨: not expr error --> expr type = " + expr);
@@ -157,6 +159,7 @@ public class ExpressionVisitor extends GJDepthFirst<MyType, SymbolTable> {
             System.err.println("🚨: Print Expression not int, instead is: " + expr_type.getBaseType());
             printFailureAndExit();
         }
+        System.err.println("🖨️ Print: SUCCESS ✅");
         return expr_type;
     }
 
@@ -210,9 +213,9 @@ public class ExpressionVisitor extends GJDepthFirst<MyType, SymbolTable> {
             printFailureAndExit();
         }
         
-        // CHECK METHOD CALLED
+        // 📦 📦 📦 📦 📦 CHECK METHOD CALLED 📦 📦 📦 📦 📦
         String called_method_name = n.f2.f0.toString();
-        System.err.println("🤙 Message: Called Method = " + called_method_name);
+        System.err.println("🤙 Method Call: Method (" + called_method_name + ")");
         // check if method for the class exists
         if (!s_table.getClassInfo(obj_class_name).hasMethod(called_method_name)){   // method DNE
             System.err.println("🚨 Method Call: non-existent method: " + called_method_name);
@@ -230,24 +233,32 @@ public class ExpressionVisitor extends GJDepthFirst<MyType, SymbolTable> {
         }
 
         List<MyType> actualArgTypes = expressionListStack.pop(); // Retrieve the correct list
-        System.err.println("📋 Message: for method call (" + called_method_name + "): this is the 📋 Expression List: " + actualArgTypes);
+        System.err.println("📋 Method Call: Method (" + called_method_name + "): the 📋 args List: " + actualArgTypes);
 
-        // Check argument count
+        // 📦 📦 📦 📦 📦 Check argument count 📦 📦 📦 📦 📦
         if (expectedArgTypes.size() != actualArgTypes.size()) {
             System.err.println("🚨 Method Call: argument count mismatch for method: " + called_method_name);
             printFailureAndExit();
         }
 
-        // Check each argument type
+        MyType ret_type = s_table.getClassInfo(obj_class_name).getMethodInfo(called_method_name).getReturnType();
+        System.err.println("⏪ Method Call: Method (" + called_method_name + ") Return type = " + ret_type);
+
+        // 📦 📦 📦 📦 📦 Check each argument type 📦 📦 📦 📦 📦
         for (int i = 0; i < expectedArgTypes.size(); i++) {
-            if (!expectedArgTypes.get(i).equals(actualArgTypes.get(i))) {
+            MyType expected_type = expectedArgTypes.get(i);
+            MyType actual_type = actualArgTypes.get(i);
+            // if (expectedArgTypes.get(i).equals(actualArgTypes.get(i)) || ) {
+            // if equals or subtype -> good!
+            if (expected_type.equals(actual_type) || s_table.isSubtype(actual_type.getClassName(), expected_type.getClassName())){
+                return ret_type;
+            }
+            else {
                 System.err.println("🚨 Method Call (" + called_method_name + "): argument type mismatch at position " + i + ". Expected: " + expectedArgTypes.get(i) + ", Got: " + actualArgTypes.get(i));
                 printFailureAndExit();
             }
         }
-
-        // get ret type
-        MyType ret_type = s_table.getClassInfo(obj_class_name).getMethodInfo(called_method_name).getReturnType();
+        
         return ret_type;
     }
 
@@ -440,6 +451,8 @@ public class ExpressionVisitor extends GJDepthFirst<MyType, SymbolTable> {
             System.err.println("🚨 Method (" + method_name + "): ret type does not match. Expected: " + ret_type + " | Actual: " + ret_type_final);
             printFailureAndExit();
         }
+
+        System.err.println("🙈 Method Dec: (" + method_name + ")");
         return null;
     }
 
@@ -516,6 +529,10 @@ public class ExpressionVisitor extends GJDepthFirst<MyType, SymbolTable> {
                 printFailureAndExit();
             }
         }
+
+        String var_name = n.f1.f0.toString();
+        System.err.println("🐰 Var Dec: " + var_name + " : " + var_type);
+
         return null;
     }
 
