@@ -52,12 +52,6 @@ public class InstrContainer{
         return temp_name != null;
     }
 
-    // Debug-friendly toString
-    // @Override
-    // public String toString() {
-    //     return "InstrContainer(temp=" + temp_name + ", class=" + class_name + ", #instr=" + instr_list.size() + ")";
-    // }
-
     @Override
     public String toString() {
         StringBuilder sb = new StringBuilder();

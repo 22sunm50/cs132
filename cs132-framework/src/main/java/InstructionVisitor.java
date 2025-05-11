@@ -5,6 +5,7 @@ import java.util.ArrayList;
 
 import IR.SparrowParser;
 import IR.token.Identifier;
+import IR.token.Label;
 import sparrow.*;
 // import sparrowv.Print;
 
@@ -163,4 +164,48 @@ public class InstructionVisitor extends GJDepthFirst < InstrContainer, SymbolTab
         return result;
     }
 
+    @Override
+    public InstrContainer visit(IfStatement n, SymbolTable s_table) {
+        InstrContainer result = new InstrContainer();
+
+        // Generate labels
+        Label elseLabel = new Label("L" + generateTemp() + "_Else");
+        Label endLabel = new Label("L" + generateTemp() + "_End");
+
+        // Evaluate condition
+        InstrContainer cond = n.f2.accept(this, s_table);
+        result.append(cond);
+
+        // Conditional jump
+        result.addInstr(new IfGoto(cond.temp_name, elseLabel)); // if0 cond goto elseLabel
+
+        // THEN block
+        InstrContainer thenBlock = n.f4.accept(this, s_table);
+        result.append(thenBlock);
+        result.addInstr(new Goto(endLabel)); // jump to end after then block
+
+        // ELSE block
+        result.addInstr(new LabelInstr(elseLabel));
+        InstrContainer elseBlock = n.f6.accept(this, s_table);
+        result.append(elseBlock);
+
+        // End label
+        result.addInstr(new LabelInstr(endLabel));
+
+        return result;
+    }
+
+    @Override // doin this for multiple statements (like in IfStatement)
+    public InstrContainer visit(minijava.syntaxtree.Block n, SymbolTable s_table) {
+        InstrContainer result = new InstrContainer();
+
+        for (Node stmtNode : n.f1.nodes) {
+            InstrContainer inner = stmtNode.accept(this, s_table);
+            if (inner != null) {
+                result.append(inner);
+            }
+        }
+
+        return result;
+    }
 }
