@@ -37,15 +37,12 @@ public class InstructionVisitor extends GJDepthFirst < InstrContainer, SymbolTab
 
     @Override
     public InstrContainer visit(Statement n, SymbolTable s_table) {
-        System.err.println("🙊 Statement: entered!");
         InstrContainer result = n.f0.accept(this, s_table);
-        System.err.println("🙊 Statement: result = " + result);
         return result;
     }
 
     @Override
     public InstrContainer visit(PrintStatement n, SymbolTable s_table) {
-        System.err.println("🖨️ : DID WE GET TO InstructionVisitor??");
         InstrContainer result = new InstrContainer();
 
         InstrContainer content = n.f2.accept(this, s_table);
@@ -55,7 +52,6 @@ public class InstructionVisitor extends GJDepthFirst < InstrContainer, SymbolTab
         result.instr_list.add(p);
         result.setTemp(content.temp_name, null);
 
-        System.err.println("🖨️ PrintStatement : result = " + result);
         return result;
     }
 
@@ -76,6 +72,48 @@ public class InstructionVisitor extends GJDepthFirst < InstrContainer, SymbolTab
         int int_val = Integer.parseInt(n.f0.toString());        
         result.instr_list.add(new Move_Id_Integer(temp_id, int_val)); // set instr list
         result.temp_name = (temp_id); // set temp name
+        return result;
+    }
+
+    @Override
+    public InstrContainer visit(PlusExpression n, SymbolTable s_table) {
+        InstrContainer result = new InstrContainer();
+        InstrContainer left = n.f0.accept(this, s_table);
+        InstrContainer right = n.f2.accept(this, s_table);
+        
+        result.instr_list=left.instr_list;
+        result.instr_list.addAll(right.instr_list);
+        result.temp_name = new Identifier(generateTemp());
+        result.instr_list.add(new Add(result.temp_name, left.temp_name, right.temp_name));
+        return result;
+    }
+
+    @Override
+    public InstrContainer visit(AssignmentStatement n, SymbolTable s_table) {
+        InstrContainer result = new InstrContainer();
+
+        // the var name being assigned to
+        String varName = n.f0.f0.toString();
+
+        // rhs
+        InstrContainer rhs = n.f2.accept(this, s_table);
+        result.instr_list.addAll(rhs.instr_list);
+    
+        // wrap var as an Identifier
+        Identifier id = new Identifier(varName);
+    
+        // add assignment: id = rhs.temp_name
+        result.addInstr(new Move_Id_Id(id, rhs.temp_name));
+    
+        // we don’t need to set temp_name for statements
+        return result;
+    }
+
+    @Override
+    public InstrContainer visit(minijava.syntaxtree.Identifier n, SymbolTable s_table) {
+        InstrContainer result = new InstrContainer();
+        Identifier var = new Identifier(n.f0.toString());
+        result.setTemp(var, null);
         return result;
     }
 }
