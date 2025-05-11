@@ -1,11 +1,13 @@
 import java.io.InputStream;
+import java.util.ArrayList;
 
 import minijava.MiniJavaParser;
-import minijava.MiniJavaParserConstants;
 import minijava.visitor.GJDepthFirst;
-import minijava.syntaxtree.*;
+import minijava.syntaxtree.Goal;
+import IR.token.*;
+import sparrow.*;
 
-public class J2S extends GJDepthFirst<String, String> implements MiniJavaParserConstants{
+public class J2S extends GJDepthFirst<String, String>{
         public static void main(String[] args) throws Exception {
                 InputStream in = System.in;
                 new MiniJavaParser(in);
@@ -17,65 +19,35 @@ public class J2S extends GJDepthFirst<String, String> implements MiniJavaParserC
                 ClassTableVisitor cv = new ClassTableVisitor();
                 cv.visit(root, s_table);
                 cv.computeTransitiveSubtypes();
-                cv.checkCycle();
                 cv.setSymbolTableSubtype(s_table);
                 cv.inheritFields(s_table);
                 cv.inheritMethods(s_table);
                 cv.addFieldsToMethodVars(s_table); // do after inheritance
 
-                s_table.printClassTable();
+                // s_table.printClassTable();
 
-                System.out.println("Program type checked successfully");
+                // InstructionVisitor iv = new InstructionVisitor();
+
+                // InstrContainer sp = iv.visit(root, s_table);
+
+                // Block block = new Block(sp.instr_list, sp.temp_name);
+                // FunctionDecl f = new FunctionDecl(new FunctionName("main"), new ArrayList<Identifier>(), block);
+
+                // // Build a function
+                // ArrayList<FunctionDecl> funcs = new ArrayList<FunctionDecl>();
+                // funcs.add(f);
+                // Program prog = new Program(funcs);
+
+                // 3 VISITORS: FROM CHAT 🍅
+                FunctionDeclVisitor fdv = new FunctionDeclVisitor();
+                ArrayList<FunctionDecl> funcs = root.accept(fdv, s_table);
+                Program prog = new Program(funcs);
+
+                // Debug: Print the program
+                System.err.println("🌷 🌷 🌷 🌷 🌷 FINAL PROGRAM!! 🌷 🌷 🌷 🌷 🌷 ");
+                System.err.println(prog.toString());
+
+                // actually print
+                System.out.println(prog.toString());
         }
 }
-
-
-
-
-
-
-
-
-// import java.io.InputStream;
-// import java.util.ArrayList;
-
-// import IR.SparrowParser;
-// import IR.token.FunctionName;
-// import IR.token.Identifier;
-// import minijava.MiniJavaParser;
-// import minijava.syntaxtree.Goal;
-// import sparrow.*;
-
-// public class J2S {
-//     public static void main(String[] args) {
-//         // Program prog;
-//         InputStream in = System.in;
-//         new SparrowParser(in);
-//         Program prog = SparrowParser.Program();
-//         // ArrayList<FunctionDecl> funcs;
-//         // FunctionDecl f;
-//         // Block block;
-//         // ArrayList<Instruction> instrs = new ArrayList<Instruction>();
-
-//         // // Build a list of instructions
-//         // Identifier a = new Identifier("v0");
-//         // instrs.add(new Move_Id_Integer(a, 3));
-
-//         // Identifier b = new Identifier("v1");
-//         // instrs.add(new Move_Id_Integer(b, 5));
-
-//         // instrs.add(new Add(b, b, a));
-
-//         // // Build a function
-//         // block = new Block(instrs, b);
-//         // f = new FunctionDecl(new FunctionName("main"), new ArrayList<Identifier>(), block);
-
-//         // // Build a program
-//         // funcs = new ArrayList<FunctionDecl>();
-//         // funcs.add(f);
-//         // prog = new Program(funcs);
-
-//         // Print the program
-//         System.out.println(prog.toString());
-//     }
-// }
