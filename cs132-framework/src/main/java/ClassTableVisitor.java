@@ -11,11 +11,6 @@ public class ClassTableVisitor extends GJDepthFirst < MyType, SymbolTable > {
     String curr_class;
     String curr_method;
 
-    public void printFailureAndExit() { 
-        System.out.println("Type error");
-        System.exit(1);
-    }
-
     // 🔄 🔄 🔄 🔄 🔄 🔄 🔄 CYCLE DETECTION 🔄 🔄 🔄 🔄 🔄 🔄 🔄
     // set is_subtype to the s_table is_subtype
     public void setSymbolTableSubtype(SymbolTable s_table) {
@@ -49,22 +44,6 @@ public class ClassTableVisitor extends GJDepthFirst < MyType, SymbolTable > {
     // helper func to get if is subtype
     private boolean isSubtype(String a, String b) {
         return is_subtype.containsKey(a) && is_subtype.get(a).getOrDefault(b, false);
-    }
-
-    public void checkCycle() {
-        List<String> classNames = getClassNames();
-        for (String i : classNames) {
-            for (String j : classNames) {
-                if (!i.equals(j) && isSubtype(i, j) && isSubtype(j, i)) {
-                    System.err.println("🚨 🚨 🚨 Cyclic subtyping detected between " + i + " and " + j);
-                    printFailureAndExit();
-                }
-                else if (i.equals(j) && isSubtype(i, j) && isSubtype(j, i)) {
-                    System.err.println("🚨 🚨 🚨 Subtype of itself: " + i + " and " + j);
-                    printFailureAndExit();
-                }
-            }
-        }
     }
 
     // 🌴 🌴 🌴 🌴 🌴 🌴 🌴 INHERITANCE 🌴 🌴 🌴 🌴 🌴 🌴 🌴 🌴
@@ -126,13 +105,7 @@ public class ClassTableVisitor extends GJDepthFirst < MyType, SymbolTable > {
                         MethodInfo copy_parentMethodInfo = new MethodInfo(parentMethodInfo);
                         classInfo.methods_map.put(parentMethod, copy_parentMethodInfo);
                     } else {    // method exists in subclass -> check for valid overriding
-                        MethodInfo childMethodInfo = classInfo.getMethodInfo(parentMethod);
-    
-                        if (!areMethodsEqual(childMethodInfo, parentMethodInfo)) {
-                            System.err.println("🚨 Method overloading not allowed in class " + className + ": " + parentMethod);
-                            printFailureAndExit();
-                        }
-    
+                        MethodInfo childMethodInfo = classInfo.getMethodInfo(parentMethod);    
                         // valid override: do nothing, child already overrides it properly
                     }
                 }
