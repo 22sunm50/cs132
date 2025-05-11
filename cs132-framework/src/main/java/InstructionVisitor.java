@@ -50,7 +50,7 @@ public class InstructionVisitor extends GJDepthFirst < InstrContainer, SymbolTab
 
         Print p = new Print(content.temp_name);
         result.instr_list.add(p);
-        result.setTemp(content.temp_name, null);
+        result.setTemp(content.temp_name);
 
         return result;
     }
@@ -72,6 +72,28 @@ public class InstructionVisitor extends GJDepthFirst < InstrContainer, SymbolTab
         int int_val = Integer.parseInt(n.f0.toString());        
         result.instr_list.add(new Move_Id_Integer(temp_id, int_val)); // set instr list
         result.temp_name = (temp_id); // set temp name
+        return result;
+    }
+
+    @Override
+    public InstrContainer visit(TrueLiteral n, SymbolTable s_table) {
+        InstrContainer result = new InstrContainer();
+
+        Identifier temp = new Identifier(generateTemp());
+        result.addInstr(new Move_Id_Integer(temp, 1));  // true = 1
+        result.setTemp(temp);
+
+        return result;
+    }
+
+    @Override
+    public InstrContainer visit(FalseLiteral n, SymbolTable s_table) {
+        InstrContainer result = new InstrContainer();
+
+        Identifier temp = new Identifier(generateTemp());
+        result.addInstr(new Move_Id_Integer(temp, 0));  // false = 0
+        result.setTemp(temp, null);
+
         return result;
     }
 
@@ -113,7 +135,32 @@ public class InstructionVisitor extends GJDepthFirst < InstrContainer, SymbolTab
     public InstrContainer visit(minijava.syntaxtree.Identifier n, SymbolTable s_table) {
         InstrContainer result = new InstrContainer();
         Identifier var = new Identifier(n.f0.toString());
-        result.setTemp(var, null);
+        result.setTemp(var);
         return result;
     }
+
+    @Override
+    public InstrContainer visit(CompareExpression n, SymbolTable s_table) {
+        InstrContainer result = new InstrContainer();
+
+        // Evaluate both sides
+        InstrContainer left = n.f0.accept(this, s_table);
+        InstrContainer right = n.f2.accept(this, s_table);
+
+        // Combine instructions from both sides
+        result.append(left);
+        result.append(right);
+
+        // Generate a new temp for the result
+        Identifier temp = new Identifier(generateTemp());
+
+        // Add the < instruction
+        result.addInstr(new LessThan(temp, left.temp_name, right.temp_name));
+
+        // Set the result temp
+        result.setTemp(temp);
+
+        return result;
+    }
+
 }

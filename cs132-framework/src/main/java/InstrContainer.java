@@ -39,6 +39,9 @@ public class InstrContainer{
     }
 
     // Sets a new temp and optionally the type
+    public void setTemp(Identifier temp) {
+        this.temp_name = temp;
+    }
     public void setTemp(Identifier temp, String type) {
         this.temp_name = temp;
         this.class_name = type;
