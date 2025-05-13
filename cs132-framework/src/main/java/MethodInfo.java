@@ -7,12 +7,14 @@ public class MethodInfo {
     List<MyType> args_type_list;
     HashMap<String, MyType> vars_map;
     HashMap<String, MyType> args_map;
+    Integer method_offset;
 
-    public MethodInfo(MyType return_type) {
+    public MethodInfo(MyType return_type, Integer offset) {
         this.return_type = return_type;
         this.args_type_list = new ArrayList<>();
         this.vars_map = new HashMap<>(); // contain vars & args
         this.args_map = new HashMap<>(); // just args
+        this.method_offset = offset;
     }
 
     // copy constructor (deep copy)
@@ -35,11 +37,9 @@ public class MethodInfo {
     public void addArg(String argName, MyType argType) {
         if (args_map.containsKey(argName)) {
             System.err.println("🚨 Argument already exists: " + argName);
-            printFailureAndExit();
         }
         if (vars_map.containsKey(argName)) {
             System.err.println("🚨 Argument name conflicts with a variable name: " + argName);
-            printFailureAndExit();
         }
         args_type_list.add(argType);
         args_map.put(argName, argType);
@@ -50,11 +50,9 @@ public class MethodInfo {
     public void addVar(String varName, MyType varType) {
         if (vars_map.containsKey(varName)) {
             System.err.println("🚨 Variable already exists: " + varName);
-            printFailureAndExit();
         }
         if (args_map.containsKey(varName)) {
             System.err.println("🚨 Variable name conflicts with an argument name: " + varName);
-            printFailureAndExit();
         }
         vars_map.put(varName, varType);
     }
@@ -73,23 +71,32 @@ public class MethodInfo {
     public MyType getVarOrArgType(String varName) {
         if (vars_map.get(varName) == null){
             System.err.println("🚨: the method variable does not exist: " + varName);
-            printFailureAndExit();
         }
         return vars_map.get(varName);
     }
 
+    public void setMethodOffset(Integer offset){
+        this.method_offset = offset;
+    }
+
+    // @Override
+    // public String toString() {
+    //     StringBuilder sb = new StringBuilder();
+    //     sb.append("Return Type: ").append(return_type.toString()).append(", Args: ");
+    //     for (MyType arg : args_type_list) {
+    //         sb.append(arg.toString()).append(" ");
+    //     }
+    //     return sb.toString().trim();
+    // }
+
     @Override
     public String toString() {
         StringBuilder sb = new StringBuilder();
+        sb.append("Offset: ").append(method_offset).append(", ");
         sb.append("Return Type: ").append(return_type.toString()).append(", Args: ");
         for (MyType arg : args_type_list) {
             sb.append(arg.toString()).append(" ");
         }
         return sb.toString().trim();
-    }
-
-    public void printFailureAndExit() { 
-        System.out.println("Type error");
-        System.exit(1);
     }
 }

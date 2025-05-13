@@ -38,6 +38,7 @@ public class FunctionDeclVisitor extends GJDepthFirst<ArrayList<FunctionDecl>, S
 
         InstrContainer mainInstrs = new InstrContainer();
 
+        // call IV on each statement in main
         if (n.f15.present()) {
             for (Node stmtNode : n.f15.nodes) {
                 InstrContainer stmtResult = stmtNode.accept(iv, s_table);
@@ -68,6 +69,7 @@ public class FunctionDeclVisitor extends GJDepthFirst<ArrayList<FunctionDecl>, S
     //         }
     //     }
 
+    //     // body instructions
     //     InstrContainer bodyInstrs = new InstrContainer();
     //     if (n.f8.present()) {
     //         for (Node stmtNode : n.f8.nodes) {
@@ -76,7 +78,7 @@ public class FunctionDeclVisitor extends GJDepthFirst<ArrayList<FunctionDecl>, S
     //         }
     //     }
 
-    //     // Handle the return expression
+    //     // handle the return expression
     //     InstrContainer returnInstr = n.f10.accept(iv, s_table);
     //     bodyInstrs.append(returnInstr);
 

@@ -24,7 +24,7 @@ public class J2S extends GJDepthFirst<String, String>{
                 cv.inheritMethods(s_table);
                 cv.addFieldsToMethodVars(s_table); // do after inheritance
 
-                // s_table.printClassTable();
+                s_table.printClassTable();
 
                 // InstructionVisitor iv = new InstructionVisitor();
 

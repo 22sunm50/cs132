@@ -10,6 +10,7 @@ public class ClassTableVisitor extends GJDepthFirst < MyType, SymbolTable > {
 
     String curr_class;
     String curr_method;
+    Integer curr_method_offset;
 
     // 🔄 🔄 🔄 🔄 🔄 🔄 🔄 CYCLE DETECTION 🔄 🔄 🔄 🔄 🔄 🔄 🔄
     // set is_subtype to the s_table is_subtype
@@ -93,6 +94,7 @@ public class ClassTableVisitor extends GJDepthFirst < MyType, SymbolTable > {
         for (String className : s_table.class_table.keySet()) {
             ClassInfo classInfo = s_table.getClassInfo(className);
             String parent = classInfo.getParentClassName();
+            Integer this_method_offset = classInfo.methods_map.size() * 4;
     
             // recursively inherit methods
             while (parent != null) {
@@ -101,13 +103,12 @@ public class ClassTableVisitor extends GJDepthFirst < MyType, SymbolTable > {
                     MethodInfo parentMethodInfo = parentInfo.getMethodInfo(parentMethod);
     
                     if (!classInfo.hasMethod(parentMethod)) { // inherit the method if not overridden
-                        // 😱 😱 😱 😱 😱: make a copy to not link methodInfo objs
+                        // make a copy to not link methodInfo objs
                         MethodInfo copy_parentMethodInfo = new MethodInfo(parentMethodInfo);
+                        copy_parentMethodInfo.setMethodOffset(this_method_offset);
+                        this_method_offset += 4;
                         classInfo.methods_map.put(parentMethod, copy_parentMethodInfo);
-                    } else {    // method exists in subclass -> check for valid overriding
-                        MethodInfo childMethodInfo = classInfo.getMethodInfo(parentMethod);    
-                        // valid override: do nothing, child already overrides it properly
-                    }
+                    } // else: method exists in subclass -> do nothing, child already overrides it properly
                 }
                 parent = parentInfo.getParentClassName(); // move up the chain
             }
@@ -145,6 +146,8 @@ public class ClassTableVisitor extends GJDepthFirst < MyType, SymbolTable > {
         // class stuff
         curr_class = class_name;
         curr_method = null;
+        curr_method_offset = 0;
+        
         ClassInfo this_classinfo = new ClassInfo();
         this_classinfo.setParentClassName(parent_name);
         s_table.addClass(class_name, this_classinfo);
@@ -177,6 +180,8 @@ public class ClassTableVisitor extends GJDepthFirst < MyType, SymbolTable > {
         // class stuff
         curr_class = class_name;
         curr_method = null;
+        curr_method_offset = 0;
+
         ClassInfo this_classinfo = new ClassInfo();
         s_table.addClass(class_name, this_classinfo);
         n.f11.accept(this, s_table); // main arg? "String[] a" --> not sure if this is ever needed
@@ -243,11 +248,14 @@ public class ClassTableVisitor extends GJDepthFirst < MyType, SymbolTable > {
             ret_type.changeBaseType(MyType.BaseType.CLASS);
         }
 
-        MethodInfo this_methodinfo = new MethodInfo(ret_type);
+        MethodInfo this_methodinfo = new MethodInfo(ret_type, curr_method_offset);
+
+        // set global states
+        curr_method = method_name;
+        curr_method_offset += 4;
 
         s_table.getClassInfo(curr_class).addMethod(method_name, this_methodinfo);
 
-        curr_method = method_name; // set global method state
         n.f4.accept(this, s_table); // param list
         n.f7.accept(this, s_table); // var dec list
         n.f8.accept(this, s_table); // statements list
