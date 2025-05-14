@@ -67,28 +67,6 @@ public class ClassTableVisitor extends GJDepthFirst < MyType, SymbolTable > {
         }
     }
 
-    // compare 2 methods for same ret type & param types
-    private boolean areMethodsEqual(MethodInfo m1, MethodInfo m2) {
-        // Check return type
-        if (!m1.getReturnType().equals(m2.getReturnType())) {
-            return false;
-        }
-    
-        // Check number of parameters
-        if (m1.getArgCount() != m2.getArgCount()) {
-            return false;
-        }
-    
-        // Check parameter types
-        for (int i = 0; i < m1.getArgCount(); i++) {
-            if (!m1.getArgsTypeList().get(i).equals(m2.getArgsTypeList().get(i))) {
-                return false;
-            }
-        }
-    
-        return true; // They are equal
-    }
-
     // method inheritance & overriding
     public void inheritMethods(SymbolTable s_table) {
         for (String className : s_table.class_table.keySet()) {

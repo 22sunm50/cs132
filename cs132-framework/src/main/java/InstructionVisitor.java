@@ -3,7 +3,6 @@ import minijava.visitor.GJDepthFirst;
 
 import java.util.ArrayList;
 
-import IR.SparrowParser;
 import IR.token.Identifier;
 import IR.token.Label;
 import sparrow.*;
@@ -208,4 +207,28 @@ public class InstructionVisitor extends GJDepthFirst < InstrContainer, SymbolTab
 
         return result;
     }
+
+    // @Override
+    // public InstrContainer visit(AllocationExpression n, SymbolTable s_table) {
+    //     InstrContainer result = new InstrContainer();
+
+    //     // Get class name being allocated
+    //     String className = n.f1.f0.toString();
+    //     ClassInfo classInfo = s_table.getClassInfo(className);
+
+    //     // Compute total allocation size = 4 bytes * (number of fields + 1)
+    //     int fieldCount = classInfo.fields_map.size();
+    //     int allocSize = (fieldCount + 1) * 4;
+
+    //     // Generate a temp for the result
+    //     Identifier temp = new Identifier(generateTemp());
+
+    //     // Add the alloc instruction
+    //     result.addInstr(new Alloc(temp, allocSize));
+
+    //     // Set the resulting temp name
+    //     result.setTemp(temp);
+
+    //     return result;
+    // }
 }

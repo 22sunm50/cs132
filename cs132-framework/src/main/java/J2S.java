@@ -44,10 +44,11 @@ public class J2S extends GJDepthFirst<String, String>{
                 Program prog = new Program(funcs);
 
                 // Debug: Print the program
-                System.err.println("🌷 🌷 🌷 🌷 🌷 FINAL PROGRAM!! 🌷 🌷 🌷 🌷 🌷 ");
-                System.err.println(prog.toString());
+                System.err.println("🌷 🌷 🌷 🌷 🌷 FINAL PROGRAM!! (.err.) 🌷 🌷 🌷 🌷 🌷 ");
+                System.err.print(prog.toString());
 
                 // actually print
-                System.out.println(prog.toString());
+                System.err.println("🌷 🌷 🌷 🌷 🌷 FINAL PROGRAM!! (.out.)🌷 🌷 🌷 🌷 🌷 ");
+                System.out.print(prog.toString());
         }
 }

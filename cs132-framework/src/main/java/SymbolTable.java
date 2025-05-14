@@ -26,8 +26,6 @@ public class SymbolTable {
     public ClassInfo getClassInfo(String className) {
         if (!this.hasClass(className)){
             System.err.println("🚨 SymbolTable: tried getting non-existent class: " + className);
-            System.out.println("Type error");
-            System.exit(1);
         }
         return class_table.get(className);
     }
@@ -37,40 +35,41 @@ public class SymbolTable {
     }
 
     public void printClassTable() {
-        System.out.println("===== CLASS TABLE =====");
+        System.err.println("===== CLASS TABLE =====");
         for (String className : class_table.keySet()) {
-            System.out.println("Class: " + className);
+            System.err.println("Class: " + className);
             ClassInfo info = class_table.get(className);
     
             // Print Fields
-            System.out.println("  Fields:");
+            System.err.println("  Fields:");
             for (String fieldName : info.fields_map.keySet()) {
                 MyType fieldType = info.fields_map.get(fieldName);
-                System.out.println("    " + fieldName + " : " + fieldType.toString());
+                Integer fieldOffset = info.field_offsets.get(fieldName);
+                System.err.println("    " + fieldName + " : " + fieldType.toString() + " at " + fieldOffset);
             }
     
             // Print Methods
-            System.out.println("  Methods:");
+            System.err.println("  Methods:");
             for (String methodName : info.methods_map.keySet()) {
                 MethodInfo methodInfo = info.methods_map.get(methodName);
-                System.out.println("    Method: " + methodName + " : " + methodInfo.toString());
+                System.err.println("    Method: " + methodName + " : " + methodInfo.toString());
     
                 // Print Arguments Map
-                System.out.println("      Arguments:");
+                System.err.println("      Arguments:");
                 for (String argName : methodInfo.args_map.keySet()) {
                     MyType argType = methodInfo.args_map.get(argName);
-                    System.out.println("        " + argName + " : " + argType.toString());
+                    System.err.println("        " + argName + " : " + argType.toString());
                 }
     
                 // Print Variables Map
-                System.out.println("      Variables:");
+                System.err.println("      Variables:");
                 for (String varName : methodInfo.vars_map.keySet()) {
                     MyType varType = methodInfo.vars_map.get(varName);
-                    System.out.println("        " + varName + " : " + varType.toString());
+                    System.err.println("        " + varName + " : " + varType.toString());
                 }
             }
     
-            System.out.println();
+            System.err.println();
         }
     }
 }

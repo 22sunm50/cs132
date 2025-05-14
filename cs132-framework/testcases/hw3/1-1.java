@@ -5,6 +5,8 @@ class Main {
 }
 
 class A {
+	int a_A;
+	boolean boolinA;
 	public int runA() {
 		System.out.println(42);
 		return 11;
@@ -12,6 +14,7 @@ class A {
 }
 
 class B extends A{
+	int sum_fieldB;
 	public int runB(){
 		return 22;
 	}

@@ -2,11 +2,14 @@ import java.util.HashMap;
 
 public class ClassInfo {
     HashMap<String, MyType> fields_map;
+    HashMap<String, Integer> field_offsets;
+
     HashMap<String, MethodInfo> methods_map;
     String parent_name;
 
     public ClassInfo() {
         fields_map = new HashMap<>();
+        field_offsets = new HashMap<>();
         methods_map = new HashMap<>();
         parent_name = null;
     }
@@ -30,7 +33,9 @@ public class ClassInfo {
             System.err.println("🚨 Field name conflicts with a method name: " + fieldName);
             printFailureAndExit();
         }
+        Integer offset = (fields_map.size() + 1) * 4;
         fields_map.put(fieldName, typeName);
+        field_offsets.put(fieldName, offset);
     }
 
     // get type of a field

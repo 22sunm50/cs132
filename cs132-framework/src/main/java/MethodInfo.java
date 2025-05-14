@@ -2,6 +2,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
+import IR.token.Identifier;
+
 public class MethodInfo {
     MyType return_type;
     List<MyType> args_type_list;
@@ -31,6 +33,15 @@ public class MethodInfo {
 
     public List<MyType> getArgsTypeList() {
         return args_type_list;
+    }
+
+    // Returns an ArrayList of IR Identifiers for the names in args_map
+    public ArrayList<Identifier> getArgsIDList() {
+        ArrayList<Identifier> args_id_list = new ArrayList<>();
+        for (String argName : args_map.keySet()) {
+            args_id_list.add(new Identifier(argName));
+        }
+        return args_id_list;
     }
 
     // add arg w name to both arg map and var map & check uniqueness 

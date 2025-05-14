@@ -2,15 +2,18 @@ import minijava.syntaxtree.*;
 import minijava.visitor.GJDepthFirst;
 
 import java.util.ArrayList;
-import java.util.List;
 
-import IR.SparrowParser;
+// import IR.SparrowParser;
 import IR.token.Identifier;
 import IR.token.FunctionName;
 import sparrow.Block;
 import sparrow.FunctionDecl;
+import sparrow.Move_Id_Integer;
 
 public class FunctionDeclVisitor extends GJDepthFirst<ArrayList<FunctionDecl>, SymbolTable> {
+
+    String curr_class;
+    String curr_method;
 
     InstructionVisitor iv = new InstructionVisitor();
 
@@ -25,6 +28,7 @@ public class FunctionDeclVisitor extends GJDepthFirst<ArrayList<FunctionDecl>, S
         // Visit all class declarations and collect methods
         for (Node node : n.f1.nodes) {
             ArrayList<FunctionDecl> classFuncs = node.accept(this, s_table);
+            System.err.println("⚽️ Goal: arraylist<funcdec> classFuncs = " + classFuncs);
             funcs.addAll(classFuncs);
         }
 
@@ -40,63 +44,102 @@ public class FunctionDeclVisitor extends GJDepthFirst<ArrayList<FunctionDecl>, S
 
         // call IV on each statement in main
         if (n.f15.present()) {
-            for (Node stmtNode : n.f15.nodes) {
-                InstrContainer stmtResult = stmtNode.accept(iv, s_table);
-                if (stmtResult != null) {
-                    mainInstrs.append(stmtResult);
+            for (Node statement_node : n.f15.nodes) {
+                InstrContainer statement_result = statement_node.accept(iv, s_table);
+                if (statement_result != null) {
+                    mainInstrs.append(statement_result);
                 }
             }
         }
 
         System.err.println("👩‍🔧 FuncDeclVisitor - visitMainAsFunction : What's in mainInstr: " + mainInstrs);
+        // main returns null usually so return dummy 0
+        if (mainInstrs.temp_name == null) {
+            Identifier dummyReturn = new Identifier("v" + iv.id_name_counter++);
+            mainInstrs.instr_list.add(new Move_Id_Integer(dummyReturn, 0));
+            mainInstrs.temp_name = dummyReturn;
+        }
         Block block = new Block(mainInstrs.instr_list, mainInstrs.temp_name);
         return new FunctionDecl(new FunctionName("main"), new ArrayList<>(), block);
     }
 
-    // @Override
-    // public ArrayList<FunctionDecl> visit(MethodDeclaration n, SymbolTable s_table) {
-    //     System.err.println("👩‍🔧 FuncDeclVisitor - visitMethodDecl: entered!");
+    @Override
+    public ArrayList<FunctionDecl> visit(TypeDeclaration n, SymbolTable s_table) {
+        return n.f0.accept(this, s_table);
+    }
 
-    //     // list of params
-    //     ArrayList<Identifier> params = new ArrayList<>();
-    //     if (n.f4.present()) {
-    //         // param list: Type Identifier ( , Type Identifier )*
-    //         params.add(new Identifier(n.f4.f1.f1.toString()));
-    //         for (Node argNode : n.f4.f3.nodes) {
-    //             NodeSequence seq = (NodeSequence) argNode;
-    //             Identifier paramName = new Identifier(((Identifier) seq.elementAt(1)).toString());
-    //             params.add(paramName);
-    //         }
-    //     }
 
-    //     // body instructions
-    //     InstrContainer bodyInstrs = new InstrContainer();
-    //     if (n.f8.present()) {
-    //         for (Node stmtNode : n.f8.nodes) {
-    //             InstrContainer stmtResult = stmtNode.accept(iv, s_table);
-    //             if (stmtResult != null) bodyInstrs.append(stmtResult);
-    //         }
-    //     }
+    @Override
+    public ArrayList<FunctionDecl> visit(MethodDeclaration n, SymbolTable s_table) {
+        String methodName = n.f2.f0.toString();
+        String full_method_name = curr_class + "_" + methodName; // 🍅 🍅 🍅 make sure to update curr_class in visit(classDec) when you implement it
 
-    //     // handle the return expression
-    //     InstrContainer returnInstr = n.f10.accept(iv, s_table);
-    //     bodyInstrs.append(returnInstr);
+        // Construct param list
+        System.err.println("🧠 FuncDecl Visitor - MethodDec : entered method " + full_method_name);
+        MethodInfo this_methodInfo = s_table.getClassInfo(curr_class).getMethodInfo(methodName);
+        ArrayList<Identifier> args = new ArrayList<>();
+        args.addAll(this_methodInfo.getArgsIDList());
 
-    //     Block block = new Block(bodyInstrs.instr_list, returnInstr.temp_name);
-    //     FunctionName funcName = new FunctionName(n.f2.toString());
+        // Get body instructions
+        InstrContainer bodyInstrs = new InstrContainer();
+        if (n.f8.present()) {
+            for (Node statement : n.f8.nodes) {
+                InstrContainer statementInstr = statement.accept(iv, s_table);
+                if (statementInstr != null)
+                    bodyInstrs.append(statementInstr);
+            }
+        }
 
-    //     return new ArrayList<>(List.of(new FunctionDecl(funcName, params, block)));
-    // }
+        System.err.println("🧠 FuncDecl Visitor - MethodDec - BodyInstr : " + bodyInstrs.toString());
 
-    // @Override
-    // public ArrayList<FunctionDecl> visit(ClassDeclaration n, SymbolTable s_table) {
-    //     ArrayList<FunctionDecl> methodFuncs = new ArrayList<>();
+        // Translate return expression
+        InstrContainer returnExpr = n.f10.accept(iv, s_table);
+        bodyInstrs.instr_list.addAll(returnExpr.instr_list);
+        bodyInstrs.temp_name = returnExpr.temp_name != null ? new Identifier(returnExpr.temp_name.toString()) : new Identifier("0"); // 🍅 🍅 🍅 🍅 🍅: if void ret, jsut return 0 right?
 
-    //     for (Node methodNode : n.f4.nodes) { // f4 = list of MethodDeclaration
-    //         FunctionDecl func = methodNode.accept(this, s_table).get(0); // each visit returns a singleton list
-    //         methodFuncs.add(func);
-    //     }
+        System.err.println("🧠 FuncDecl Visitor - MethodDec - BodyInstr : (with return)" + bodyInstrs.toString());
 
-    //     return methodFuncs;
-    // }
+        Block body = new Block(bodyInstrs.instr_list, bodyInstrs.temp_name);
+        FunctionDecl func_dec = new FunctionDecl(new FunctionName(full_method_name), args, body);
+
+        System.err.println("🧠 FuncDecl Visitor - MethodDec - FunctionDecl : (with return)" + func_dec.toString());
+
+        ArrayList<FunctionDecl> func_list = new ArrayList<>();
+        func_list.add(func_dec);
+        return func_list;
+    }
+
+    @Override
+    public ArrayList<FunctionDecl> visit(ClassDeclaration n, SymbolTable s_table) {
+        String class_name = n.f1.f0.toString();
+        curr_class = class_name;
+        System.err.println("👩‍🏫 FuncDecl Visitor - ClassDec - curr_class = " + curr_class);
+        // ClassInfo classInfo = s_table.getClassInfo(class_name);
+
+        ArrayList<FunctionDecl> methodFuncs = new ArrayList<>();
+
+        for (Node methodNode : n.f4.nodes) {
+            ArrayList<FunctionDecl> methodIRs = methodNode.accept(this, s_table);
+            methodFuncs.addAll(methodIRs);
+        }
+
+        return methodFuncs;
+    }
+
+    @Override
+    public ArrayList<FunctionDecl> visit(ClassExtendsDeclaration n, SymbolTable s_table) { // 🍅 🍅 🍅 : Do I need to do anything more for classExtends? (I copied from ClassDeclaration)
+        String class_name = n.f1.f0.toString();
+        curr_class = class_name;
+        System.err.println("👩‍🏫 FuncDecl Visitor - ClassDecExtends - curr_class = " + curr_class);
+        // ClassInfo classInfo = s_table.getClassInfo(class_name);
+
+        ArrayList<FunctionDecl> methodFuncs = new ArrayList<>();
+
+        for (Node methodNode : n.f6.nodes) {
+            ArrayList<FunctionDecl> methodIRs = methodNode.accept(this, s_table);
+            methodFuncs.addAll(methodIRs);
+        }
+
+        return methodFuncs;
+    }
 }
