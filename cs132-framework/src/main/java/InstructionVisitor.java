@@ -12,8 +12,10 @@ import sparrow.*;
 public class InstructionVisitor extends GJDepthFirst < InstrContainer, SymbolTable > {
 
     // global counter for our identifier name generator
-    int id_name_counter = 0;
-    ArrayList<Instruction> global_instr_list = new ArrayList<Instruction> ();
+    Integer id_name_counter = 0;
+    public String curr_class = null;
+    public String curr_method = null;
+    public String curr_sparrow_method = null;
 
     public String generateTemp(){
         String name = "v" + id_name_counter;
@@ -112,6 +114,27 @@ public class InstructionVisitor extends GJDepthFirst < InstrContainer, SymbolTab
     }
 
     @Override
+    public InstrContainer visit(MinusExpression n, SymbolTable s_table) {
+        InstrContainer result = new InstrContainer();
+
+        // evaluate the left operand
+        InstrContainer left = n.f0.accept(this, s_table);
+        result.append(left);
+        // evaluate the right operand
+        InstrContainer right = n.f2.accept(this, s_table);
+        result.append(right);
+
+        // create a new temp for the result
+        Identifier temp = new Identifier(generateTemp());
+        result.addInstr(new Subtract(temp, left.temp_name, right.temp_name));
+
+        // set the result temp
+        result.setTemp(temp);
+
+        return result;
+    }
+
+    @Override
     public InstrContainer visit(TimesExpression n, SymbolTable s_table) {
         InstrContainer result = new InstrContainer();
 
@@ -128,6 +151,21 @@ public class InstructionVisitor extends GJDepthFirst < InstrContainer, SymbolTab
         result.addInstr(new Multiply(temp, left.temp_name, right.temp_name));
         
         result.setTemp(temp);
+
+        return result;
+    }
+
+    @Override
+    public InstrContainer visit(ThisExpression n, SymbolTable s_table) {
+        InstrContainer result = new InstrContainer();
+
+        // "this" is passed as the first argument to every method
+        Identifier this_id = new Identifier("this");
+        result.setTemp(this_id);
+
+        // Also store the current class name (needed for MessageSend)
+        result.class_name = curr_class; // does this work?
+        System.err.println("👇 This: curr_class = " + curr_class);
 
         return result;
     }
@@ -311,18 +349,21 @@ public class InstructionVisitor extends GJDepthFirst < InstrContainer, SymbolTab
         result.addInstr(new Load(func_ptr, vmt_ptr, methodOffset));
 
         // 6. Evaluate arguments
-        ExpressionList args_exprList = (ExpressionList) n.f4.node;
         ArrayList<Identifier> arg_temps = new ArrayList<Identifier>();
+        if (n.f4.present()){
+            ExpressionList args_exprList = (ExpressionList) n.f4.node;
 
-        InstrContainer first_instr = args_exprList.f0.accept(this, s_table);
-        result.append(first_instr);
-        arg_temps.add(first_instr.temp_name);
-        for (Node node : args_exprList.f1.nodes) {
-            ExpressionRest rest = (ExpressionRest) node;
-            InstrContainer arg_instr = rest.f1.accept(this, s_table);
-            result.append(arg_instr);
-            arg_temps.add(arg_instr.temp_name);
+            InstrContainer first_instr = args_exprList.f0.accept(this, s_table);
+            result.append(first_instr);
+            arg_temps.add(first_instr.temp_name);
+            for (Node node : args_exprList.f1.nodes) {
+                ExpressionRest rest = (ExpressionRest) node;
+                InstrContainer arg_instr = rest.f1.accept(this, s_table);
+                result.append(arg_instr);
+                arg_temps.add(arg_instr.temp_name);
+            }
         }
+
         System.err.println("📣 Message Send: arg_temps list = " + arg_temps);
 
         // 7. Prepare return temp and emit call

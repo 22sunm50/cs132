@@ -10,7 +10,7 @@ class Fac {
         if ((num + bum) < 35)
             num_aux = 101010;
         else
-            num_aux = 202020;
+            num_aux = this.ComputeFac((num - 1), bum);
         return num_aux ;
     }
 }

@@ -14,6 +14,7 @@ public class FunctionDeclVisitor extends GJDepthFirst<ArrayList<FunctionDecl>, S
 
     String curr_class;
     String curr_method;
+    String curr_sparrow_method;
 
     InstructionVisitor iv = new InstructionVisitor();
 
@@ -39,6 +40,7 @@ public class FunctionDeclVisitor extends GJDepthFirst<ArrayList<FunctionDecl>, S
 
         InstrContainer mainInstrs = new InstrContainer();
 
+        iv.curr_class = curr_class;
         // call IV on each statement in main
         if (n.f15.present()) {
             for (Node statement_node : n.f15.nodes) {
@@ -69,6 +71,11 @@ public class FunctionDeclVisitor extends GJDepthFirst<ArrayList<FunctionDecl>, S
     public ArrayList<FunctionDecl> visit(MethodDeclaration n, SymbolTable s_table) {
         String methodName = n.f2.f0.toString();
         String full_method_name = curr_class + "_" + methodName; // 🍅 🍅 🍅 make sure to update curr_class in visit(classDec) when you implement it
+        curr_method = methodName;
+        curr_sparrow_method = full_method_name;
+
+        iv.curr_method = curr_method;
+        iv.curr_sparrow_method = curr_sparrow_method;
 
         // Construct param list
         MethodInfo this_methodInfo = s_table.getClassInfo(curr_class).getMethodInfo(methodName);
@@ -104,7 +111,12 @@ public class FunctionDeclVisitor extends GJDepthFirst<ArrayList<FunctionDecl>, S
     public ArrayList<FunctionDecl> visit(ClassDeclaration n, SymbolTable s_table) {
         String class_name = n.f1.f0.toString();
         curr_class = class_name;
-        // ClassInfo classInfo = s_table.getClassInfo(class_name);
+        curr_method = null;
+        curr_sparrow_method = null;
+
+        iv.curr_class = curr_class;
+        iv.curr_method = curr_method;
+        iv.curr_sparrow_method = curr_sparrow_method;
 
         ArrayList<FunctionDecl> methodFuncs = new ArrayList<>();
 
@@ -120,7 +132,12 @@ public class FunctionDeclVisitor extends GJDepthFirst<ArrayList<FunctionDecl>, S
     public ArrayList<FunctionDecl> visit(ClassExtendsDeclaration n, SymbolTable s_table) { // 🍅 🍅 🍅 : Do I need to do anything more for classExtends? (I copied from ClassDeclaration)
         String class_name = n.f1.f0.toString();
         curr_class = class_name;
-        // ClassInfo classInfo = s_table.getClassInfo(class_name);
+        curr_method = null;
+        curr_sparrow_method = null;
+
+        iv.curr_class = curr_class;
+        iv.curr_method = curr_method;
+        iv.curr_sparrow_method = curr_sparrow_method;
 
         ArrayList<FunctionDecl> methodFuncs = new ArrayList<>();
 
