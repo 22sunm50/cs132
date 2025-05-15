@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import minijava.MiniJavaParser;
 import minijava.visitor.GJDepthFirst;
 import minijava.syntaxtree.Goal;
-import IR.token.*;
 import sparrow.*;
 
 public class J2S extends GJDepthFirst<String, String>{

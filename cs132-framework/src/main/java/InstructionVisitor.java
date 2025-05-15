@@ -2,7 +2,6 @@ import minijava.syntaxtree.*;
 import minijava.visitor.GJDepthFirst;
 
 import java.util.ArrayList;
-import java.util.Enumeration;
 
 import IR.token.FunctionName;
 import IR.token.Identifier;
