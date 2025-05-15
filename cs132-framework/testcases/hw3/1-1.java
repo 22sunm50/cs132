@@ -1,21 +1,21 @@
 class Main {
 	public static void main(String[] a){
-		System.out.println(33);
+		a = new A();
+		System.out.println(new A().runA(11, 22));
 	}
 }
 
 class A {
 	int a_A;
-	boolean boolinA;
-	public int runA() {
+	public int runA(int sum, int bum) {
 		System.out.println(42);
-		return 11;
+		return 111;
 	}
 }
 
 class B extends A{
-	int sum_fieldB;
+	int b_B;
 	public int runB(){
-		return 22;
+		return 222;
 	}
 }

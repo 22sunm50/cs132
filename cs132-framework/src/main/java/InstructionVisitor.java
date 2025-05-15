@@ -2,7 +2,9 @@ import minijava.syntaxtree.*;
 import minijava.visitor.GJDepthFirst;
 
 import java.util.ArrayList;
+import java.util.Enumeration;
 
+import IR.token.FunctionName;
 import IR.token.Identifier;
 import IR.token.Label;
 import sparrow.*;
@@ -111,7 +113,29 @@ public class InstructionVisitor extends GJDepthFirst < InstrContainer, SymbolTab
     }
 
     @Override
-    public InstrContainer visit(AssignmentStatement n, SymbolTable s_table) {
+    public InstrContainer visit(TimesExpression n, SymbolTable s_table) {
+        InstrContainer result = new InstrContainer();
+
+        // Evaluate left operand
+        InstrContainer left = n.f0.accept(this, s_table);
+        result.append(left);
+
+        // Evaluate right operand
+        InstrContainer right = n.f2.accept(this, s_table);
+        result.append(right);
+
+        // Generate a temp for the result
+        Identifier temp = new Identifier(generateTemp());
+        result.addInstr(new Multiply(temp, left.temp_name, right.temp_name));
+        
+        result.setTemp(temp);
+
+        return result;
+    }
+
+
+    @Override
+    public InstrContainer visit(AssignmentStatement n, SymbolTable s_table) { // 🍅 🍅 🍅 : deal with polymorphism later?
         InstrContainer result = new InstrContainer();
 
         // the var name being assigned to
@@ -164,6 +188,11 @@ public class InstructionVisitor extends GJDepthFirst < InstrContainer, SymbolTab
     }
 
     @Override
+    public InstrContainer visit(BracketExpression n, SymbolTable s_table) {
+        return n.f1.accept(this, s_table);
+    }
+
+    @Override
     public InstrContainer visit(IfStatement n, SymbolTable s_table) {
         InstrContainer result = new InstrContainer();
 
@@ -206,29 +235,108 @@ public class InstructionVisitor extends GJDepthFirst < InstrContainer, SymbolTab
         }
 
         return result;
+    }  
+
+    @Override
+    public InstrContainer visit(AllocationExpression n, SymbolTable s_table) {
+        InstrContainer result = new InstrContainer();
+
+        // get class name being allocated
+        String className = n.f1.f0.toString();
+        ClassInfo classInfo = s_table.getClassInfo(className);
+
+        // compute total allocation size = 4 bytes * (number of fields + 1)
+        Integer fieldCount = classInfo.fields_map.size();
+        Integer field_size = (fieldCount + 1) * 4;
+
+        // temp to hold the alloc size
+        Identifier field_size_temp = new Identifier(generateTemp());
+        result.addInstr(new Move_Id_Integer(field_size_temp, field_size));
+
+        // generate a temp for the result (store the object instance - AKA the field table)
+        Identifier instance_temp = new Identifier(generateTemp());
+        result.addInstr(new Alloc(instance_temp, field_size_temp)); // add the alloc instruction
+        result.setTemp(instance_temp, className); // set the resulting temp name
+
+        //// create VMT
+        Integer vmt_size = classInfo.methods_map.size() * 4;
+        // temp to hold vmt size -> vmt_size_temp = vmt_size
+        Identifier vmt_size_temp = new Identifier(generateTemp());
+        result.addInstr(new Move_Id_Integer(vmt_size_temp, vmt_size));
+        // temp to hold vmt -> vmt_name = alloc(vmt_size_temp)
+        Identifier vmt_name = new Identifier("vmt_" + className);
+        result.addInstr(new Alloc(vmt_name, vmt_size_temp));
+
+        //// Loading Functions into VMT
+        for (String methodName : classInfo.methods_map.keySet()) {
+            FunctionName sparrow_func_name = new FunctionName(className + "_" + methodName);
+            Integer offset = classInfo.getMethodOffset(methodName);
+
+            // fptr = @Class_Method
+            Identifier func_ptr = new Identifier(generateTemp());
+            result.addInstr(new Move_Id_FuncName(func_ptr, sparrow_func_name));
+
+            // [vmt + offset] = func_ptr
+            result.addInstr(new Store(vmt_name, offset, func_ptr));
+        }
+
+        //// Loading vmt ptr into field's table -> [instance + 0] = vmt
+        result.addInstr(new Store(instance_temp, 0, vmt_name));
+
+        return result;
     }
 
-    // @Override
-    // public InstrContainer visit(AllocationExpression n, SymbolTable s_table) {
-    //     InstrContainer result = new InstrContainer();
+    @Override
+    public InstrContainer visit(MessageSend n, SymbolTable s_table) {
+        InstrContainer result = new InstrContainer();
 
-    //     // Get class name being allocated
-    //     String className = n.f1.f0.toString();
-    //     ClassInfo classInfo = s_table.getClassInfo(className);
+        // 1. Evaluate the object expression (e.g., a.b().c -> get 'a')
+        InstrContainer obj = n.f0.accept(this, s_table);
+        result.append(obj);
 
-    //     // Compute total allocation size = 4 bytes * (number of fields + 1)
-    //     int fieldCount = classInfo.fields_map.size();
-    //     int allocSize = (fieldCount + 1) * 4;
+        // 2. Extract the object class from the symbol table
+        Identifier obj_temp = obj.temp_name;
+        String className = obj.class_name;
+        ClassInfo classInfo = s_table.getClassInfo(className);
 
-    //     // Generate a temp for the result
-    //     Identifier temp = new Identifier(generateTemp());
+        // 3. Get method name
+        String methodName = n.f2.f0.toString();
+        int methodOffset = classInfo.getMethodOffset(methodName);
 
-    //     // Add the alloc instruction
-    //     result.addInstr(new Alloc(temp, allocSize));
+        // 4. Load vmt ptr from vmt_ptr = [obj + 0]
+        Identifier vmt_ptr = new Identifier(generateTemp());
+        result.addInstr(new Load(vmt_ptr, obj_temp, 0));
 
-    //     // Set the resulting temp name
-    //     result.setTemp(temp);
+        // 5. Load function ptr from func_ptr = vmt_ptr = [vmt + methodOffset]
+        Identifier func_ptr = new Identifier(generateTemp());
+        result.addInstr(new Load(func_ptr, vmt_ptr, methodOffset));
 
-    //     return result;
-    // }
+        // 6. Evaluate arguments
+        ExpressionList args_exprList = (ExpressionList) n.f4.node;
+        ArrayList<Identifier> arg_temps = new ArrayList<Identifier>();
+
+        InstrContainer first_instr = args_exprList.f0.accept(this, s_table);
+        result.append(first_instr);
+        arg_temps.add(first_instr.temp_name);
+        for (Node node : args_exprList.f1.nodes) {
+            ExpressionRest rest = (ExpressionRest) node;
+            InstrContainer arg_instr = rest.f1.accept(this, s_table);
+            result.append(arg_instr);
+            arg_temps.add(arg_instr.temp_name);
+        }
+        System.err.println("📣 Message Send: arg_temps list = " + arg_temps);
+
+        // 7. Prepare return temp and emit call
+        Identifier ret_temp = new Identifier(generateTemp());
+
+        // Argument list: receiver (obj) + all evaluated args
+        ArrayList<Identifier> allArgs = new ArrayList<>();
+        allArgs.add(obj_temp); // 'this' pointer
+        allArgs.addAll(arg_temps);
+
+        result.addInstr(new Call(ret_temp, func_ptr, allArgs));
+        result.setTemp(ret_temp);
+
+        return result;
+    }
 }

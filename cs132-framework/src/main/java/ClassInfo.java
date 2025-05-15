@@ -26,12 +26,10 @@ public class ClassInfo {
         // Fail if field already exists
         if (fields_map.containsKey(fieldName)) {
             System.err.println("🚨 Field already exists: " + fieldName);
-            printFailureAndExit();
         }
         // Fail if field name conflicts with a method name
         if (methods_map.containsKey(fieldName)) {
             System.err.println("🚨 Field name conflicts with a method name: " + fieldName);
-            printFailureAndExit();
         }
         Integer offset = (fields_map.size() + 1) * 4;
         fields_map.put(fieldName, typeName);
@@ -42,7 +40,6 @@ public class ClassInfo {
     public MyType getFieldType(String fieldName) {
         if (!this.hasField(fieldName)){
             System.err.println("🚨: Fetching a field (" + fieldName + ") that DNE");
-            printFailureAndExit();
         }
         return fields_map.get(fieldName);
     }
@@ -56,12 +53,10 @@ public class ClassInfo {
         // Fail if method already exists
         if (methods_map.containsKey(methodName)) {
             System.err.println("🚨 Method already exists: " + methodName);
-            printFailureAndExit();
         }
         // Fail if method name conflicts with a field name
         if (fields_map.containsKey(methodName)) {
             System.err.println("🚨 Method name conflicts with a field name: " + methodName);
-            printFailureAndExit();
         }
         methods_map.put(methodName, methodInfo);
     }
@@ -70,7 +65,6 @@ public class ClassInfo {
     public MethodInfo getMethodInfo(String methodName) {
         if (!this.hasMethod(methodName)){
             System.err.println("🚨 MethodInfo: tried getting non-existent method: " + methodName);
-            printFailureAndExit();
         }
         return methods_map.get(methodName);
     }
@@ -80,8 +74,22 @@ public class ClassInfo {
         return methods_map.containsKey(methodName);
     }
 
-    public void printFailureAndExit() { 
-        System.out.println("Type error");
-        System.exit(1);
+    public int getMethodOffset(String methodName) {
+        if (!methods_map.containsKey(methodName)) {
+            System.err.println("🚨 Method offset lookup failed: " + methodName + " does not exist");
+        }
+        MethodInfo m = methods_map.get(methodName);
+        if (m == null || m.method_offset == null) {
+            System.err.println("🚨 Method offset is undefined for: " + methodName);
+        }
+        return m.method_offset;
+    }
+
+    // get method offset:
+    public int getFieldOffset(String fieldName) {
+        if (!field_offsets.containsKey(fieldName)) {
+            System.err.println("🚨 Field offset lookup failed: " + fieldName + " does not exist");
+        }
+        return field_offsets.get(fieldName);
     }
 }

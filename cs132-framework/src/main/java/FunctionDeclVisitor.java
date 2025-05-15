@@ -28,7 +28,6 @@ public class FunctionDeclVisitor extends GJDepthFirst<ArrayList<FunctionDecl>, S
         // Visit all class declarations and collect methods
         for (Node node : n.f1.nodes) {
             ArrayList<FunctionDecl> classFuncs = node.accept(this, s_table);
-            System.err.println("⚽️ Goal: arraylist<funcdec> classFuncs = " + classFuncs);
             funcs.addAll(classFuncs);
         }
 
@@ -36,8 +35,6 @@ public class FunctionDeclVisitor extends GJDepthFirst<ArrayList<FunctionDecl>, S
     }
 
     public FunctionDecl visitMainAsFunction(MainClass n, SymbolTable s_table) {
-        System.err.println("👩‍🔧 FuncDeclVisitor - visitMainAsFunction : entered!");
-
         // InstrContainer mainInstrs = n.f15.accept(iv, s_table); // call IV on statements
 
         InstrContainer mainInstrs = new InstrContainer();
@@ -52,8 +49,7 @@ public class FunctionDeclVisitor extends GJDepthFirst<ArrayList<FunctionDecl>, S
             }
         }
 
-        System.err.println("👩‍🔧 FuncDeclVisitor - visitMainAsFunction : What's in mainInstr: " + mainInstrs);
-        // main returns null usually so return dummy 0
+        // main returns null always so return dummy 0
         if (mainInstrs.temp_name == null) {
             Identifier dummyReturn = new Identifier("v" + iv.id_name_counter++);
             mainInstrs.instr_list.add(new Move_Id_Integer(dummyReturn, 0));
@@ -75,9 +71,9 @@ public class FunctionDeclVisitor extends GJDepthFirst<ArrayList<FunctionDecl>, S
         String full_method_name = curr_class + "_" + methodName; // 🍅 🍅 🍅 make sure to update curr_class in visit(classDec) when you implement it
 
         // Construct param list
-        System.err.println("🧠 FuncDecl Visitor - MethodDec : entered method " + full_method_name);
         MethodInfo this_methodInfo = s_table.getClassInfo(curr_class).getMethodInfo(methodName);
         ArrayList<Identifier> args = new ArrayList<>();
+        args.add(new Identifier("this"));
         args.addAll(this_methodInfo.getArgsIDList());
 
         // Get body instructions
@@ -90,19 +86,14 @@ public class FunctionDeclVisitor extends GJDepthFirst<ArrayList<FunctionDecl>, S
             }
         }
 
-        System.err.println("🧠 FuncDecl Visitor - MethodDec - BodyInstr : " + bodyInstrs.toString());
-
         // Translate return expression
         InstrContainer returnExpr = n.f10.accept(iv, s_table);
         bodyInstrs.instr_list.addAll(returnExpr.instr_list);
         bodyInstrs.temp_name = returnExpr.temp_name != null ? new Identifier(returnExpr.temp_name.toString()) : new Identifier("0"); // 🍅 🍅 🍅 🍅 🍅: if void ret, jsut return 0 right?
-
-        System.err.println("🧠 FuncDecl Visitor - MethodDec - BodyInstr : (with return)" + bodyInstrs.toString());
+        bodyInstrs.class_name = returnExpr.class_name;
 
         Block body = new Block(bodyInstrs.instr_list, bodyInstrs.temp_name);
         FunctionDecl func_dec = new FunctionDecl(new FunctionName(full_method_name), args, body);
-
-        System.err.println("🧠 FuncDecl Visitor - MethodDec - FunctionDecl : (with return)" + func_dec.toString());
 
         ArrayList<FunctionDecl> func_list = new ArrayList<>();
         func_list.add(func_dec);
@@ -113,7 +104,6 @@ public class FunctionDeclVisitor extends GJDepthFirst<ArrayList<FunctionDecl>, S
     public ArrayList<FunctionDecl> visit(ClassDeclaration n, SymbolTable s_table) {
         String class_name = n.f1.f0.toString();
         curr_class = class_name;
-        System.err.println("👩‍🏫 FuncDecl Visitor - ClassDec - curr_class = " + curr_class);
         // ClassInfo classInfo = s_table.getClassInfo(class_name);
 
         ArrayList<FunctionDecl> methodFuncs = new ArrayList<>();
@@ -130,7 +120,6 @@ public class FunctionDeclVisitor extends GJDepthFirst<ArrayList<FunctionDecl>, S
     public ArrayList<FunctionDecl> visit(ClassExtendsDeclaration n, SymbolTable s_table) { // 🍅 🍅 🍅 : Do I need to do anything more for classExtends? (I copied from ClassDeclaration)
         String class_name = n.f1.f0.toString();
         curr_class = class_name;
-        System.err.println("👩‍🏫 FuncDecl Visitor - ClassDecExtends - curr_class = " + curr_class);
         // ClassInfo classInfo = s_table.getClassInfo(class_name);
 
         ArrayList<FunctionDecl> methodFuncs = new ArrayList<>();
