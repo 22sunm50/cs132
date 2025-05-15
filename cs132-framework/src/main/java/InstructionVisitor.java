@@ -327,7 +327,7 @@ public class InstructionVisitor extends GJDepthFirst < InstrContainer, SymbolTab
     public InstrContainer visit(MessageSend n, SymbolTable s_table) {
         InstrContainer result = new InstrContainer();
 
-        // 1. Evaluate the object expression (e.g., a.b().c -> get 'a')
+        // 1. Evaluate the object expression (e.g., a.run().dog -> get 'a')
         InstrContainer obj = n.f0.accept(this, s_table);
         result.append(obj);
 
@@ -335,6 +335,17 @@ public class InstructionVisitor extends GJDepthFirst < InstrContainer, SymbolTab
         Identifier obj_temp = obj.temp_name;
         String className = obj.class_name;
         ClassInfo classInfo = s_table.getClassInfo(className);
+
+        //// 🍅 NULL CHECK!
+        // Insert null pointer check before dereferencing the object
+        Label nullLabel = new Label("L" + generateTemp() + "_Error");
+        Label endLabel = new Label("L" + generateTemp() + "_End");
+
+        result.addInstr(new IfGoto(obj_temp, nullLabel));  // if0 obj → jump to null handler
+        result.addInstr(new Goto(endLabel));               // skip error if not null
+        result.addInstr(new LabelInstr(nullLabel));
+        result.addInstr(new ErrorMessage("\"null pointer\""));        // throw runtime error
+        result.addInstr(new LabelInstr(endLabel));
 
         // 3. Get method name
         String methodName = n.f2.f0.toString();
