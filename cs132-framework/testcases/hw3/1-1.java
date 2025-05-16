@@ -1,7 +1,8 @@
 class Main {
 	public static void main(String[] a){
-		a = new A();
-		System.out.println(new A().runA());
+		C ccc;
+		ccc = new C();
+		System.out.println(ccc.runA());
 	}
 }
 
@@ -24,5 +25,8 @@ class C extends B{
 	int c_C;
 	public int runA(){
 		return 333;
+	}
+	public int runC(){
+		return 555;
 	}
 }

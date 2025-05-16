@@ -189,36 +189,66 @@ public class InstructionVisitor extends GJDepthFirst < InstrContainer, SymbolTab
         // rhs
         InstrContainer rhs = n.f2.accept(this, s_table);
         result.instr_list.addAll(rhs.instr_list);
+
+        if (curr_method != null) {
+            ClassInfo classInfo = s_table.getClassInfo(curr_class);
+            MethodInfo methodInfo = classInfo.getMethodInfo(curr_method);
     
-        // wrap var as an Identifier
-        Identifier id = new Identifier(varName);
+            // If it's a local variable or argument, emit normal assignment
+            if (methodInfo.vars_map.containsKey(varName) || methodInfo.args_map.containsKey(varName)) {
+                result.addInstr(new Move_Id_Id(new Identifier(varName), rhs.temp_name));
+                return result;
+            }
     
-        // add assignment: id = rhs.temp_name
-        result.addInstr(new Move_Id_Id(id, rhs.temp_name));
+            // Otherwise it's a field → emit [this + offset] = value
+            int offset = classInfo.getFieldOffset(varName);
+            result.addInstr(new Store(new Identifier("this"), offset, rhs.temp_name));
+            return result;
+        }
     
-        // we don’t need to set temp_name for statements
+        // In main (outside method): all are locals
+        result.addInstr(new Move_Id_Id(new Identifier(varName), rhs.temp_name));
         return result;
     }
 
     @Override
     public InstrContainer visit(minijava.syntaxtree.Identifier n, SymbolTable s_table) {
         InstrContainer result = new InstrContainer();
-        Identifier var = new Identifier(n.f0.toString());
-
-        // get class type of the identifier
-        String var_className = null;
-        MyType var_type = null;
-        if (curr_method == null){ // get field's type
-            var_type = s_table.getClassInfo(curr_class).getFieldType(var.toString());
-            var_className = var_type.getClassName();
-            System.err.println("🕵️‍♀️ Identifier: curr_class = " + curr_class + " | var = " + var_className);
+        String var_name = n.f0.toString();
+        Identifier temp = new Identifier(generateTemp());
+    
+        // check if we're inside a method
+        if (curr_method != null) {
+            MethodInfo methodInfo = s_table.getClassInfo(curr_class).getMethodInfo(curr_method);
+    
+            // Is local var or argument?
+            if (methodInfo.vars_map.containsKey(var_name) || methodInfo.args_map.containsKey(var_name)) {
+                result.setTemp(new Identifier(var_name));  // use directly
+                return result;
+            }
+    
+            // Not local → must be a field → load from [this + offset]
+            ClassInfo classInfo = s_table.getClassInfo(curr_class);
+            int index = classInfo.field_table_list.indexOf(var_name);
+            if (index == -1) {
+                System.err.println("🚨 Field not found: " + var_name);
+            }
+    
+            int offset = (index + 1) * 4; // +1 because [this + 0] is VMT
+            Identifier thisId = new Identifier("this");
+    
+            result.addInstr(new Load(temp, thisId, offset));
+            result.setTemp(temp);
+            return result;
         }
-        else { // get local var's type
-            var_type = s_table.getClassInfo(curr_class).getMethodInfo(curr_method).getVarOrArgType(var.toString());
-            var_className = var_type.getClassName();
-        }
+    
+        // Outside method context (e.g., in main) — assume all identifiers are locals
+        result.setTemp(new Identifier(var_name));
 
-        result.setTemp(var, var_className);
+        ClassInfo classInfo = s_table.getClassInfo(curr_class);
+        MyType type = classInfo.getFieldType(var_name);  // get declared type of the variable
+        result.setTemp(new Identifier(var_name), type.getClassName()); // ✅ attach class name
+        
         return result;
     }
 
@@ -336,7 +366,7 @@ public class InstructionVisitor extends GJDepthFirst < InstrContainer, SymbolTab
         ClassInfo classInfo = s_table.getClassInfo(className);
 
         // compute total allocation size = 4 bytes * (number of fields + 1)
-        Integer fieldCount = classInfo.fields_map.size();
+        Integer fieldCount = classInfo.field_table_list.size();
         Integer field_size = (fieldCount + 1) * 4;
 
         // temp to hold the alloc size
@@ -358,16 +388,19 @@ public class InstructionVisitor extends GJDepthFirst < InstrContainer, SymbolTab
         result.addInstr(new Alloc(vmt_name, vmt_size_temp));
 
         //// Loading Functions into VMT
-        for (String methodName : classInfo.methods_map.keySet()) {
-            FunctionName sparrow_func_name = new FunctionName(className + "_" + methodName);
+        System.err.println("👮‍♀️ AllocationExpr: about to Load Funcs into VMT !");
+        for (MethodOrigin mo : classInfo.method_origin_list) {
+            String methodName = mo.methodName;
+            String originClass = mo.className;
+    
+            // Correct label = originClass_methodName
+            FunctionName sparrow_func_name = new FunctionName(originClass + "_" + methodName);
             Integer offset = classInfo.getMethodOffset(methodName);
-
-            // fptr = @Class_Method
+            System.err.println("👮‍♀️ AllocationExpr: loading into vmt... func_name = " + sparrow_func_name + " | offset = " + offset);
+    
             Identifier func_ptr = new Identifier(generateTemp());
-            result.addInstr(new Move_Id_FuncName(func_ptr, sparrow_func_name));
-
-            // [vmt + offset] = func_ptr
-            result.addInstr(new Store(vmt_name, offset, func_ptr));
+            result.addInstr(new Move_Id_FuncName(func_ptr, sparrow_func_name)); // fptr = @Class_Method
+            result.addInstr(new Store(vmt_name, offset, func_ptr));             // [vmt + offset] = func_ptr
         }
 
         //// Loading vmt ptr into field's table -> [instance + 0] = vmt
@@ -388,7 +421,6 @@ public class InstructionVisitor extends GJDepthFirst < InstrContainer, SymbolTab
         // 2. Extract the object class from the symbol table
         Identifier obj_temp = obj.temp_name;
         String className = obj.class_name;
-        System.err.println("📣 Message Send: Did I get here?? obj.class_name = " + className);
         ClassInfo classInfo = s_table.getClassInfo(className);
 
         //// 🍅 NULL CHECK!
@@ -404,6 +436,9 @@ public class InstructionVisitor extends GJDepthFirst < InstrContainer, SymbolTab
 
         // 3. Get method name
         String methodName = n.f2.f0.toString();
+        System.err.println("📣 Message Send: entered into method = " + methodName);
+        System.err.println("📣 Message Send: obj.temp_name = " + obj_temp);
+        System.err.println("📣 Message Send: obj.class_name = " + className);
         int methodOffset = classInfo.getMethodOffset(methodName);
 
         // 4. Load vmt ptr from vmt_ptr = [obj + 0]
@@ -429,8 +464,6 @@ public class InstructionVisitor extends GJDepthFirst < InstrContainer, SymbolTab
                 arg_temps.add(arg_instr.temp_name);
             }
         }
-
-        System.err.println("📣 Message Send: arg_temps list = " + arg_temps);
 
         // 7. Prepare return temp and emit call
         Identifier ret_temp = new Identifier(generateTemp());

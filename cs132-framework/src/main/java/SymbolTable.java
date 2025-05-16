@@ -44,26 +44,23 @@ public class SymbolTable {
             System.err.println("  Fields:");
             for (String fieldName : info.fields_map.keySet()) {
                 MyType fieldType = info.fields_map.get(fieldName);
-                Integer fieldOffset = info.field_offsets.get(fieldName);
-                System.err.println("    " + fieldName + " : " + fieldType.toString() + " at " + fieldOffset);
+                int offset = info.getFieldOffset(fieldName);
+                System.err.println("    " + fieldName + " : " + fieldType.toString() + " at offset " + offset);
             }
-
+    
             // Print Field Table List (ordered + includes shadowed fields)
             System.err.println("  Full Field Order (field_table_list):");
             for (String fieldName : info.field_table_list) {
-                System.err.println("    " + fieldName);
+                int offset = info.getFieldOffset(fieldName);
+                System.err.println("    " + fieldName + " @ offset " + offset);
             }
     
             // Print Methods
             System.err.println("  Methods:");
-            // Print Method Origin List
-            System.err.println("  Full Method Order (method_origin_list):");
-            for (MethodOrigin mo : info.method_origin_list) {
-                System.err.println("    " + mo.toString());
-            }
             for (String methodName : info.methods_map.keySet()) {
                 MethodInfo methodInfo = info.methods_map.get(methodName);
-                System.err.println("    Method: " + methodName + " : " + methodInfo.toString());
+                int offset = info.getMethodOffset(methodName);
+                System.err.println("    Method: " + methodName + " : " + methodInfo.toString() + " @ offset " + offset);
     
                 // Print Arguments Map
                 System.err.println("      Arguments:");
@@ -80,7 +77,15 @@ public class SymbolTable {
                 }
             }
     
+            // Print Method Origin List
+            System.err.println("  Full Method Order (method_origin_list):");
+            for (int i = 0; i < info.method_origin_list.size(); i++) {
+                MethodOrigin mo = info.method_origin_list.get(i);
+                int offset = i * 4;
+                System.err.println("    " + mo.methodName + " from " + mo.className + " @ offset " + offset);
+            }
+    
             System.err.println();
         }
-    }
+    }    
 }

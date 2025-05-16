@@ -3,7 +3,6 @@ import java.util.HashMap;
 
 public class ClassInfo {
     HashMap<String, MyType> fields_map;
-    HashMap<String, Integer> field_offsets;
     ArrayList<String> field_table_list;
     ArrayList<MethodOrigin> method_origin_list;
 
@@ -12,7 +11,6 @@ public class ClassInfo {
 
     public ClassInfo() {
         fields_map = new HashMap<>();
-        field_offsets = new HashMap<>();
         methods_map = new HashMap<>();
         field_table_list = new ArrayList<>();
         method_origin_list = new ArrayList<>();
@@ -36,9 +34,9 @@ public class ClassInfo {
         if (methods_map.containsKey(fieldName)) {
             System.err.println("🚨 Field name conflicts with a method name: " + fieldName);
         }
-        Integer offset = (fields_map.size() + 1) * 4;
+        // Integer offset = (fields_map.size() + 1) * 4;
         fields_map.put(fieldName, typeName);
-        field_offsets.put(fieldName, offset);
+        // field_offsets.put(fieldName, offset);
     }
 
     // get type of a field
@@ -80,21 +78,26 @@ public class ClassInfo {
     }
 
     public int getMethodOffset(String methodName) {
-        if (!methods_map.containsKey(methodName)) {
-            System.err.println("🚨 Method offset lookup failed: " + methodName + " does not exist");
+        for (int i = 0; i < method_origin_list.size(); i++) {
+            MethodOrigin m = method_origin_list.get(i);
+            if (m.methodName.equals(methodName)) {
+                return i * 4;
+            }
         }
-        MethodInfo m = methods_map.get(methodName);
-        if (m == null || m.method_offset == null) {
-            System.err.println("🚨 Method offset is undefined for: " + methodName);
-        }
-        return m.method_offset;
+    
+        System.err.println("🚨 getMethodOffset: Method not found in method_origin_list: " + methodName);
+        return -1; // or throw exception if preferred
     }
 
-    // get method offset:
     public int getFieldOffset(String fieldName) {
-        if (!field_offsets.containsKey(fieldName)) {
-            System.err.println("🚨 Field offset lookup failed: " + fieldName + " does not exist");
+        // search backwards to find the latest (most derived) match
+        for (int i = field_table_list.size() - 1; i >= 0; i--) {
+            if (field_table_list.get(i).equals(fieldName)) {
+                return (i + 1) * 4;  // +1 to skip VMT at [this + 0]
+            }
         }
-        return field_offsets.get(fieldName);
+    
+        System.err.println("🚨 getFieldOffset: Field not found in field_table_list: " + fieldName);
+        return -1; // or throw exception if you prefer
     }
 }

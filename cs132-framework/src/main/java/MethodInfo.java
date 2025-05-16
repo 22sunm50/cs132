@@ -9,14 +9,12 @@ public class MethodInfo {
     List<MyType> args_type_list;
     HashMap<String, MyType> vars_map;
     HashMap<String, MyType> args_map;
-    Integer method_offset;
 
-    public MethodInfo(MyType return_type, Integer offset) {
+    public MethodInfo(MyType return_type) {
         this.return_type = return_type;
         this.args_type_list = new ArrayList<>();
         this.vars_map = new HashMap<>(); // contain vars & args
         this.args_map = new HashMap<>(); // just args
-        this.method_offset = offset;
     }
 
     // copy constructor (deep copy)
@@ -86,24 +84,9 @@ public class MethodInfo {
         return vars_map.get(varName);
     }
 
-    public void setMethodOffset(Integer offset){
-        this.method_offset = offset;
-    }
-
-    // @Override
-    // public String toString() {
-    //     StringBuilder sb = new StringBuilder();
-    //     sb.append("Return Type: ").append(return_type.toString()).append(", Args: ");
-    //     for (MyType arg : args_type_list) {
-    //         sb.append(arg.toString()).append(" ");
-    //     }
-    //     return sb.toString().trim();
-    // }
-
     @Override
     public String toString() {
         StringBuilder sb = new StringBuilder();
-        sb.append("Offset: ").append(method_offset).append(", ");
         sb.append("Return Type: ").append(return_type.toString()).append(", Args: ");
         for (MyType arg : args_type_list) {
             sb.append(arg.toString()).append(" ");
