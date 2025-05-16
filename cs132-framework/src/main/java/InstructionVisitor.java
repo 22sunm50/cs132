@@ -260,6 +260,37 @@ public class InstructionVisitor extends GJDepthFirst < InstrContainer, SymbolTab
         return result;
     }
 
+    @Override
+    public InstrContainer visit(WhileStatement n, SymbolTable s_table) {
+        InstrContainer result = new InstrContainer();
+
+        // Labels for the loop
+        Label startLabel = new Label("L" + generateTemp() + "_Start");
+        Label endLabel = new Label("L" + generateTemp() + "_End");
+
+        // Start label
+        result.addInstr(new LabelInstr(startLabel));
+
+        // Evaluate the loop condition
+        InstrContainer cond = n.f2.accept(this, s_table);
+        result.append(cond);
+
+        // If condition is false, jump to end
+        result.addInstr(new IfGoto(cond.temp_name, endLabel)); // if0 cond → end
+
+        // Loop body
+        InstrContainer body = n.f4.accept(this, s_table);
+        result.append(body);
+
+        // Jump back to the start
+        result.addInstr(new Goto(startLabel));
+
+        // End label
+        result.addInstr(new LabelInstr(endLabel));
+
+        return result;
+    }
+
     @Override // doin this for multiple statements (like in IfStatement)
     public InstrContainer visit(minijava.syntaxtree.Block n, SymbolTable s_table) {
         InstrContainer result = new InstrContainer();
