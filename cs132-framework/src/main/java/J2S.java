@@ -19,11 +19,14 @@ public class J2S extends GJDepthFirst<String, String>{
                 cv.visit(root, s_table);
                 cv.computeTransitiveSubtypes();
                 cv.setSymbolTableSubtype(s_table);
+                
+                cv.inherit_SparrowFields(s_table);
+                cv.inherit_SparrowMethods(s_table);
+                s_table.printClassTable();
+
                 cv.inheritFields(s_table);
                 cv.inheritMethods(s_table);
                 cv.addFieldsToMethodVars(s_table); // do after inheritance
-
-                s_table.printClassTable();
 
                 // InstructionVisitor iv = new InstructionVisitor();
 

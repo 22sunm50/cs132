@@ -48,6 +48,77 @@ public class ClassTableVisitor extends GJDepthFirst < MyType, SymbolTable > {
     }
 
     // 🌴 🌴 🌴 🌴 🌴 🌴 🌴 INHERITANCE 🌴 🌴 🌴 🌴 🌴 🌴 🌴 🌴
+    public void inherit_SparrowFields(SymbolTable s_table) {
+        // loop thru classes
+        for (String className : s_table.class_table.keySet()) {
+            ClassInfo classInfo = s_table.getClassInfo(className);
+    
+            ArrayList<String> accumulatedFields = new ArrayList<>();
+    
+            // 1. Start with current class's fields (in order of insertion)
+            accumulatedFields.addAll(classInfo.fields_map.keySet());
+    
+            // 2. Walk up the parent chain
+            String parentName = classInfo.getParentClassName();
+    
+            while (parentName != null) {
+                ClassInfo parentInfo = s_table.getClassInfo(parentName);
+    
+                // Convert parent's field_map keys to a list
+                ArrayList<String> parentFields = new ArrayList<>(parentInfo.fields_map.keySet());
+    
+                // Prepend parent's fields to the accumulated list
+                ArrayList<String> newAccumulated = new ArrayList<>(parentFields);
+                newAccumulated.addAll(accumulatedFields); // parent's fields first
+                accumulatedFields = newAccumulated;
+    
+                // Move up the hierarchy
+                parentName = parentInfo.getParentClassName();
+            }
+    
+            // 3. Save the final ordered list
+            classInfo.field_table_list = accumulatedFields;
+        }
+    }
+
+    public void inherit_SparrowMethods(SymbolTable s_table) {
+        // loop thru classes
+        for (String className : s_table.class_table.keySet()) {
+            ClassInfo classInfo = s_table.getClassInfo(className);
+    
+            ArrayList<MethodOrigin> accumulatedMethods = new ArrayList<>(); // the final list of (methodName, className) pairs that we build for the current class
+            HashMap<String, Integer> methodIndexMap = new HashMap<>();      // keeps track of where each method is located inside accumulatedMethods
+            ArrayList<String> classChain = new ArrayList<>();               // to keep track of order before we reached root
+    
+            // traverse up to root & record class chain
+            String current = className;
+            while (current != null) {
+                classChain.add(current);
+                current = s_table.getClassInfo(current).getParentClassName();
+            }
+    
+            // traverse from root to child
+            for (int i = classChain.size() - 1; i >= 0; i--) {
+                String curr = classChain.get(i);
+                ClassInfo info = s_table.getClassInfo(curr);
+    
+                // loop thru methods in class
+                for (String method : info.methods_map.keySet()) {
+                    if (methodIndexMap.containsKey(method)) {
+                        // override existing entry
+                        int idx = methodIndexMap.get(method);
+                        accumulatedMethods.get(idx).className = curr;
+                    } else {
+                        // new method — append
+                        accumulatedMethods.add(new MethodOrigin(method, curr));
+                        methodIndexMap.put(method, accumulatedMethods.size() - 1);
+                    }
+                }
+            }
+            classInfo.method_origin_list = accumulatedMethods;
+        }
+    }    
+    
     public void inheritFields(SymbolTable s_table) { // basically goes thru all ancestors and puts into curr class (starting at closest parent)
         for (String className : s_table.class_table.keySet()) {     // loop thru all classes
             ClassInfo classInfo = s_table.getClassInfo(className);  // get its ClassInfo

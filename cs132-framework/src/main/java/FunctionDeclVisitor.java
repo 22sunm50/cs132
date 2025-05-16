@@ -40,7 +40,13 @@ public class FunctionDeclVisitor extends GJDepthFirst<ArrayList<FunctionDecl>, S
 
         InstrContainer mainInstrs = new InstrContainer();
 
+        String class_name = n.f1.f0.toString(); // name = "Main"
+        curr_class = class_name;
+        curr_method = null;
         iv.curr_class = curr_class;
+        iv.curr_method = null;
+        iv.curr_sparrow_method = null;
+
         // call IV on each statement in main
         if (n.f15.present()) {
             for (Node statement_node : n.f15.nodes) {

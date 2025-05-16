@@ -47,9 +47,20 @@ public class SymbolTable {
                 Integer fieldOffset = info.field_offsets.get(fieldName);
                 System.err.println("    " + fieldName + " : " + fieldType.toString() + " at " + fieldOffset);
             }
+
+            // Print Field Table List (ordered + includes shadowed fields)
+            System.err.println("  Full Field Order (field_table_list):");
+            for (String fieldName : info.field_table_list) {
+                System.err.println("    " + fieldName);
+            }
     
             // Print Methods
             System.err.println("  Methods:");
+            // Print Method Origin List
+            System.err.println("  Full Method Order (method_origin_list):");
+            for (MethodOrigin mo : info.method_origin_list) {
+                System.err.println("    " + mo.toString());
+            }
             for (String methodName : info.methods_map.keySet()) {
                 MethodInfo methodInfo = info.methods_map.get(methodName);
                 System.err.println("    Method: " + methodName + " : " + methodInfo.toString());

@@ -1,8 +1,11 @@
+import java.util.ArrayList;
 import java.util.HashMap;
 
 public class ClassInfo {
     HashMap<String, MyType> fields_map;
     HashMap<String, Integer> field_offsets;
+    ArrayList<String> field_table_list;
+    ArrayList<MethodOrigin> method_origin_list;
 
     HashMap<String, MethodInfo> methods_map;
     String parent_name;
@@ -11,6 +14,8 @@ public class ClassInfo {
         fields_map = new HashMap<>();
         field_offsets = new HashMap<>();
         methods_map = new HashMap<>();
+        field_table_list = new ArrayList<>();
+        method_origin_list = new ArrayList<>();
         parent_name = null;
     }
 

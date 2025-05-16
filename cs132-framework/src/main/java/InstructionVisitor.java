@@ -13,13 +13,21 @@ public class InstructionVisitor extends GJDepthFirst < InstrContainer, SymbolTab
 
     // global counter for our identifier name generator
     Integer id_name_counter = 0;
+    Integer label_name_counter = 0;
     public String curr_class = null;
     public String curr_method = null;
     public String curr_sparrow_method = null;
+    // ArrayList<String> reserved_names = ["a2", ""];
 
     public String generateTemp(){
         String name = "v" + id_name_counter;
         id_name_counter++;
+        return name;
+    }
+
+    public String generateLabelName(){
+        String name = "v" + label_name_counter;
+        label_name_counter++;
         return name;
     }
 
@@ -196,7 +204,21 @@ public class InstructionVisitor extends GJDepthFirst < InstrContainer, SymbolTab
     public InstrContainer visit(minijava.syntaxtree.Identifier n, SymbolTable s_table) {
         InstrContainer result = new InstrContainer();
         Identifier var = new Identifier(n.f0.toString());
-        result.setTemp(var);
+
+        // get class type of the identifier
+        String var_className = null;
+        MyType var_type = null;
+        if (curr_method == null){ // get field's type
+            var_type = s_table.getClassInfo(curr_class).getFieldType(var.toString());
+            var_className = var_type.getClassName();
+            System.err.println("🕵️‍♀️ Identifier: curr_class = " + curr_class + " | var = " + var_className);
+        }
+        else { // get local var's type
+            var_type = s_table.getClassInfo(curr_class).getMethodInfo(curr_method).getVarOrArgType(var.toString());
+            var_className = var_type.getClassName();
+        }
+
+        result.setTemp(var, var_className);
         return result;
     }
 
@@ -234,8 +256,8 @@ public class InstructionVisitor extends GJDepthFirst < InstrContainer, SymbolTab
         InstrContainer result = new InstrContainer();
 
         // Generate labels
-        Label elseLabel = new Label("L" + generateTemp() + "_Else");
-        Label endLabel = new Label("L" + generateTemp() + "_End");
+        Label elseLabel = new Label("L" + generateLabelName() + "_Else");
+        Label endLabel = new Label("L" + generateLabelName() + "_End");
 
         // Evaluate condition
         InstrContainer cond = n.f2.accept(this, s_table);
@@ -265,8 +287,8 @@ public class InstructionVisitor extends GJDepthFirst < InstrContainer, SymbolTab
         InstrContainer result = new InstrContainer();
 
         // Labels for the loop
-        Label startLabel = new Label("L" + generateTemp() + "_Start");
-        Label endLabel = new Label("L" + generateTemp() + "_End");
+        Label startLabel = new Label("L" + generateLabelName() + "_Start");
+        Label endLabel = new Label("L" + generateLabelName() + "_End");
 
         // Start label
         result.addInstr(new LabelInstr(startLabel));
@@ -357,6 +379,7 @@ public class InstructionVisitor extends GJDepthFirst < InstrContainer, SymbolTab
     @Override
     public InstrContainer visit(MessageSend n, SymbolTable s_table) {
         InstrContainer result = new InstrContainer();
+        System.err.println("📣 Message Send: entered!");
 
         // 1. Evaluate the object expression (e.g., a.run().dog -> get 'a')
         InstrContainer obj = n.f0.accept(this, s_table);
@@ -365,12 +388,13 @@ public class InstructionVisitor extends GJDepthFirst < InstrContainer, SymbolTab
         // 2. Extract the object class from the symbol table
         Identifier obj_temp = obj.temp_name;
         String className = obj.class_name;
+        System.err.println("📣 Message Send: Did I get here?? obj.class_name = " + className);
         ClassInfo classInfo = s_table.getClassInfo(className);
 
         //// 🍅 NULL CHECK!
         // Insert null pointer check before dereferencing the object
-        Label nullLabel = new Label("L" + generateTemp() + "_Error");
-        Label endLabel = new Label("L" + generateTemp() + "_End");
+        Label nullLabel = new Label("L" + generateLabelName() + "_Error");
+        Label endLabel = new Label("L" + generateLabelName() + "_End");
 
         result.addInstr(new IfGoto(obj_temp, nullLabel));  // if0 obj → jump to null handler
         result.addInstr(new Goto(endLabel));               // skip error if not null
