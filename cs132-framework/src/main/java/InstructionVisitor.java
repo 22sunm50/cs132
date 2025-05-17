@@ -534,4 +534,207 @@ public class InstructionVisitor extends GJDepthFirst < InstrContainer, SymbolTab
 
         return result;
     }
+
+    @Override
+    public InstrContainer visit(ArrayAllocationExpression n, SymbolTable s_table) {
+        InstrContainer result = new InstrContainer();
+
+        // Step 1: Evaluate the array length expression inside brackets
+        InstrContainer lengthExpr = n.f3.accept(this, s_table);  // `new int[expr]`
+        result.append(lengthExpr);
+
+        // Step 2: Add 1 to account for storing array length
+        Identifier one = new Identifier(generateTemp());
+        result.addInstr(new Move_Id_Integer(one, 1));
+
+        Identifier paddedLength = new Identifier(generateTemp());
+        result.addInstr(new Add(paddedLength, lengthExpr.temp_name, one)); // paddedLength = length + 1
+
+        // Step 3: Multiply by 4 (size of int)
+        Identifier intSize = new Identifier(generateTemp());
+        result.addInstr(new Move_Id_Integer(intSize, 4));
+
+        Identifier allocSize = new Identifier(generateTemp());
+        result.addInstr(new Multiply(allocSize, paddedLength, intSize)); // allocSize = (length + 1) * 4
+
+        // Step 4: Allocate memory
+        Identifier arrayPtr = new Identifier(generateTemp());
+        result.addInstr(new Alloc(arrayPtr, allocSize)); // arrayPtr = alloc(allocSize)
+
+        // Step 5: Null pointer check
+        Label errorLabel = new Label("L" + generateLabelName() + "_Error");
+        Label endLabel = new Label("L" + generateLabelName() + "_End");
+
+        result.addInstr(new IfGoto(arrayPtr, errorLabel));  // if0 arrayPtr → error
+        result.addInstr(new Goto(endLabel));                // else → continue
+
+        result.addInstr(new LabelInstr(errorLabel));
+        result.addInstr(new ErrorMessage("\"null pointer\""));
+
+        result.addInstr(new LabelInstr(endLabel));
+
+        // Step 6: Store original length at [arrayPtr + 0]
+        result.addInstr(new Store(arrayPtr, 0, lengthExpr.temp_name));
+
+        // Done: set result.temp_name
+        result.setTemp(arrayPtr);
+
+        return result;
+    }
+
+    @Override
+    public InstrContainer visit(ArrayAssignmentStatement n, SymbolTable s_table) {
+        InstrContainer result = new InstrContainer();
+
+        // Step 1: Evaluate array reference
+        InstrContainer arrayRef = n.f0.accept(this, s_table); // arr
+        result.append(arrayRef);
+        Identifier arr = arrayRef.temp_name;
+
+        // Step 2: Evaluate index
+        InstrContainer indexExpr = n.f2.accept(this, s_table); // i
+        result.append(indexExpr);
+        Identifier index = indexExpr.temp_name;
+
+        // Step 3: Evaluate value to store
+        InstrContainer valueExpr = n.f5.accept(this, s_table); // val
+        result.append(valueExpr);
+        Identifier value = valueExpr.temp_name;
+
+        // Constants
+        Identifier four = new Identifier(generateTemp());
+        result.addInstr(new Move_Id_Integer(four, 4));
+
+        Identifier zero = new Identifier(generateTemp());
+        result.addInstr(new Move_Id_Integer(zero, 0));
+
+        // Step 4: Bounds checking
+        // Compute -1 using: -1 = 4 - 5
+        Identifier five = new Identifier(generateTemp());
+        result.addInstr(new Move_Id_Integer(five, 5));
+        Identifier minusOne = new Identifier(generateTemp());
+        result.addInstr(new Subtract(minusOne, four, five));  // -1
+
+        Identifier isNonNegative = new Identifier(generateTemp());
+        result.addInstr(new LessThan(isNonNegative, minusOne, index)); // -1 < index
+
+        Identifier arrLen = new Identifier(generateTemp());
+        result.addInstr(new Load(arrLen, arr, 0));  // arrLen = [arr + 0]
+
+        Identifier isInBound = new Identifier(generateTemp());
+        result.addInstr(new LessThan(isInBound, index, arrLen));  // index < arrLen
+
+        Identifier inBounds = new Identifier(generateTemp());
+        result.addInstr(new Multiply(inBounds, isNonNegative, isInBound));  // AND condition
+
+        // Labels for bound check
+        Label errorLabel = new Label("L" + generateLabelName() + "_BoundsError");
+        Label endLabel = new Label("L" + generateLabelName() + "_End");
+
+        result.addInstr(new IfGoto(inBounds, errorLabel));
+        result.addInstr(new Goto(endLabel));
+        result.addInstr(new LabelInstr(errorLabel));
+        result.addInstr(new ErrorMessage("\"array index out of bounds\""));
+        result.addInstr(new LabelInstr(endLabel));
+
+        // Step 5: Compute address = arr + 4 * index + 4
+        Identifier offset = new Identifier(generateTemp());
+        result.addInstr(new Multiply(offset, four, index)); // offset = 4 * index
+
+        Identifier dataOffset = new Identifier(generateTemp());
+        result.addInstr(new Add(dataOffset, offset, four)); // offset = offset + 4
+
+        Identifier targetAddr = new Identifier(generateTemp());
+        result.addInstr(new Add(targetAddr, arr, dataOffset)); // final address
+
+        // Step 6: Store value
+        result.addInstr(new Store(targetAddr, 0, value)); // [targetAddr + 0] = value
+
+        return result;
+    }
+
+    @Override
+    public InstrContainer visit(ArrayLookup n, SymbolTable s_table) {
+        InstrContainer result = new InstrContainer();
+
+        // Step 1: Evaluate array and index
+        InstrContainer arrExpr = n.f0.accept(this, s_table);
+        InstrContainer indexExpr = n.f2.accept(this, s_table);
+        result.append(arrExpr);
+        result.append(indexExpr);
+
+        Identifier arr = arrExpr.temp_name;
+        Identifier index = indexExpr.temp_name;
+
+        // Step 2: Load constants
+        Identifier four = new Identifier(generateTemp());
+        result.addInstr(new Move_Id_Integer(four, 4));
+
+        Identifier five = new Identifier(generateTemp());
+        result.addInstr(new Move_Id_Integer(five, 5));
+
+        Identifier minusOne = new Identifier(generateTemp());
+        result.addInstr(new Subtract(minusOne, four, five));  // -1
+
+        // Step 3: -1 < index
+        Identifier lowBound = new Identifier(generateTemp());
+        result.addInstr(new LessThan(lowBound, minusOne, index));
+
+        // Step 4: index < length
+        Identifier arrLen = new Identifier(generateTemp());
+        result.addInstr(new Load(arrLen, arr, 0)); // length = [arr + 0]
+
+        Identifier highBound = new Identifier(generateTemp());
+        result.addInstr(new LessThan(highBound, index, arrLen));
+
+        // Step 5: Combine bounds
+        Identifier inBounds = new Identifier(generateTemp());
+        result.addInstr(new Multiply(inBounds, lowBound, highBound));
+
+        // Labels
+        Label boundsError = new Label("L" + generateLabelName() + "_BoundsError");
+        Label boundsOK = new Label("L" + generateLabelName() + "_BoundsOK");
+
+        result.addInstr(new IfGoto(inBounds, boundsError));
+        result.addInstr(new Goto(boundsOK));
+        result.addInstr(new LabelInstr(boundsError));
+        result.addInstr(new ErrorMessage("\"array index out of bounds\""));
+        result.addInstr(new LabelInstr(boundsOK));
+
+        // Step 6: Compute offset = index * 4 + 4
+        Identifier scaled = new Identifier(generateTemp());
+        result.addInstr(new Multiply(scaled, four, index));
+
+        Identifier offset = new Identifier(generateTemp());
+        result.addInstr(new Add(offset, scaled, four)); // offset = scaled + 4
+
+        Identifier addr = new Identifier(generateTemp());
+        result.addInstr(new Add(addr, arr, offset));
+
+        // Step 7: Load [addr + 0]
+        Identifier value = new Identifier(generateTemp());
+        result.addInstr(new Load(value, addr, 0));
+
+        result.setTemp(value);
+        return result;
+    }
+
+    @Override
+    public InstrContainer visit(ArrayLength n, SymbolTable s_table) {
+        InstrContainer result = new InstrContainer();
+
+        // Evaluate the array expression
+        InstrContainer arrayExpr = n.f0.accept(this, s_table);
+        result.append(arrayExpr);
+
+        Identifier arr = arrayExpr.temp_name;
+
+        // Load [arr + 0]
+        Identifier length = new Identifier(generateTemp());
+        result.addInstr(new Load(length, arr, 0));
+
+        result.setTemp(length);
+        return result;
+    }
+
 }
