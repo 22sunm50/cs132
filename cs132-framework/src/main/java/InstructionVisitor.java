@@ -371,33 +371,33 @@ public class InstructionVisitor extends GJDepthFirst < InstrContainer, SymbolTab
     public InstrContainer visit(AndExpression n, SymbolTable s_table) {
         InstrContainer result = new InstrContainer();
 
-        // Labels for short-circuit logic
-        Label falseLabel = new Label("L" + generateLabelName() + "_False");
+        // Labels for branching
+        Label rightLabel = new Label("L" + generateLabelName() + "_Right");
         Label endLabel = new Label("L" + generateLabelName() + "_End");
 
-        // 1. Evaluate the left side
+        // Step 1: Evaluate left operand
         InstrContainer left = n.f0.accept(this, s_table);
         result.append(left);
 
-        // 2. If left is false, jump to falseLabel
-        result.addInstr(new IfGoto(left.temp_name, falseLabel));  // if0 left → false
+        // Step 2: If left is false (== 0), short-circuit to end with false
+        result.addInstr(new IfGoto(left.temp_name, rightLabel)); // if0 left → skip right
 
-        // 3. Evaluate the right side
+        // Step 3: If left is true, evaluate right
         InstrContainer right = n.f2.accept(this, s_table);
         result.append(right);
 
-        // 4. Assign final result = right
-        Identifier finalTemp = new Identifier(generateTemp());
-        result.addInstr(new Move_Id_Id(finalTemp, right.temp_name));
+        // Step 4: Multiply left * right (both true)
+        Identifier resultTemp = new Identifier(generateTemp());
+        result.addInstr(new Multiply(resultTemp, left.temp_name, right.temp_name));
         result.addInstr(new Goto(endLabel));
 
-        // 5. Label false branch
-        result.addInstr(new LabelInstr(falseLabel));
-        result.addInstr(new Move_Id_Integer(finalTemp, 0)); // false = 0
+        // Step 5: Right label — left was false
+        result.addInstr(new LabelInstr(rightLabel));
+        result.addInstr(new Move_Id_Integer(resultTemp, 0)); // short-circuit value
 
-        // 6. End label
+        // Step 6: End
         result.addInstr(new LabelInstr(endLabel));
-        result.setTemp(finalTemp);
+        result.setTemp(resultTemp);
 
         return result;
     }
