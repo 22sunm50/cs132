@@ -12,15 +12,15 @@ class A {
     int a;
     int b;
 
-    public int foo(int arg1, int arg2) {
+    public int foo(int a1, int a2) {
         int res;
-        res = arg1 + arg2;
+        res = a1 + a2;
         return res;
     }
 
-    public int bar(int arg1, int arg2) {
-        a = arg1;
-        b = arg2;
+    public int bar(int a1, int a2) {
+        a = a1;
+        b = a2;
         return 0;
     }
 
