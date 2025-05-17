@@ -186,12 +186,9 @@ public class InstructionVisitor extends GJDepthFirst < InstrContainer, SymbolTab
     public InstrContainer visit(ThisExpression n, SymbolTable s_table) {
         InstrContainer result = new InstrContainer();
 
-        // "this" is passed as the first argument to every method
         Identifier this_id = new Identifier("this");
         result.setTemp(this_id);
-
-        // Also store the current class name (needed for MessageSend)
-        result.class_name = curr_class; // does this work?
+        result.class_name = curr_class;
 
         return result;
     }
@@ -220,6 +217,7 @@ public class InstructionVisitor extends GJDepthFirst < InstrContainer, SymbolTab
     
             // Otherwise it's a field → emit [this + offset] = value
             int offset = classInfo.getFieldOffset(varName);
+
             result.addInstr(new Store(new Identifier("this"), offset, rhs.temp_name));
             return result;
         }
@@ -365,6 +363,41 @@ public class InstructionVisitor extends GJDepthFirst < InstrContainer, SymbolTab
 
         // End label
         result.addInstr(new LabelInstr(endLabel));
+
+        return result;
+    }
+
+    @Override
+    public InstrContainer visit(AndExpression n, SymbolTable s_table) {
+        InstrContainer result = new InstrContainer();
+
+        // Labels for short-circuit logic
+        Label falseLabel = new Label("L" + generateLabelName() + "_False");
+        Label endLabel = new Label("L" + generateLabelName() + "_End");
+
+        // 1. Evaluate the left side
+        InstrContainer left = n.f0.accept(this, s_table);
+        result.append(left);
+
+        // 2. If left is false, jump to falseLabel
+        result.addInstr(new IfGoto(left.temp_name, falseLabel));  // if0 left → false
+
+        // 3. Evaluate the right side
+        InstrContainer right = n.f2.accept(this, s_table);
+        result.append(right);
+
+        // 4. Assign final result = right
+        Identifier finalTemp = new Identifier(generateTemp());
+        result.addInstr(new Move_Id_Id(finalTemp, right.temp_name));
+        result.addInstr(new Goto(endLabel));
+
+        // 5. Label false branch
+        result.addInstr(new LabelInstr(falseLabel));
+        result.addInstr(new Move_Id_Integer(finalTemp, 0)); // false = 0
+
+        // 6. End label
+        result.addInstr(new LabelInstr(endLabel));
+        result.setTemp(finalTemp);
 
         return result;
     }
