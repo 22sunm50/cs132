@@ -109,6 +109,25 @@ public class InstructionVisitor extends GJDepthFirst < InstrContainer, SymbolTab
     }
 
     @Override
+    public InstrContainer visit(NotExpression n, SymbolTable s_table) {
+        InstrContainer result = new InstrContainer();
+
+        // Evaluate the inner expression
+        InstrContainer inner = n.f1.accept(this, s_table);
+        result.append(inner);
+
+        // Create constants and do: result = 1 - inner.temp
+        Identifier one = new Identifier(generateTemp());
+        result.addInstr(new Move_Id_Integer(one, 1));
+
+        Identifier temp = new Identifier(generateTemp());
+        result.addInstr(new Subtract(temp, one, inner.temp_name));
+
+        result.setTemp(temp);
+        return result;
+    }
+
+    @Override
     public InstrContainer visit(PlusExpression n, SymbolTable s_table) {
         InstrContainer result = new InstrContainer();
         InstrContainer left = n.f0.accept(this, s_table);
@@ -173,7 +192,6 @@ public class InstructionVisitor extends GJDepthFirst < InstrContainer, SymbolTab
 
         // Also store the current class name (needed for MessageSend)
         result.class_name = curr_class; // does this work?
-        System.err.println("👇 This: curr_class = " + curr_class);
 
         return result;
     }
@@ -224,17 +242,24 @@ public class InstructionVisitor extends GJDepthFirst < InstrContainer, SymbolTab
             // Is local var or argument?
             if (methodInfo.vars_map.containsKey(var_name) || methodInfo.args_map.containsKey(var_name)) {
                 result.setTemp(new Identifier(var_name));  // use directly
+
+                MyType type = methodInfo.vars_map.get(var_name);
+                if (type == null) {
+                    type = methodInfo.args_map.get(var_name);
+                }
+                if (type != null && type.isOfType(MyType.BaseType.CLASS)) {
+                    result.setTemp(new Identifier(var_name), type.getClassName());
+                } else {
+                    result.setTemp(new Identifier(var_name)); // default fallback
+                }
+
                 return result;
             }
     
             // Not local → must be a field → load from [this + offset]
             ClassInfo classInfo = s_table.getClassInfo(curr_class);
-            int index = classInfo.field_table_list.indexOf(var_name);
-            if (index == -1) {
-                System.err.println("🚨 Field not found: " + var_name);
-            }
-    
-            int offset = (index + 1) * 4; // +1 because [this + 0] is VMT
+            int offset = classInfo.getFieldOffset(var_name);
+
             Identifier thisId = new Identifier("this");
     
             result.addInstr(new Load(temp, thisId, offset));
@@ -292,6 +317,7 @@ public class InstructionVisitor extends GJDepthFirst < InstrContainer, SymbolTab
         // Evaluate condition
         InstrContainer cond = n.f2.accept(this, s_table);
         result.append(cond);
+        System.err.println("🤨 IfStatement: InstrContainer cond = " + cond);
 
         // Conditional jump
         result.addInstr(new IfGoto(cond.temp_name, elseLabel)); // if0 cond goto elseLabel
@@ -388,15 +414,14 @@ public class InstructionVisitor extends GJDepthFirst < InstrContainer, SymbolTab
         result.addInstr(new Alloc(vmt_name, vmt_size_temp));
 
         //// Loading Functions into VMT
-        System.err.println("👮‍♀️ AllocationExpr: about to Load Funcs into VMT !");
         for (MethodOrigin mo : classInfo.method_origin_list) {
             String methodName = mo.methodName;
             String originClass = mo.className;
     
             // Correct label = originClass_methodName
             FunctionName sparrow_func_name = new FunctionName(originClass + "_" + methodName);
+            System.err.println("👇 Allocation Expr: sparrow func name = " + sparrow_func_name);
             Integer offset = classInfo.getMethodOffset(methodName);
-            System.err.println("👮‍♀️ AllocationExpr: loading into vmt... func_name = " + sparrow_func_name + " | offset = " + offset);
     
             Identifier func_ptr = new Identifier(generateTemp());
             result.addInstr(new Move_Id_FuncName(func_ptr, sparrow_func_name)); // fptr = @Class_Method
@@ -412,7 +437,6 @@ public class InstructionVisitor extends GJDepthFirst < InstrContainer, SymbolTab
     @Override
     public InstrContainer visit(MessageSend n, SymbolTable s_table) {
         InstrContainer result = new InstrContainer();
-        System.err.println("📣 Message Send: entered!");
 
         // 1. Evaluate the object expression (e.g., a.run().dog -> get 'a')
         InstrContainer obj = n.f0.accept(this, s_table);
@@ -436,9 +460,8 @@ public class InstructionVisitor extends GJDepthFirst < InstrContainer, SymbolTab
 
         // 3. Get method name
         String methodName = n.f2.f0.toString();
-        System.err.println("📣 Message Send: entered into method = " + methodName);
-        System.err.println("📣 Message Send: obj.temp_name = " + obj_temp);
-        System.err.println("📣 Message Send: obj.class_name = " + className);
+
+        System.err.println("📣 MessageSend: obj's class_name = " + className + " | calling method = " + methodName);
         int methodOffset = classInfo.getMethodOffset(methodName);
 
         // 4. Load vmt ptr from vmt_ptr = [obj + 0]

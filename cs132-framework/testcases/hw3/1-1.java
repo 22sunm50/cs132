@@ -2,7 +2,7 @@ class Main {
 	public static void main(String[] a){
 		C ccc;
 		ccc = new C();
-		System.out.println(ccc.runA());
+		System.out.println(!(true));
 	}
 }
 

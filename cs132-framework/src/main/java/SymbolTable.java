@@ -63,9 +63,11 @@ public class SymbolTable {
     
             // Print Field Table List (ordered + includes shadowed fields)
             System.err.println("  Full Field Order (field_table_list):");
-            for (String fieldName : info.field_table_list) {
-                int offset = info.getFieldOffset(fieldName);
-                System.err.println("    " + fieldName + " @ offset " + offset);
+            for (int i = 0; i < info.field_table_list.size(); i++) {
+                String fieldName = info.field_table_list.get(i);
+                int byteOffset = (i + 1) * 4;
+                int resolvedOffset = info.getFieldOffset(fieldName);
+                System.err.println("    " + fieldName + " @ index " + i + ", byte offset " + byteOffset + ", resolved getFieldOffset = " + resolvedOffset);
             }
     
             // Print Methods
