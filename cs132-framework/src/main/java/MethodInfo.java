@@ -52,7 +52,6 @@ public class MethodInfo {
         }
         args_type_list.add(argType);
         args_map.put(argName, argType);
-        vars_map.put(argName, argType);
     }
 
     // add var & check uniqueness
@@ -72,16 +71,27 @@ public class MethodInfo {
     }
 
     // check if a specific name exists as either an argument or a variable
-    public boolean hasVarsOrArgs(String name) {
+    public boolean hasVar(String name) {
         return vars_map.containsKey(name);
     }
 
+    public boolean hasArg(String name) {
+        return args_map.containsKey(name);
+    }
+
     // Returns the type of a variable (or argument) given its name, or null if not found
-    public MyType getVarOrArgType(String varName) {
+    public MyType getVarType(String varName) {
         if (vars_map.get(varName) == null){
             System.err.println("🚨: the method variable does not exist: " + varName);
         }
         return vars_map.get(varName);
+    }
+
+    public MyType getArgType(String varName) {
+        if (args_map.get(varName) == null){
+            System.err.println("🚨: the method arg does not exist: " + varName);
+        }
+        return args_map.get(varName);
     }
 
     @Override

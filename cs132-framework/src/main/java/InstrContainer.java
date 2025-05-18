@@ -57,7 +57,6 @@ public class InstrContainer{
         StringBuilder sb = new StringBuilder();
         sb.append("InstrContainer(temp=").append(temp_name)
         .append(", class=").append(class_name)
-        .append(", #instr=").append(instr_list.size())
         .append(")\nInstructions:\n");
 
         for (Instruction instr : instr_list) {

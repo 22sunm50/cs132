@@ -190,6 +190,7 @@ public class InstructionVisitor extends GJDepthFirst < InstrContainer, SymbolTab
         result.setTemp(this_id);
         result.class_name = curr_class;
 
+        System.err.println("👇 This: entered! curr_class = " + curr_class);
         return result;
     }
 
@@ -230,48 +231,56 @@ public class InstructionVisitor extends GJDepthFirst < InstrContainer, SymbolTab
     @Override
     public InstrContainer visit(minijava.syntaxtree.Identifier n, SymbolTable s_table) {
         InstrContainer result = new InstrContainer();
-        String var_name = n.f0.toString();
-        Identifier temp = new Identifier(generateTemp());
-    
-        // check if we're inside a method
-        if (curr_method != null) {
-            MethodInfo methodInfo = s_table.getClassInfo(curr_class).getMethodInfo(curr_method);
-    
-            // Is local var or argument?
-            if (methodInfo.vars_map.containsKey(var_name) || methodInfo.args_map.containsKey(var_name)) {
-                result.setTemp(new Identifier(var_name));  // use directly
+        String varName = n.f0.toString();
+        // Identifier temp = new Identifier(generateTemp());
 
-                MyType type = methodInfo.vars_map.get(var_name);
-                if (type == null) {
-                    type = methodInfo.args_map.get(var_name);
-                }
-                if (type != null && type.isOfType(MyType.BaseType.CLASS)) {
-                    result.setTemp(new Identifier(var_name), type.getClassName());
-                } else {
-                    result.setTemp(new Identifier(var_name)); // default fallback
-                }
+        // Default class context
+        ClassInfo classInfo = s_table.getClassInfo(curr_class);
+        MethodInfo methodInfo = curr_method != null ? classInfo.getMethodInfo(curr_method) : null;
 
-                return result;
+        System.err.println("🕵️‍♀️ Identifier: varName = " + varName + " | curr_class = " + curr_class + " | curr_method = " + curr_method);
+        // 1. Local variable
+        if (methodInfo != null && methodInfo.hasVar(varName)) {
+            result.setTemp(new Identifier(varName));
+            MyType type = methodInfo.getVarType(varName);
+            if (type != null && type.isOfType(MyType.BaseType.CLASS)) {
+                result.setTemp(new Identifier(varName), type.getClassName());
             }
-    
-            // Not local → must be a field → load from [this + offset]
-            ClassInfo classInfo = s_table.getClassInfo(curr_class);
-            int offset = classInfo.getFieldOffset(var_name);
-
-            Identifier thisId = new Identifier("this");
-    
-            result.addInstr(new Load(temp, thisId, offset));
-            result.setTemp(temp);
             return result;
         }
-    
-        // Outside method context (e.g., in main) — assume all identifiers are locals
-        result.setTemp(new Identifier(var_name));
 
-        ClassInfo classInfo = s_table.getClassInfo(curr_class);
-        MyType type = classInfo.getFieldType(var_name);  // get declared type of the variable
-        result.setTemp(new Identifier(var_name), type.getClassName()); // ✅ attach class name
-        
+        // 2. Method parameter
+        if (methodInfo != null && methodInfo.hasArg(varName)) {
+            result.setTemp(new Identifier(varName));
+            MyType type = methodInfo.getArgType(varName);
+            if (type != null && type.isOfType(MyType.BaseType.CLASS)) {
+                result.setTemp(new Identifier(varName), type.getClassName());
+            }
+            return result;
+        }
+
+        // 3. Field access: load from [this + offset]
+        if (methodInfo != null && curr_class != null && classInfo.hasField(varName)) {
+            int offset = classInfo.getFieldOffset(varName);
+            Identifier fieldTemp = new Identifier(generateTemp());
+            result.addInstr(new Load(fieldTemp, new Identifier("this"), offset));
+            MyType type = classInfo.getFieldType(varName);
+            if (type != null && type.isOfType(MyType.BaseType.CLASS)) {
+                result.setTemp(fieldTemp, type.getClassName());
+            } else {
+                result.setTemp(fieldTemp);
+            }
+            return result;
+        }
+
+        System.err.println("🕵️‍♀️ Identifier: here??");
+        // 4. Global/local in main
+        if (s_table.getClassInfo(curr_class).getFieldType(varName).isOfType(MyType.BaseType.CLASS)) { // if local is of type CLASS
+            String var_type = s_table.getClassInfo(curr_class).getFieldType(varName).getClassName();var_type = s_table.getClassInfo(curr_class).getFieldType(varName).getClassName();
+            result.setTemp(new Identifier(varName), var_type);  // Default to just the name
+            return result;
+        }
+        result.setTemp(new Identifier(varName));  // Default to just the name if primitive type
         return result;
     }
 
@@ -315,7 +324,6 @@ public class InstructionVisitor extends GJDepthFirst < InstrContainer, SymbolTab
         // Evaluate condition
         InstrContainer cond = n.f2.accept(this, s_table);
         result.append(cond);
-        System.err.println("🤨 IfStatement: InstrContainer cond = " + cond);
 
         // Conditional jump
         result.addInstr(new IfGoto(cond.temp_name, elseLabel)); // if0 cond goto elseLabel
@@ -370,35 +378,34 @@ public class InstructionVisitor extends GJDepthFirst < InstrContainer, SymbolTab
     @Override
     public InstrContainer visit(AndExpression n, SymbolTable s_table) {
         InstrContainer result = new InstrContainer();
-
-        // Labels for branching
-        Label rightLabel = new Label("L" + generateLabelName() + "_Right");
+    
+        // Labels
+        Label falseLabel = new Label("L" + generateLabelName() + "_False");
         Label endLabel = new Label("L" + generateLabelName() + "_End");
-
-        // Step 1: Evaluate left operand
+    
+        // Step 1: Evaluate left
         InstrContainer left = n.f0.accept(this, s_table);
         result.append(left);
-
-        // Step 2: If left is false (== 0), short-circuit to end with false
-        result.addInstr(new IfGoto(left.temp_name, rightLabel)); // if0 left → skip right
-
-        // Step 3: If left is true, evaluate right
+    
+        // Step 2: If left == 0, short-circuit to false
+        result.addInstr(new IfGoto(left.temp_name, falseLabel)); // if0 left -> false
+    
+        // Step 3: Evaluate right
         InstrContainer right = n.f2.accept(this, s_table);
         result.append(right);
-
-        // Step 4: Multiply left * right (both true)
+    
+        // Step 4: result = right
         Identifier resultTemp = new Identifier(generateTemp());
-        result.addInstr(new Multiply(resultTemp, left.temp_name, right.temp_name));
+        result.addInstr(new Move_Id_Id(resultTemp, right.temp_name));
         result.addInstr(new Goto(endLabel));
-
-        // Step 5: Right label — left was false
-        result.addInstr(new LabelInstr(rightLabel));
-        result.addInstr(new Move_Id_Integer(resultTemp, 0)); // short-circuit value
-
-        // Step 6: End
+    
+        // Step 5: false branch
+        result.addInstr(new LabelInstr(falseLabel));
+        result.addInstr(new Move_Id_Integer(resultTemp, 0));
+    
+        // Step 6: end
         result.addInstr(new LabelInstr(endLabel));
         result.setTemp(resultTemp);
-
         return result;
     }
 
@@ -453,7 +460,6 @@ public class InstructionVisitor extends GJDepthFirst < InstrContainer, SymbolTab
     
             // Correct label = originClass_methodName
             FunctionName sparrow_func_name = new FunctionName(originClass + "_" + methodName);
-            System.err.println("👇 Allocation Expr: sparrow func name = " + sparrow_func_name);
             Integer offset = classInfo.getMethodOffset(methodName);
     
             Identifier func_ptr = new Identifier(generateTemp());
@@ -474,6 +480,12 @@ public class InstructionVisitor extends GJDepthFirst < InstrContainer, SymbolTab
         // 1. Evaluate the object expression (e.g., a.run().dog -> get 'a')
         InstrContainer obj = n.f0.accept(this, s_table);
         result.append(obj);
+        // System.err.println("📣 MessageSend: InstrContainer obj = " + obj);
+
+        // if (obj.class_name == null && obj.temp_name.toString().equals("this")) {
+        if (obj.temp_name.toString().equals("this")) {
+            obj.class_name = curr_class;
+        }
 
         // 2. Extract the object class from the symbol table
         Identifier obj_temp = obj.temp_name;
@@ -493,8 +505,7 @@ public class InstructionVisitor extends GJDepthFirst < InstrContainer, SymbolTab
 
         // 3. Get method name
         String methodName = n.f2.f0.toString();
-
-        System.err.println("📣 MessageSend: obj's class_name = " + className + " | calling method = " + methodName);
+        System.err.println("📣 MessageSend: obj = " + obj + "className = " + className + " | method = " + methodName);
         int methodOffset = classInfo.getMethodOffset(methodName);
 
         // 4. Load vmt ptr from vmt_ptr = [obj + 0]
@@ -518,6 +529,12 @@ public class InstructionVisitor extends GJDepthFirst < InstrContainer, SymbolTab
                 InstrContainer arg_instr = rest.f1.accept(this, s_table);
                 result.append(arg_instr);
                 arg_temps.add(arg_instr.temp_name);
+
+                // if (arg_instr.class_name == null && arg_instr.temp_name.toString().equals("this")) {
+                if (arg_instr.temp_name.toString().equals("this")) {
+                    System.err.println("📣 MessageSend: entered into 'this' of args");
+                    arg_instr.class_name = curr_class;
+                }
             }
         }
 
