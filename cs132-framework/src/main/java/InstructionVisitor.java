@@ -412,7 +412,7 @@ public class InstructionVisitor extends GJDepthFirst < InstrContainer, SymbolTab
     @Override // doin this for multiple statements (like in IfStatement)
     public InstrContainer visit(minijava.syntaxtree.Block n, SymbolTable s_table) {
         InstrContainer result = new InstrContainer();
-
+        
         for (Node stmtNode : n.f1.nodes) {
             InstrContainer inner = stmtNode.accept(this, s_table);
             if (inner != null) {
