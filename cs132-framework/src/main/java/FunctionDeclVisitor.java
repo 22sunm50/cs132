@@ -103,6 +103,7 @@ public class FunctionDeclVisitor extends GJDepthFirst<ArrayList<FunctionDecl>, S
         InstrContainer returnExpr = n.f10.accept(iv, s_table);
         bodyInstrs.instr_list.addAll(returnExpr.instr_list);
         bodyInstrs.temp_name = returnExpr.temp_name != null ? new Identifier(returnExpr.temp_name.toString()) : new Identifier("0"); // 🍅 🍅 🍅 🍅 🍅: if void ret, jsut return 0 right?
+        
         bodyInstrs.class_name = returnExpr.class_name;
 
         Block body = new Block(bodyInstrs.instr_list, bodyInstrs.temp_name);

@@ -190,7 +190,6 @@ public class InstructionVisitor extends GJDepthFirst < InstrContainer, SymbolTab
         result.setTemp(this_id);
         result.class_name = curr_class;
 
-        System.err.println("👇 This: entered! curr_class = " + curr_class);
         return result;
     }
 
@@ -238,7 +237,6 @@ public class InstructionVisitor extends GJDepthFirst < InstrContainer, SymbolTab
         ClassInfo classInfo = s_table.getClassInfo(curr_class);
         MethodInfo methodInfo = curr_method != null ? classInfo.getMethodInfo(curr_method) : null;
 
-        System.err.println("🕵️‍♀️ Identifier: varName = " + varName + " | curr_class = " + curr_class + " | curr_method = " + curr_method);
         // 1. Local variable
         if (methodInfo != null && methodInfo.hasVar(varName)) {
             result.setTemp(new Identifier(varName));
@@ -264,6 +262,7 @@ public class InstructionVisitor extends GJDepthFirst < InstrContainer, SymbolTab
             int offset = classInfo.getFieldOffset(varName);
             Identifier fieldTemp = new Identifier(generateTemp());
             result.addInstr(new Load(fieldTemp, new Identifier("this"), offset));
+            System.err.println("🕵️‍♀️ Identifier: curr_class = " + curr_class + " | curr_method = " + curr_method + " | var name = " + varName);
             MyType type = classInfo.getFieldType(varName);
             if (type != null && type.isOfType(MyType.BaseType.CLASS)) {
                 result.setTemp(fieldTemp, type.getClassName());
@@ -273,7 +272,6 @@ public class InstructionVisitor extends GJDepthFirst < InstrContainer, SymbolTab
             return result;
         }
 
-        System.err.println("🕵️‍♀️ Identifier: here??");
         // 4. Global/local in main
         if (s_table.getClassInfo(curr_class).getFieldType(varName).isOfType(MyType.BaseType.CLASS)) { // if local is of type CLASS
             String var_type = s_table.getClassInfo(curr_class).getFieldType(varName).getClassName();var_type = s_table.getClassInfo(curr_class).getFieldType(varName).getClassName();
@@ -480,7 +478,6 @@ public class InstructionVisitor extends GJDepthFirst < InstrContainer, SymbolTab
         // 1. Evaluate the object expression (e.g., a.run().dog -> get 'a')
         InstrContainer obj = n.f0.accept(this, s_table);
         result.append(obj);
-        // System.err.println("📣 MessageSend: InstrContainer obj = " + obj);
 
         // if (obj.class_name == null && obj.temp_name.toString().equals("this")) {
         if (obj.temp_name.toString().equals("this")) {
@@ -505,7 +502,6 @@ public class InstructionVisitor extends GJDepthFirst < InstrContainer, SymbolTab
 
         // 3. Get method name
         String methodName = n.f2.f0.toString();
-        System.err.println("📣 MessageSend: obj = " + obj + "className = " + className + " | method = " + methodName);
         int methodOffset = classInfo.getMethodOffset(methodName);
 
         // 4. Load vmt ptr from vmt_ptr = [obj + 0]
@@ -532,7 +528,6 @@ public class InstructionVisitor extends GJDepthFirst < InstrContainer, SymbolTab
 
                 // if (arg_instr.class_name == null && arg_instr.temp_name.toString().equals("this")) {
                 if (arg_instr.temp_name.toString().equals("this")) {
-                    System.err.println("📣 MessageSend: entered into 'this' of args");
                     arg_instr.class_name = curr_class;
                 }
             }
@@ -541,13 +536,20 @@ public class InstructionVisitor extends GJDepthFirst < InstrContainer, SymbolTab
         // 7. Prepare return temp and emit call
         Identifier ret_temp = new Identifier(generateTemp());
 
+        String ret_class = null;
+        MyType ret_type = classInfo.getMethodInfo(methodName).return_type;
+        if (ret_type.isOfType(MyType.BaseType.CLASS)){
+            ret_class = ret_type.getClassName();
+        }
+
         // Argument list: receiver (obj) + all evaluated args
         ArrayList<Identifier> allArgs = new ArrayList<>();
         allArgs.add(obj_temp); // 'this' pointer
+
         allArgs.addAll(arg_temps);
 
         result.addInstr(new Call(ret_temp, func_ptr, allArgs));
-        result.setTemp(ret_temp);
+        result.setTemp(ret_temp, ret_class);
 
         return result;
     }

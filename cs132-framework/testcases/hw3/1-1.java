@@ -1,32 +1,22 @@
 class Main {
 	public static void main(String[] a){
-		C ccc;
-		ccc = new C();
-		System.out.println(!(true));
+		A aa;
+		aa = new A();
+		System.out.println( (aa.runA()));
 	}
 }
 
 class A {
-	int a_A;
+	boolean end;
 	public int runA() {
+		boolean var_end;
+		end = true;
+		var_end = end;
+		if(!var_end){
+			var_end = false;
+		}else{
+			var_end = true;
+		}
 		return 111;
-	}
-}
-
-class B extends A{
-	int b_B;
-	public int runB(){
-		return 222;
-	}
-}
-
-class C extends B{
-	boolean a_A;
-	int c_C;
-	public int runA(){
-		return 333;
-	}
-	public int runC(){
-		return 555;
 	}
 }

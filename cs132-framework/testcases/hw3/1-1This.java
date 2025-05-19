@@ -9,7 +9,7 @@ class Main {
 class A {
     int intA;
     public int runThis(B boo){
-        // System.out.println(boo.printB());
+        System.out.println(boo.printB());
         return 101;
     }
 }
@@ -23,7 +23,7 @@ class B {
     }
 
     public int printB(){
-        System.out.println(aa);
+        System.out.println(555);
         return 777;
     }
 }

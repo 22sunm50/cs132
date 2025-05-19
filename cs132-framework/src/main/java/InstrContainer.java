@@ -7,17 +7,11 @@ public class InstrContainer{
     public ArrayList<Instruction> instr_list;
     public Identifier temp_name; // v0, v1, etc.
     public String class_name; // the temp's type
-    // public ArrayList<ArrayList<String>> optionalList;
-    // public ArrayList<String> optionalResult;
-    // public boolean isField=false;
 
     public InstrContainer (){
         instr_list = new ArrayList<Instruction>();
         temp_name = null;
         class_name = "";
-        // optionalList = new ArrayList<ArrayList<String>>();
-        // optionalResult = new ArrayList<String>();
-        // isField=false;
     }
 
     public InstrContainer (ArrayList<Instruction> instr, Identifier name){

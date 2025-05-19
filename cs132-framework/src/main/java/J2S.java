@@ -22,10 +22,11 @@ public class J2S extends GJDepthFirst<String, String>{
 
                 cv.inherit_SparrowFields(s_table);
                 cv.inherit_SparrowMethods(s_table);
-                s_table.printClassTable();
 
                 cv.inheritFields(s_table);
                 cv.inheritMethods(s_table);
+
+                s_table.printClassTable();
                 // cv.addFieldsToMethodVars(s_table); // do after inheritance
 
                 // InstructionVisitor iv = new InstructionVisitor();
