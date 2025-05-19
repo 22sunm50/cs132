@@ -9,12 +9,28 @@ public class MethodInfo {
     List<MyType> args_type_list;
     HashMap<String, MyType> vars_map;
     HashMap<String, MyType> args_map;
+    ArrayList<Identifier> args_id_list;
+
+    String[] reserved_names = {"a2", "a3", "a4", "a5", "a6", "a7", 
+                                "s1", "s2", "s3", "s4", "s5", "s6", "s7", "s8", "s9", "s10", "s11",
+                                "t0", "t1", "t3", "t4", "t5"};
+
+    public String sanitizeName(String name) {
+        for (String reserved : reserved_names) {
+            if (reserved.equals(name)) {
+                System.err.println("🧼 Sanitizing: " + name);
+                return "Thaddy_" + name;
+            }
+        }
+        return name;
+    }
 
     public MethodInfo(MyType return_type) {
         this.return_type = return_type;
         this.args_type_list = new ArrayList<>();
         this.vars_map = new HashMap<>(); // contain vars & args
         this.args_map = new HashMap<>(); // just args
+        this.args_id_list = new ArrayList<>();
     }
 
     // copy constructor (deep copy)
@@ -35,15 +51,12 @@ public class MethodInfo {
 
     // Returns an ArrayList of IR Identifiers for the names in args_map
     public ArrayList<Identifier> getArgsIDList() {
-        ArrayList<Identifier> args_id_list = new ArrayList<>();
-        for (String argName : args_map.keySet()) {
-            args_id_list.add(new Identifier(argName));
-        }
         return args_id_list;
     }
 
     // add arg w name to both arg map and var map & check uniqueness 
     public void addArg(String argName, MyType argType) {
+        argName = sanitizeName(argName);
         if (args_map.containsKey(argName)) {
             System.err.println("🚨 Argument already exists: " + argName);
         }
@@ -52,10 +65,12 @@ public class MethodInfo {
         }
         args_type_list.add(argType);
         args_map.put(argName, argType);
+        args_id_list.add(new Identifier(argName));
     }
 
     // add var & check uniqueness
     public void addVar(String varName, MyType varType) {
+        varName = sanitizeName(varName);
         if (vars_map.containsKey(varName)) {
             System.err.println("🚨 Variable already exists: " + varName);
         }
@@ -81,6 +96,7 @@ public class MethodInfo {
 
     // Returns the type of a variable (or argument) given its name, or null if not found
     public MyType getVarType(String varName) {
+        varName = sanitizeName(varName);
         if (vars_map.get(varName) == null){
             System.err.println("🚨: the method variable does not exist: " + varName);
         }
@@ -88,6 +104,7 @@ public class MethodInfo {
     }
 
     public MyType getArgType(String varName) {
+        varName = sanitizeName(varName);
         if (args_map.get(varName) == null){
             System.err.println("🚨: the method arg does not exist: " + varName);
         }

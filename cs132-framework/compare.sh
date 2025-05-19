@@ -1,6 +1,6 @@
-gradle run -q < hw3/T15.java > out.sparrow 
+gradle run -q < hw3/T17.java > out.sparrow 
 java -jar misc/sparrow.jar s < out.sparrow > myoutput.txt
-javac -d . hw3/T15.java
+javac -d . hw3/T17.java
 java Main > javaoutput.txt
 
 rm *.class

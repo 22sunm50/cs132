@@ -1,7 +1,6 @@
 class Main {
     public static void main(String[] args) {
         A a;
-        B b;
         int result;
         boolean rt;
         Element e1;
@@ -11,22 +10,19 @@ class Main {
         Element e5;
         
         e1 = new Element();
-        rt=e1.Init(10, 100, true);
+        rt = e1.Init(10, 100, true);
         e2 = new Element();
-        rt=e2.Init(20, 200, false);
+        rt = e2.Init(20, 200, false);
         e3 = new Element();
-        rt=e3.Init(30, 300, true);
+        rt = e3.Init(30, 300, true);
         e4 = new Element();
-        rt=e4.Init(40, 400, false);
+        rt = e4.Init(40, 400, false);
         e5 = new Element();
         rt=e5.Init(50, 500, true);
         
         a = new A();
-        b = new B();
         
         result = a.calculate(e1, e2, e3, e4, e5);
-        System.out.println(result);
-        result = b.calculate(e1, e2, e3, e4, e5);
         System.out.println(result);
     }
 }
@@ -65,6 +61,11 @@ class A {
 
     public int calculate(Element e1, Element e2, Element e3, Element e4, Element e5) {
         x = ((((e1.GetValue()) + (e2.GetValue())) + ((e3.GetValue()) + (e4.GetValue()))) + (e5.GetValue())); // 150
+        System.out.println((e1.GetID()));
+        System.out.println((e2.GetID()));
+        System.out.println((e3.GetID()));
+        System.out.println((e4.GetID()));
+        System.out.println((e5.GetID()));
         y = ((((e1.GetID()) + (e2.GetID())) + ((e3.GetID()) + (e4.GetID()))) + ((e5.GetID()))); // 1500
         z = 0;
         if ((e1.GetFlag())) {z = z + 1;} // true: z = 1
@@ -87,45 +88,13 @@ class A {
         else{
 
         }
+
+        System.out.println(x);  // should be 150
+        System.out.println(y);  // should be 1500
+        System.out.println(z);  // should be 3
+        
         w = x * y;      // 150 * 1500 = 225000
         v = w + z;      // 225000 + 3 = 225003
         return ((x + y) + (z + w)) + v; // 1650 + 225003 + 225003 = 451656
-    }
-}
-
-class B extends A {
-    int a;
-    int b;
-    int c;
-    int d;
-    int e;
-
-    public int calculate(Element e1, Element e2, Element e3, Element e4, Element e5) {
-        a = (((e1.GetValue()) * (e2.GetValue())) * ((e3.GetValue()) * (e4.GetValue()))) * (e5.GetValue());
-        b = (((e1.GetID()) * (e2.GetID())) * ((e3.GetID()) * (e4.GetID()))) * (e5.GetID());
-        c = 0;
-        if ((e1.GetFlag())) c = c + 1;
-        else{
-
-        }
-        if ((e2.GetFlag())) c = c + 1;
-        else{
-            
-        }
-        if ((e3.GetFlag())) c = c + 1;
-        else{
-            
-        }
-        if ((e4.GetFlag())) c = c + 1;
-        else{
-            
-        }
-        if ((e5.GetFlag())) c = c + 1;
-        else{
-            
-        }
-        d = a * b;
-        e = d + c;
-        return ((a + b) + (c + d)) + e;
     }
 }

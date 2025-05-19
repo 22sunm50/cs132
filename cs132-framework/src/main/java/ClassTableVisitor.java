@@ -10,7 +10,73 @@ public class ClassTableVisitor extends GJDepthFirst < MyType, SymbolTable > {
 
     String curr_class;
     String curr_method;
-    // Integer curr_method_offset;
+    String[] reserved_names = {"a2", "a3", "a4", "a5", "a6", "a7", 
+                                "s1", "s2", "s3", "s4", "s5", "s6", "s7", "s8", "s9", "s10", "s11",
+                                "t0", "t1", "t3", "t4", "t5"};
+
+    public String sanitizeName(String name) {
+        for (String reserved : reserved_names) {
+            if (reserved.equals(name)) {
+                System.err.println("🧼 Sanitizing: " + name);
+                return "Thaddy_" + name;
+            }
+        }
+        return name;
+    }
+
+    // 🧼 🧼 🧼 🧼 🧼 SANITIZE ALL FIELDS AND VARS 🧼 🧼 🧼 🧼 🧼
+    public void sanitizeAllNames(SymbolTable s_table) {
+        for (String className : s_table.class_table.keySet()) {
+            ClassInfo classInfo = s_table.getClassInfo(className);
+    
+            // Sanitize fields
+            HashMap<String, MyType> newFieldMap = new HashMap<>();
+            for (String oldName : classInfo.fields_map.keySet()) {
+                String newName = sanitizeName(oldName);
+                newFieldMap.put(newName, classInfo.fields_map.get(oldName));
+            }
+            classInfo.fields_map = newFieldMap;
+    
+            // Sanitize field_table_list
+            ArrayList<String> newFieldTableList = new ArrayList<>();
+            for (String oldName : classInfo.field_table_list) {
+                newFieldTableList.add(sanitizeName(oldName));
+            }
+            classInfo.field_table_list = newFieldTableList;
+    
+            // Sanitize methods
+            HashMap<String, MethodInfo> newMethodMap = new HashMap<>();
+            for (String oldMethodName : classInfo.methods_map.keySet()) {
+                MethodInfo methodInfo = classInfo.getMethodInfo(oldMethodName);
+    
+                // Sanitize method args
+                HashMap<String, MyType> newArgs = new HashMap<>();
+                for (String oldArg : methodInfo.args_map.keySet()) {
+                    String newArg = sanitizeName(oldArg);
+                    newArgs.put(newArg, methodInfo.args_map.get(oldArg));
+                }
+                methodInfo.args_map = newArgs;
+    
+                // Sanitize method vars
+                HashMap<String, MyType> newVars = new HashMap<>();
+                for (String oldVar : methodInfo.vars_map.keySet()) {
+                    String newVar = sanitizeName(oldVar);
+                    newVars.put(newVar, methodInfo.vars_map.get(oldVar));
+                }
+                methodInfo.vars_map = newVars;
+    
+                // Sanitize method name if necessary (optional)
+                String newMethodName = sanitizeName(oldMethodName);
+                newMethodMap.put(newMethodName, methodInfo);
+            }
+            classInfo.methods_map = newMethodMap;
+    
+            // Sanitize method_origin_list (optional, depends on codegen use)
+            for (MethodOrigin mo : classInfo.method_origin_list) {
+                mo.methodName = sanitizeName(mo.methodName);
+            }
+        }
+    }    
 
     // 🔄 🔄 🔄 🔄 🔄 🔄 🔄 CYCLE DETECTION 🔄 🔄 🔄 🔄 🔄 🔄 🔄
     // set is_subtype to the s_table is_subtype

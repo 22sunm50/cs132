@@ -25,23 +25,12 @@ public class J2S extends GJDepthFirst<String, String>{
 
                 cv.inheritFields(s_table);
                 cv.inheritMethods(s_table);
+                
+                cv.sanitizeAllNames(s_table);
 
                 s_table.printClassTable();
-                // cv.addFieldsToMethodVars(s_table); // do after inheritance
 
-                // InstructionVisitor iv = new InstructionVisitor();
-
-                // InstrContainer sp = iv.visit(root, s_table);
-
-                // Block block = new Block(sp.instr_list, sp.temp_name);
-                // FunctionDecl f = new FunctionDecl(new FunctionName("main"), new ArrayList<Identifier>(), block);
-
-                // // Build a function
-                // ArrayList<FunctionDecl> funcs = new ArrayList<FunctionDecl>();
-                // funcs.add(f);
-                // Program prog = new Program(funcs);
-
-                // 3 VISITORS: FROM CHAT 🍅
+                // 3 VISITORS:
                 FunctionDeclVisitor fdv = new FunctionDeclVisitor();
                 ArrayList<FunctionDecl> funcs = root.accept(fdv, s_table);
                 Program prog = new Program(funcs);

@@ -8,18 +8,19 @@ public class SymbolTable {
                                 "s1", "s2", "s3", "s4", "s5", "s6", "s7", "s8", "s9", "s10", "s11",
                                 "t0", "t1", "t3", "t4", "t5"};
 
-    public SymbolTable() {
-        class_table = new HashMap<>();
-        is_subtype = new HashMap<>();
-    }
-
     public String sanitizeName(String name) {
         for (String reserved : reserved_names) {
             if (reserved.equals(name)) {
-                return "zzz" + name;
+                System.err.println("🧼 Sanitizing: " + name);
+                return "Thaddy_" + name;
             }
         }
         return name;
+    }
+
+    public SymbolTable() {
+        class_table = new HashMap<>();
+        is_subtype = new HashMap<>();
     }
 
     // 🤰 🤰 🤰 🤰 🤰 🤰 SUBTYPING🤰 🤰 🤰 🤰 🤰 🤰
@@ -33,10 +34,12 @@ public class SymbolTable {
     
     // 👩‍🏫 👩‍🏫 👩‍🏫 👩‍🏫 👩‍🏫 👩‍🏫 👩‍🏫 👩‍🏫 👩‍🏫 CLASS TABLE FUNCS 👩‍🏫 👩‍🏫 👩‍🏫 👩‍🏫 👩‍🏫 👩‍🏫 👩‍🏫 👩‍🏫 👩‍🏫 👩‍🏫
     public void addClass(String className, ClassInfo classInfo) {
+        className = sanitizeName(className);
         class_table.put(className, classInfo);
     }
 
     public ClassInfo getClassInfo(String className) {
+        className = sanitizeName(className);
         if (!this.hasClass(className)){
             System.err.println("🚨 SymbolTable: tried getting non-existent class: " + className);
         }

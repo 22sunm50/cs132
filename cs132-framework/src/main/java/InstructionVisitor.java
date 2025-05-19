@@ -17,7 +17,19 @@ public class InstructionVisitor extends GJDepthFirst < InstrContainer, SymbolTab
     public String curr_class = null;
     public String curr_method = null;
     public String curr_sparrow_method = null;
-    // ArrayList<String> reserved_names = ["a2", ""];
+    String[] reserved_names = {"a2", "a3", "a4", "a5", "a6", "a7", 
+                                "s1", "s2", "s3", "s4", "s5", "s6", "s7", "s8", "s9", "s10", "s11",
+                                "t0", "t1", "t3", "t4", "t5"};
+
+    public String sanitizeName(String name) {
+        for (String reserved : reserved_names) {
+            if (reserved.equals(name)) {
+                System.err.println("🧼 Sanitizing: " + name);
+                return "Thaddy_" + name;
+            }
+        }
+        return name;
+    }
 
     public String generateTemp(){
         String name = "v" + id_name_counter;
@@ -200,17 +212,19 @@ public class InstructionVisitor extends GJDepthFirst < InstrContainer, SymbolTab
 
         // the var name being assigned to
         String varName = n.f0.f0.toString();
+        varName = sanitizeName(varName);
 
         // rhs
         InstrContainer rhs = n.f2.accept(this, s_table);
         result.instr_list.addAll(rhs.instr_list);
+
 
         if (curr_method != null) {
             ClassInfo classInfo = s_table.getClassInfo(curr_class);
             MethodInfo methodInfo = classInfo.getMethodInfo(curr_method);
     
             // If it's a local variable or argument, emit normal assignment
-            if (methodInfo.vars_map.containsKey(varName) || methodInfo.args_map.containsKey(varName)) {
+            if (methodInfo.hasVar(varName) || methodInfo.hasArg(varName)) {
                 result.addInstr(new Move_Id_Id(new Identifier(varName), rhs.temp_name));
                 return result;
             }
@@ -218,6 +232,8 @@ public class InstructionVisitor extends GJDepthFirst < InstrContainer, SymbolTab
             // Otherwise it's a field → emit [this + offset] = value
             int offset = classInfo.getFieldOffset(varName);
 
+            System.err.println("🌿 Assigning to field: " + varName + " in class: " + curr_class + " @ " + offset);
+            System.err.println("    🌿 rhs = " + rhs);
             result.addInstr(new Store(new Identifier("this"), offset, rhs.temp_name));
             return result;
         }
@@ -231,7 +247,7 @@ public class InstructionVisitor extends GJDepthFirst < InstrContainer, SymbolTab
     public InstrContainer visit(minijava.syntaxtree.Identifier n, SymbolTable s_table) {
         InstrContainer result = new InstrContainer();
         String varName = n.f0.toString();
-        // Identifier temp = new Identifier(generateTemp());
+        varName = sanitizeName(varName);
 
         // Default class context
         ClassInfo classInfo = s_table.getClassInfo(curr_class);
@@ -262,7 +278,7 @@ public class InstructionVisitor extends GJDepthFirst < InstrContainer, SymbolTab
             int offset = classInfo.getFieldOffset(varName);
             Identifier fieldTemp = new Identifier(generateTemp());
             result.addInstr(new Load(fieldTemp, new Identifier("this"), offset));
-            System.err.println("🕵️‍♀️ Identifier: curr_class = " + curr_class + " | curr_method = " + curr_method + " | var name = " + varName);
+
             MyType type = classInfo.getFieldType(varName);
             if (type != null && type.isOfType(MyType.BaseType.CLASS)) {
                 result.setTemp(fieldTemp, type.getClassName());
@@ -278,6 +294,7 @@ public class InstructionVisitor extends GJDepthFirst < InstrContainer, SymbolTab
             result.setTemp(new Identifier(varName), var_type);  // Default to just the name
             return result;
         }
+
         result.setTemp(new Identifier(varName));  // Default to just the name if primitive type
         return result;
     }
