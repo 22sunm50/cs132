@@ -6,14 +6,14 @@ import sparrow.*;
 import IR.token.Identifier;
 
 public class FastLivenessVisitor implements Visitor {
-    HashMap<String, LivenessInterval> intervals_map = new HashMap<String, LivenessInterval>();
+    HashMap<String, LiveInterval> intervals_map = new HashMap<String, LiveInterval>();
     HashMap<String, Integer> labelToLine = new HashMap<String, Integer>();
     ArrayList<LoopRange> loopRanges = new ArrayList<LoopRange>();
 
     Integer currentLine = 1;
 
     private void def(String id) {
-        if (intervals_map.putIfAbsent(id, new LivenessInterval(currentLine)) != null){
+        if (intervals_map.putIfAbsent(id, new LiveInterval(id, currentLine)) != null){
             System.err.println("🚨 def() in lv: try to def (" + id + ") already in the intervals_map");
         }
         // want to keep the earliest def
@@ -22,7 +22,7 @@ public class FastLivenessVisitor implements Visitor {
 
     private void use(String id) {
         if (!id.matches("\\d+")) { // id is a number, not a variable, skip constants
-            intervals_map.putIfAbsent(id, new LivenessInterval(currentLine));
+            intervals_map.putIfAbsent(id, new LiveInterval(id, currentLine));
             intervals_map.get(id).updateEnd(currentLine);
         }
     }
@@ -54,21 +54,6 @@ public class FastLivenessVisitor implements Visitor {
     *   Identifier return_id; */
     @Override
     public void visit(Block n){
-        // for (Instruction instr : n.instructions) {
-        //     instr.accept(this);
-        // }
-        // // treat return as a use of the return_id
-        // use(n.return_id.toString());
-        // currentLine++;
-
-        // // post-processing to extend live ranges for loop variables
-        // for (var entry : varToLoops.entrySet()) {
-        //     String var = entry.getKey();
-        //     for (LoopRange loop : entry.getValue()) {
-        //         intervals_map.get(var).updateEnd(loop.end);
-        //     }
-        // }
-
         for (Instruction instr : n.instructions) {
             instr.accept(this);
         }
@@ -81,12 +66,12 @@ public class FastLivenessVisitor implements Visitor {
         for (LoopRange loop : loopRanges) {
             for (var entry : intervals_map.entrySet()) {
                 // String var = entry.getKey();
-                LivenessInterval interval = entry.getValue();
+                LiveInterval interval = entry.getValue();
                 int def = interval.start;
                 int lastUse = interval.end;
     
-                // Variable was defined before loop
-                // And used somewhere inside loop (after label/start but before or inside end)
+                // variable was defined before loop
+                // and used somewhere inside loop (after label/start but before or inside end)
                 if (def < loop.start && lastUse >= loop.start && lastUse <= loop.end) {
                     interval.updateEnd(loop.end);
                 }
