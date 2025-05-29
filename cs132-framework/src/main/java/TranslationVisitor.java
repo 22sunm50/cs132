@@ -1,4 +1,3 @@
-// must be sparrowv.Instruction !!
 import sparrowv.*;
 import IR.token.*;
 
@@ -20,6 +19,13 @@ public class TranslationVisitor implements RetVisitor < List<sparrowv.Instructio
         List<Instruction> l = new ArrayList<>();
         l.add(i);
         return l;
+    }
+
+    // combine list of instr
+    private List<Instruction> concat(List<Instruction> a, List<Instruction> b) {
+        List<Instruction> result = new ArrayList<>(a);
+        result.addAll(b);
+        return result;
     }
 
     // VISIT METHODS START HERE
@@ -47,10 +53,41 @@ public class TranslationVisitor implements RetVisitor < List<sparrowv.Instructio
     *   Block block; */
     @Override
     public List<Instruction> visit(sparrow.FunctionDecl n){
-        sparrowv.Block b = new sparrowv.Block(n.block.accept(this), ret_id);
-        sparrowv.FunctionDecl func = new sparrowv.FunctionDecl(n.functionName, n.formalParameters, b);
+        System.err.println("🔧 Starting function: " + n.functionName);
+
+        List<Instruction> bodyInstrs = n.block.accept(this);
+
+        // Prologue: Save callee-saved (s1–s11) registers to stack (as identifiers)
+        List<Instruction> prologue = new ArrayList<>();
+        for (int i = 1; i <= 11; i++) {
+            Register s = new Register("s" + i);
+            Identifier save = new Identifier("save_s" + i);
+            prologue.add(new Move_Id_Reg(save, s));
+            System.err.println("🛡️  Saving callee register: " + s + " → " + save);
+        }
+
+        // Epilogue: Restore callee-saved registers from stack
+        List<Instruction> epilogue = new ArrayList<>();
+        for (int i = 1; i <= 11; i++) {
+            Register s = new Register("s" + i);
+            Identifier save = new Identifier("save_s" + i);
+            epilogue.add(new Move_Reg_Id(s, save));
+            System.err.println("🌎  Restoring callee register: " + save + " → " + s);
+        }
+
+        // Append return move and epilogue
+        epilogue.add(new Move_Reg_Id(t0, ret_id));
+        System.err.println("🔚 Appending return: " + t0 + " ← " + ret_id);
+
+        sparrowv.Block block = new sparrowv.Block(concat(prologue, concat(bodyInstrs, epilogue)), ret_id);
+        sparrowv.FunctionDecl func = new sparrowv.FunctionDecl(n.functionName, n.formalParameters, block);
         func_list.add(func);
         return null;
+
+        // sparrowv.Block b = new sparrowv.Block(n.block.accept(this), ret_id);
+        // sparrowv.FunctionDecl func = new sparrowv.FunctionDecl(n.functionName, n.formalParameters, b);
+        // func_list.add(func);
+        // return null;
     }
 
     /*   FunctionDecl parent;
@@ -226,11 +263,60 @@ public class TranslationVisitor implements RetVisitor < List<sparrowv.Instructio
     *   List<Identifier> args; */
     @Override
     public List<Instruction> visit(sparrow.Call n){
+        System.err.println("📞 Preparing call to: " + n.callee + " → result in " + n.lhs);
+
         List<Instruction> instrs = new ArrayList<>();
-        // instrs.add(new Move_Reg_Id(t0, n.lhs));
+
+        // Save t0–t5 to identifiers
+        for (int i = 0; i <= 5; i++) {
+            Register t = new Register("t" + i);
+            Identifier save = new Identifier("save_t" + i);
+            instrs.add(new Move_Id_Reg(save, t));
+            System.err.println("💾 Saving caller register: " + t + " → " + save);
+        }
+
+        // Save a2–a7
+        for (int i = 2; i <= 7; i++) {
+            Register a = new Register("a" + i);
+            Identifier save = new Identifier("save_a" + i);
+            instrs.add(new Move_Id_Reg(save, a));
+            System.err.println("💾 Saving argument register: " + a + " → " + save);
+        }
+    
+        // Move callee
         instrs.add(new Move_Reg_Id(t0, n.callee));
+        System.err.println("🔁 Moving callee to t0: " + n.callee + " → t0");
+        
+        // NOTE: This assumes the call target uses a2–a7 directly. No argument register optimization yet.
         instrs.add(new sparrowv.Call(t0, t0, n.args));
+        System.err.println("📲 Executed call with args: " + n.args);
+    
+        // Move return value to lhs
         instrs.add(new Move_Id_Reg(n.lhs, t0));
+        System.err.println("📥 Stored return value: t0 → " + n.lhs);
+    
+        // Restore t0–t5
+        for (int i = 0; i <= 5; i++) {
+            Register t = new Register("t" + i);
+            Identifier save = new Identifier("save_t" + i);
+            instrs.add(new Move_Reg_Id(t, save));
+            System.err.println("🔁 Restoring caller register: " + save + " → " + t);
+        }
+
+        // Restore a2–a7
+        for (int i = 2; i <= 7; i++) {
+            Register a = new Register("a" + i);
+            Identifier save = new Identifier("save_a" + i);
+            instrs.add(new Move_Reg_Id(a, save));
+            System.err.println("🔁 Restoring argument register: " + save + " → " + a);
+        }
+    
         return instrs;
+
+        // List<Instruction> instrs = new ArrayList<>();
+        // instrs.add(new Move_Reg_Id(t0, n.callee));
+        // instrs.add(new sparrowv.Call(t0, t0, n.args));
+        // instrs.add(new Move_Id_Reg(n.lhs, t0));
+        // return instrs;
     }
 }
