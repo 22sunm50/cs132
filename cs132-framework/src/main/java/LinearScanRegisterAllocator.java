@@ -17,11 +17,6 @@ public class LinearScanRegisterAllocator {
     public void allocate() {
         intervals.sort(Comparator.comparingInt(i -> i.start));
 
-        // System.err.println("📦 Sorted intervals (by start):");
-        // for (LiveInterval i : intervals) {
-        //     System.err.println("  " + i.name + " [" + i.start + ", " + i.end + "]");
-        // }
-
         for (LiveInterval i : intervals) {
             System.err.println("\n🔹Processing: " + i.name + " [" + i.start + ", " + i.end + "]");
 

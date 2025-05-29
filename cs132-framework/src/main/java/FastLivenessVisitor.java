@@ -46,6 +46,7 @@ public class FastLivenessVisitor implements Visitor {
                 def(id.toString());  // parameters are defined at the start
             }
         }
+        currentLine++;
         n.block.accept(this);
     }
 

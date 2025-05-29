@@ -21,6 +21,6 @@ public class LiveInterval {
 
     @Override
     public String toString() {
-        return name = " = [" + start + ", " + end + "]";
+        return name + " = [" + start + ", " + end + "]";
     }
 }
