@@ -19,6 +19,7 @@ public class S2SV {
         SparrowConstructor constructor = new SparrowConstructor();
         root.accept(constructor);
         sparrow.Program program = constructor.getProgram();
+        System.err.println("🌼 🌼 🌼 🌼 🌼 INPUT SPARROW PROGRAM 🌼 🌼 🌼 🌼 🌼");
         System.err.println(program.toString());
 
         // //// FAST LIVENESS ANALYSIS
@@ -56,33 +57,9 @@ public class S2SV {
         // allocator.printResult();
 
         //// TRANSLATION
-        // TranslationVisitor tv = new TranslationVisitor();
-        // // lv.visit(program);
-        // List<Instruction> translated_instr = tv.visit(program);
-        // System.err.println("🌷 🌷 🌷 🌷 🌷 FINAL PROGRAM!! (.err.) 🌷 🌷 🌷 🌷 🌷");
-        // for (Instruction instr : translated_instr) {
-        //     System.err.println(instr.toString());
-        // }
-        // System.err.println("🌷 🌷 🌷 🌷 🌷 FINAL PROGRAM!! (.out.) 🌷 🌷 🌷 🌷 🌷");
-        // for (Instruction instr : translated_instr) {
-        //     System.out.println(instr.toString());
-        // }
-
         // in a variables liveness variable, if u can track a func call, then alloc to a callee save register so you don't have to do reallocation
         // its just a flag, and just go to first pass and hit a call and iterate through all the ur variable intervals and check them off
         // if you can multiple calls to a funct, if you save to a callee save register, then you have less calls to the stack
-
-        // List<FunctionDecl> vFuncs = new ArrayList<>();
-        // TranslationVisitor tv = new TranslationVisitor();
-
-        // for (sparrow.FunctionDecl f : program.funDecls) {
-        //     List<Instruction> instrs = f.accept(tv);
-        //     FunctionDecl vFunc = new FunctionDecl(f.functionName, f.formalParameters, f.block);
-        //     vFuncs.add(vFunc);
-        // }
-
-        // sparrowv.Program vProg = new sparrowv.Program(vFuncs);
-        // System.out.println(vProg);
 
         TranslationVisitor tv = new TranslationVisitor();
         tv.visit(program);

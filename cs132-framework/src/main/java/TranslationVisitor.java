@@ -13,13 +13,7 @@ public class TranslationVisitor implements RetVisitor < List<sparrowv.Instructio
     private final Register t1 = new Register("t1");
 
     List<sparrowv.FunctionDecl> func_list;
-    List<sparrowv.Instruction> instr_list_global;
     Identifier ret_id = null;
-
-    // id to reg
-    private Register id_to_reg(Identifier id) {
-        return new Register(id.toString());
-    }
 
     // wrap an instr w a list
     private List<Instruction> wrap(Instruction i) {
@@ -45,11 +39,6 @@ public class TranslationVisitor implements RetVisitor < List<sparrowv.Instructio
         System.err.println("🌷 🌷 🌷 🌷 🌷 FINAL PROGRAM!! (.out.) 🌷 🌷 🌷 🌷 🌷");
         System.out.println(program);
         return null;
-        // List<Instruction> result = new ArrayList<>();
-        // for (sparrow.FunctionDecl f : n.funDecls) {
-        //     result.addAll(f.accept(this));
-        // }
-        // return result;
     }
 
     /*   Program parent;
@@ -62,7 +51,6 @@ public class TranslationVisitor implements RetVisitor < List<sparrowv.Instructio
         sparrowv.FunctionDecl func = new sparrowv.FunctionDecl(n.functionName, n.formalParameters, b);
         func_list.add(func);
         return null;
-        // return n.block.accept(this); // eventually wrap in a FunctionDecl in full translator
     }
 
     /*   FunctionDecl parent;
@@ -93,14 +81,16 @@ public class TranslationVisitor implements RetVisitor < List<sparrowv.Instructio
         instr_list.add(new Move_Reg_Integer(t0, n.rhs));
         instr_list.add(new Move_Id_Reg(n.lhs, t0));
         return instr_list;
-        // return wrap(new Move_Reg_Integer(id_to_reg(n.lhs), n.rhs));
     }
 
     /*   Identifier lhs;
     *   FunctionName rhs; */
     @Override
     public List<Instruction> visit(sparrow.Move_Id_FuncName n){
-        return wrap(new Move_Reg_FuncName(id_to_reg(n.lhs), n.rhs));
+        return List.of(
+            new Move_Reg_FuncName(t0, n.rhs),
+            new Move_Id_Reg(n.lhs, t0)
+        );
     }
 
     /*   Identifier lhs;
