@@ -1,0 +1,70 @@
+func main()
+v0 = 4
+v1 = alloc(v0)
+v2 = 4
+vmt_A = alloc(v2)
+v3 = @A_run
+[vmt_A + 0] = v3
+[v1 + 0] = vmt_A
+if0 v1 goto Lv0_Error
+goto Lv1_End
+Lv0_Error:
+error("null pointer")
+Lv1_End:
+v4 = [v1 + 0]
+v5 = [v4 + 0]
+v6 = call v5(v1)
+print(v6)
+v7 = 0
+      return v7
+
+func A_run(this)
+v8 = 20
+v9 = 1
+v10 = v8 + v9
+v11 = 4
+v12 = v10 * v11
+v13 = alloc(v12)
+if0 v13 goto Lv2_Error
+goto Lv3_End
+Lv2_Error:
+error("null pointer")
+Lv3_End:
+[v13 + 0] = v8
+a = v13
+v14 = 10
+v15 = 4
+v16 = 5
+v17 = v15 - v16
+v18 = v17 < v14
+v19 = [a + 0]
+v20 = v14 < v19
+v21 = v18 * v20
+if0 v21 goto Lv4_BoundsError
+goto Lv5_BoundsOK
+Lv4_BoundsError:
+error("array index out of bounds")
+Lv5_BoundsOK:
+v22 = v15 * v14
+v23 = v22 + v15
+v24 = a + v23
+v25 = [v24 + 0]
+print(v25)
+v26 = 40
+v27 = 4
+v28 = 5
+v29 = v27 - v28
+v30 = v29 < v26
+v31 = [a + 0]
+v32 = v26 < v31
+v33 = v30 * v32
+if0 v33 goto Lv6_BoundsError
+goto Lv7_BoundsOK
+Lv6_BoundsError:
+error("array index out of bounds")
+Lv7_BoundsOK:
+v34 = v27 * v26
+v35 = v34 + v27
+v36 = a + v35
+v37 = [v36 + 0]
+      return v37

@@ -1,6 +1,6 @@
 func Main()
     a = 1
-    b = 2
+    b = a
     c = a + b
     print(c)
-    return a
+    return c

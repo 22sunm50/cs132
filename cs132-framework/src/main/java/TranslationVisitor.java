@@ -52,7 +52,7 @@ public class TranslationVisitor implements RetVisitor < List<sparrowv.Instructio
     }
 
     private void moveToReg(Register dest, Object src, List<Instruction> list) {
-        if (src instanceof Identifier) {
+        if (src instanceof Identifier) { //spill
             list.add(new Move_Reg_Id(dest, (Identifier)src));
         } else if (!dest.toString().equals(src.toString())) {
             list.add(new Move_Reg_Reg(dest, (Register)src));
@@ -95,30 +95,44 @@ public class TranslationVisitor implements RetVisitor < List<sparrowv.Instructio
         System.err.println("🔧 Starting function: " + n.functionName);
 
         List<Instruction> bodyInstrs = n.block.accept(this);
+        List<Instruction> prologue = new ArrayList<>();
+        List<Instruction> epilogue = new ArrayList<>();
 
         // Prologue: Save callee-saved (s1–s11) registers to stack (as identifiers)
-        List<Instruction> prologue = new ArrayList<>();
         for (int i = 1; i <= 11; i++) {
             Register s = new Register("s" + i);
             Identifier save = new Identifier("save_s" + i);
             prologue.add(new Move_Id_Reg(save, s));
-            System.err.println("🛡️  Saving callee register: " + s + " → " + save);
         }
 
         // Epilogue: Restore callee-saved registers from stack
-        List<Instruction> epilogue = new ArrayList<>();
         for (int i = 1; i <= 11; i++) {
             Register s = new Register("s" + i);
             Identifier save = new Identifier("save_s" + i);
             epilogue.add(new Move_Reg_Id(s, save));
-            System.err.println("🌎  Restoring callee register: " + save + " → " + s);
         }
 
-        // Append return move and epilogue
-        epilogue.add(new Move_Reg_Id(t0, ret_id));
-        System.err.println("🔚 Appending return: " + t0 + " ← " + ret_id);
+        // 🍅 : Handle function parameters: move from a2–a7 into allocated space
+        for (int i = 0; i < n.formalParameters.size(); i++) {
+            Identifier param = n.formalParameters.get(i);
+            Object dest = lookup(param);
+            Register argReg = new Register("a" + (i + 2)); // a2–a7
+
+            if (dest instanceof Identifier) {
+                prologue.add(new Move_Id_Reg((Identifier) dest, argReg));
+                System.err.println("📥 Param " + param + " (spill) ← a" + (i + 2));
+            } else {
+                prologue.add(new Move_Reg_Reg((Register) dest, argReg));
+                System.err.println("📥 Param " + param + " ← a" + (i + 2));
+            }
+        }
+
+        // // Append return move and epilogue -> i already do this in visit(Block) I think
+        // epilogue.add(new Move_Reg_Id(t0, ret_id));
+        // System.err.println("🔚 Appending return: " + t0 + " ← " + ret_id);
 
         sparrowv.Block block = new sparrowv.Block(concat(prologue, concat(bodyInstrs, epilogue)), ret_id);
+
         sparrowv.FunctionDecl func = new sparrowv.FunctionDecl(n.functionName, n.formalParameters, block);
         func_list.add(func);
         return null;
@@ -138,8 +152,15 @@ public class TranslationVisitor implements RetVisitor < List<sparrowv.Instructio
         for (sparrow.Instruction s : n.instructions) {
             instr_list.addAll(s.accept(this));
         }
+        // set global
         ret_id = n.return_id;
-        instr_list.add(new Move_Reg_Id(t0, n.return_id));
+
+        // check if return_id is associated with a register
+        Object ret_id_reg = lookup(ret_id);
+        if (ret_id_reg instanceof Register){
+            instr_list.add(new Move_Id_Reg(n.return_id, (Register) ret_id_reg));
+        }
+        
         return instr_list;
     }
 
@@ -156,12 +177,12 @@ public class TranslationVisitor implements RetVisitor < List<sparrowv.Instructio
         List<Instruction> instrs = new ArrayList<>();
         Object lhs = lookup(n.lhs);
     
-        if (lhs instanceof Identifier) {
+        if (lhs instanceof Identifier) { // spill
             instrs.add(new Move_Reg_Integer(t0, n.rhs));
             instrs.add(new Move_Id_Reg((Identifier) lhs, t0));
         } else {
             instrs.add(new Move_Reg_Integer((Register) lhs, n.rhs));
-            instrs.add(new Move_Id_Reg(n.lhs, (Register) lhs));
+            // instrs.add(new Move_Id_Reg(n.lhs, (Register) lhs)); // 🍅 🍅 🍅 : only so other code works for now i think
         }
     
         return instrs;
@@ -179,7 +200,7 @@ public class TranslationVisitor implements RetVisitor < List<sparrowv.Instructio
             instrs.add(new Move_Id_Reg(n.lhs, t0));
         } else {
             instrs.add(new Move_Reg_FuncName((Register) lhs, n.rhs));
-            instrs.add(new Move_Id_Reg(n.lhs, (Register) lhs));
+            // instrs.add(new Move_Id_Reg(n.lhs, (Register) lhs)); // 🍅 🍅 🍅 : only so other code works for now i think
         }
     
         return instrs;
@@ -192,53 +213,40 @@ public class TranslationVisitor implements RetVisitor < List<sparrowv.Instructio
     public List<Instruction> visit(sparrow.Add n){
         List<Instruction> instrs = new ArrayList<>();
 
-        // Object lhs = lookup(n.lhs);
-        // Object arg1 = lookup(n.arg1);
-        // Object arg2 = lookup(n.arg2);
+        Object lhs = lookup(n.lhs);
+        Object arg1 = lookup(n.arg1);
+        Object arg2 = lookup(n.arg2);
 
-        // Register r1 = t0;
-        // Register r2 = t1;
-        // Register r3 = t0;
+        // arg1
+        if (arg1 instanceof Register) {
+            instrs.add(new Move_Reg_Reg(t0, (Register) arg1));
+        } else {
+            instrs.add(new Move_Reg_Id(t0, n.arg1));
+        }
+        
+        // arg2
+        if (arg2 instanceof Register) {
+            instrs.add(new Move_Reg_Reg(t1, (Register) arg2));
+        } else {
+            instrs.add(new Move_Reg_Id(t1, n.arg2));
+        }
 
-        // // arg1
-        // if (arg1 instanceof Identifier) {
-        //     // instrs.add(new Move_Reg_Id(t0, (Identifier) arg1));
-        //     System.err.println("🚨 🚨 🚨 arg1 = " + n.arg1.toString() + " = an Identifier");
-        // } else {
-        //     r1 = (Register) arg1;
-        //     System.err.println("🚨 🚨 🚨 arg1 = " + n.arg1.toString() + " = a Register : " + arg1.toString());
-        // }
-        // instrs.add(new Move_Reg_Id(r1, n.arg1));
+        // lhs
+        if (lhs instanceof Register) {
+            instrs.add(new sparrowv.Add((Register) lhs, t0, t1));
+        } else {
+            instrs.add(new sparrowv.Add(t0, t0, t1));
+            instrs.add(new Move_Id_Reg(n.lhs, t0));
+        }
 
-        // // arg2
-        // if (arg2 instanceof Identifier) {
-        //     // instrs.add(new Move_Reg_Id(t1, (Identifier) arg2));
-        //     System.err.println("🚨 🚨 🚨 arg2 = " + n.arg2.toString() + " = an Identifier");
-        // } else {
-        //     r2 = (Register) arg2;
-        //     System.err.println("🚨 🚨 🚨 arg2 = " + n.arg2.toString() + " = a Register : " + arg2.toString());
-        // }
-        // instrs.add(new Move_Reg_Id(r2, n.arg2));
-
-        // // lhs
-        // if (lhs instanceof Identifier) {
-        //     // do ntohing r3 = t0
-        //     System.err.println("🚨 🚨 🚨 lhs = " + n.lhs.toString() + " = an Identifier");
-        // } else {
-        //     r3 = (Register) lhs;
-        //     // instrs.add(new Move_Reg_Reg((Register) lhs, t0));
-        //     System.err.println("🚨 🚨 🚨 lhs = " + n.lhs.toString() + " = a Register : " + lhs.toString());
-        // }
-
-        // instrs.add(new sparrowv.Add(r3, r1, r2));
-        // instrs.add(new Move_Id_Reg(n.lhs, r3));
-        // return instrs;
-
-        instrs.add(new Move_Reg_Id(t0, n.arg1));
-        instrs.add(new Move_Reg_Id(t1, n.arg2));
-        instrs.add(new sparrowv.Add(t0, t0, t1));
-        instrs.add(new Move_Id_Reg(n.lhs, t0));
         return instrs;
+
+        // List<Instruction> instrs = new ArrayList<>();
+        // instrs.add(new Move_Reg_Id(t0, n.arg1));
+        // instrs.add(new Move_Reg_Id(t1, n.arg2));
+        // instrs.add(new sparrowv.Add(t0, t0, t1));
+        // instrs.add(new Move_Id_Reg(n.lhs, t0));
+        // return instrs;
     }
 
     /*   Identifier lhs;
@@ -247,11 +255,40 @@ public class TranslationVisitor implements RetVisitor < List<sparrowv.Instructio
     @Override
     public List<Instruction> visit(sparrow.Subtract n){
         List<Instruction> instrs = new ArrayList<>();
-        instrs.add(new Move_Reg_Id(t0, n.arg1));
-        instrs.add(new Move_Reg_Id(t1, n.arg2));
-        instrs.add(new sparrowv.Subtract(t0, t0, t1));
-        instrs.add(new Move_Id_Reg(n.lhs, t0));
+
+        Object lhs = lookup(n.lhs);
+        Object arg1 = lookup(n.arg1);
+        Object arg2 = lookup(n.arg2);
+
+        // arg1
+        if (arg1 instanceof Register) {
+            instrs.add(new Move_Reg_Reg(t0, (Register) arg1));
+        } else {
+            instrs.add(new Move_Reg_Id(t0, n.arg1));
+        }
+        
+        // arg2
+        if (arg2 instanceof Register) {
+            instrs.add(new Move_Reg_Reg(t1, (Register) arg2));
+        } else {
+            instrs.add(new Move_Reg_Id(t1, n.arg2));
+        }
+
+        // lhs
+        if (lhs instanceof Register) {
+            instrs.add(new sparrowv.Subtract((Register) lhs, t0, t1));
+        } else {
+            instrs.add(new sparrowv.Subtract(t0, t0, t1));
+            instrs.add(new Move_Id_Reg(n.lhs, t0));
+        }
+        
         return instrs;
+        // List<Instruction> instrs = new ArrayList<>();
+        // instrs.add(new Move_Reg_Id(t0, n.arg1));
+        // instrs.add(new Move_Reg_Id(t1, n.arg2));
+        // instrs.add(new sparrowv.Subtract(t0, t0, t1));
+        // instrs.add(new Move_Id_Reg(n.lhs, t0));
+        // return instrs;
     }
 
     /*   Identifier lhs;
@@ -260,11 +297,41 @@ public class TranslationVisitor implements RetVisitor < List<sparrowv.Instructio
     @Override
     public List<Instruction> visit(sparrow.Multiply n){
         List<Instruction> instrs = new ArrayList<>();
-        instrs.add(new Move_Reg_Id(t0, n.arg1));
-        instrs.add(new Move_Reg_Id(t1, n.arg2));
-        instrs.add(new sparrowv.Multiply(t0, t0, t1));
-        instrs.add(new Move_Id_Reg(n.lhs, t0));
+
+        Object lhs = lookup(n.lhs);
+        Object arg1 = lookup(n.arg1);
+        Object arg2 = lookup(n.arg2);
+
+        // arg1
+        if (arg1 instanceof Register) {
+            instrs.add(new Move_Reg_Reg(t0, (Register) arg1));
+        } else {
+            instrs.add(new Move_Reg_Id(t0, n.arg1));
+        }
+        
+        // arg2
+        if (arg2 instanceof Register) {
+            instrs.add(new Move_Reg_Reg(t1, (Register) arg2));
+        } else {
+            instrs.add(new Move_Reg_Id(t1, n.arg2));
+        }
+
+        // lhs
+        if (lhs instanceof Register) {
+            instrs.add(new sparrowv.Multiply((Register) lhs, t0, t1));
+        } else {
+            instrs.add(new sparrowv.Multiply(t0, t0, t1));
+            instrs.add(new Move_Id_Reg(n.lhs, t0));
+        }
+        
         return instrs;
+
+        // List<Instruction> instrs = new ArrayList<>();
+        // instrs.add(new Move_Reg_Id(t0, n.arg1));
+        // instrs.add(new Move_Reg_Id(t1, n.arg2));
+        // instrs.add(new sparrowv.Multiply(t0, t0, t1));
+        // instrs.add(new Move_Id_Reg(n.lhs, t0));
+        // return instrs;
     }
 
     /*   Identifier lhs;
@@ -273,11 +340,40 @@ public class TranslationVisitor implements RetVisitor < List<sparrowv.Instructio
     @Override
     public List<Instruction> visit(sparrow.LessThan n){
         List<Instruction> instrs = new ArrayList<>();
-        instrs.add(new Move_Reg_Id(t0, n.arg1));
-        instrs.add(new Move_Reg_Id(t1, n.arg2));
-        instrs.add(new sparrowv.LessThan(t0, t0, t1));
-        instrs.add(new Move_Id_Reg(n.lhs, t0));
+
+        Object lhs = lookup(n.lhs);
+        Object arg1 = lookup(n.arg1);
+        Object arg2 = lookup(n.arg2);
+
+        // arg1
+        if (arg1 instanceof Register) {
+            instrs.add(new Move_Reg_Reg(t0, (Register) arg1));
+        } else {
+            instrs.add(new Move_Reg_Id(t0, n.arg1));
+        }
+        
+        // arg2
+        if (arg2 instanceof Register) {
+            instrs.add(new Move_Reg_Reg(t1, (Register) arg2));
+        } else {
+            instrs.add(new Move_Reg_Id(t1, n.arg2));
+        }
+
+        // lhs
+        if (lhs instanceof Register) {
+            instrs.add(new sparrowv.LessThan((Register) lhs, t0, t1));
+        } else {
+            instrs.add(new sparrowv.LessThan(t0, t0, t1));
+            instrs.add(new Move_Id_Reg(n.lhs, t0));
+        }
+        
         return instrs;
+        // List<Instruction> instrs = new ArrayList<>();
+        // instrs.add(new Move_Reg_Id(t0, n.arg1));
+        // instrs.add(new Move_Reg_Id(t1, n.arg2));
+        // instrs.add(new sparrowv.LessThan(t0, t0, t1));
+        // instrs.add(new Move_Id_Reg(n.lhs, t0));
+        // return instrs;
     }
 
     /*   Identifier lhs;
@@ -285,11 +381,32 @@ public class TranslationVisitor implements RetVisitor < List<sparrowv.Instructio
     *   int offset; */
     @Override
     public List<Instruction> visit(sparrow.Load n){
-        return List.of(
-            new Move_Reg_Id(t0, n.base),
-            new sparrowv.Load(t0, t0, n.offset),
-            new Move_Id_Reg(n.lhs, t0)
-        );
+        List<Instruction> instrs = new ArrayList<>();
+
+        Object lhs_reg = lookup(n.lhs);
+        Object base_reg = lookup(n.base);
+
+        if (base_reg instanceof Identifier){
+            instrs.add(new Move_Reg_Id(t0, n.base));
+        } else {
+            instrs.add(new Move_Reg_Reg(t0, (Register) base_reg));
+        }
+
+        if (lhs_reg instanceof Identifier){
+            instrs.add(new Load(t0, t0, n.offset));
+            instrs.add(new Move_Id_Reg(n.lhs, t0));
+        } else {
+            instrs.add(new Load((Register) lhs_reg, t0, n.offset));
+            // instrs.add(new Load(t0, t0, n.offset));
+            // instrs.add(new Move_Reg_Reg((Register) lhs_reg, t0));
+        }
+
+        return instrs; 
+        // return List.of(
+        //     new Move_Reg_Id(t0, n.base),
+        //     new sparrowv.Load(t0, t0, n.offset),
+        //     new Move_Id_Reg(n.lhs, t0)
+        // );
     }
 
     /*   Identifier base;
@@ -297,73 +414,124 @@ public class TranslationVisitor implements RetVisitor < List<sparrowv.Instructio
     *   Identifier rhs; */
     @Override
     public List<Instruction> visit(sparrow.Store n){
-        return List.of(
-            new Move_Reg_Id(t0, n.base),
-            new Move_Reg_Id(t1, n.rhs),
-            new sparrowv.Store(t0, n.offset, t1)
-        );
+        List<Instruction> instrs = new ArrayList<>();
+
+        Object base_reg = lookup(n.base);
+        Object rhs_reg = lookup(n.rhs);
+
+        if (rhs_reg instanceof Identifier){
+            instrs.add(new Move_Reg_Id(t0, n.rhs));
+        } else {
+            instrs.add(new Move_Reg_Reg(t0, (Register) rhs_reg));
+        }
+
+        if (base_reg instanceof Identifier){
+            instrs.add(new Move_Reg_Id(t1, n.base));
+            instrs.add(new Store(t1, n.offset, t0));
+        } else {
+            instrs.add(new Store((Register) base_reg, n.offset, t0));
+        }
+
+        return instrs;
+        // return List.of(
+        //     new Move_Reg_Id(t0, n.base),
+        //     new Move_Reg_Id(t1, n.rhs),
+        //     new sparrowv.Store(t0, n.offset, t1)
+        // );
     }
 
     /*   Identifier lhs;
     *   Identifier rhs; */
     @Override
     public List<Instruction> visit(sparrow.Move_Id_Id n){
-        // List<Instruction> instrs = new ArrayList<>();
+        List<Instruction> instrs = new ArrayList<>();
 
-        // Object lhs = lookup(n.lhs);
-        // Object rhs = lookup(n.rhs);
+        Object lhs = lookup(n.lhs);
+        Object rhs = lookup(n.rhs);
 
-        // Register r1 = t0;
-        // Register r2 = t1;
+        Register r1 = t0;
+        Register r2 = t1;
 
-        // if (lhs instanceof Identifier) {
-        //     instrs.add(new Move_Reg_Id(t0, (Identifier) lhs));
-            
-        // } else {
-        //     r1 = (Register) lhs;
-        // }
+        // put rhs ID -> t0
+        if (rhs instanceof Register) {
+            r2 = (Register) rhs;
+            instrs.add(new Move_Reg_Reg(t0, r2));
+        } else {
+            instrs.add(new Move_Reg_Id(t0, n.rhs));
+        }
 
-        // if (rhs instanceof Identifier) {
-        //     instrs.add(new Move_Reg_Id(t1, (Identifier) rhs));
-        // } else {
-        //     r2 = (Register) rhs;
-        // }
-
-        // instrs.add(new sparrowv.Add(t0, r1, r2));
-        // instrs.add(new Move_Reg_Id(t0, n.rhs));
+        // store rhs -> lhs id
         // instrs.add(new Move_Id_Reg(n.lhs, t0));
 
-        // if (lhs instanceof Identifier) {
-        //     instrs.add(new Move_Id_Reg((Identifier) lhs, t0));
-        // } else {
-        //     instrs.add(new Move_Reg_Reg((Register) lhs, t0));
-        // }
+        // lhs
+        if (lhs instanceof Register){
+            r1 = (Register) lhs;
+            instrs.add(new Move_Reg_Reg(r1, t0));
+        } else {
+            instrs.add(new Move_Id_Reg(n.lhs, t0));
+        }
     
-        // return instrs;
-        return List.of(
-            new Move_Reg_Id(t0, n.rhs),
-            new Move_Id_Reg(n.lhs, t0)
-        );
+        return instrs;
+
+
+        // return List.of(
+        //     new Move_Reg_Id(t0, n.rhs),
+        //     new Move_Id_Reg(n.lhs, t0)
+        // );
     }
 
     /*   Identifier lhs;
     *   Identifier size; */
     @Override
     public List<Instruction> visit(sparrow.Alloc n){
-        return List.of(
-            new Move_Reg_Id(t0, n.size),
-            new sparrowv.Alloc(t0, t0),
-            new Move_Id_Reg(n.lhs, t0)
-        );
+        List<Instruction> instrs = new ArrayList<>();
+        Object lhs = lookup(n.lhs);
+        Object size = lookup(n.size);
+
+        // put size -> t0
+        if (size instanceof Identifier) {
+            instrs.add(new Move_Reg_Id(t0, n.size));
+        } else {
+            instrs.add(new Move_Reg_Reg(t0, (Register) size));
+        }
+
+        // assign lhs
+        if (lhs instanceof Identifier) {
+            instrs.add(new Move_Reg_Id(t1, n.lhs));
+            instrs.add(new sparrowv.Alloc(t1, t0));
+            instrs.add(new Move_Id_Reg(n.lhs, t1));
+        } else {
+            instrs.add(new sparrowv.Alloc((Register) lhs, t0));
+            // instrs.add(new Move_Id_Reg(n.lhs, (Register) lhs));
+        }
+
+        return instrs;
+        // return List.of(
+        //     new Move_Reg_Id(t0, n.size),
+        //     new sparrowv.Alloc(t0, t0),
+        //     new Move_Id_Reg(n.lhs, t0)
+        // );
     }
 
     /*   Identifier content; */
     @Override
     public List<Instruction> visit(sparrow.Print n){
-        return List.of(
-            new Move_Reg_Id(t0, n.content),
-            new sparrowv.Print(t0)
-        );
+        List<Instruction> instrs = new ArrayList<>();
+        Object content = lookup(n.content);
+
+        if (content instanceof Identifier) {
+            instrs.add(new Move_Reg_Id(t0, n.content));
+            instrs.add(new Print(t0));
+        } else {
+            instrs.add(new Print((Register) content));
+        }
+
+        return instrs;
+
+        // return List.of(
+        //     new Move_Reg_Id(t0, n.content),
+        //     new sparrowv.Print(t0)
+        // );
     }
 
     /*   String msg; */
@@ -382,10 +550,21 @@ public class TranslationVisitor implements RetVisitor < List<sparrowv.Instructio
     *   Label label; */
     @Override
     public List<Instruction> visit(sparrow.IfGoto n){
-        return List.of(
-            new Move_Reg_Id(t0, n.condition),
-            new sparrowv.IfGoto(t0, n.label)
-        );
+        List<Instruction> instrs = new ArrayList<>();
+        Object cond_reg = lookup(n.condition);
+
+        if (cond_reg instanceof Identifier){
+            instrs.add(new Move_Reg_Id(t0, n.condition));
+            instrs.add(new sparrowv.IfGoto(t0, n.label));
+        } else {
+            instrs.add(new sparrowv.IfGoto((Register) cond_reg, n.label));
+        }
+
+        return instrs;
+        // return List.of(
+        //     new Move_Reg_Id(t0, n.condition),
+        //     new sparrowv.IfGoto(t0, n.label)
+        // );
     }
 
     /*   Identifier lhs;
@@ -396,13 +575,14 @@ public class TranslationVisitor implements RetVisitor < List<sparrowv.Instructio
         System.err.println("📞 Preparing call to: " + n.callee + " → result in " + n.lhs);
 
         List<Instruction> instrs = new ArrayList<>();
+        Object callee_reg = lookup(n.callee);
+        Object lhs_reg = lookup(n.lhs);
 
-        // Save t0–t5 to identifiers
+        // Save caller (t0–t5) to identifiers
         for (int i = 0; i <= 5; i++) {
             Register t = new Register("t" + i);
             Identifier save = new Identifier("save_t" + i);
             instrs.add(new Move_Id_Reg(save, t));
-            System.err.println("💾 Saving caller register: " + t + " → " + save);
         }
 
         // Save a2–a7
@@ -410,27 +590,57 @@ public class TranslationVisitor implements RetVisitor < List<sparrowv.Instructio
             Register a = new Register("a" + i);
             Identifier save = new Identifier("save_a" + i);
             instrs.add(new Move_Id_Reg(save, a));
-            System.err.println("💾 Saving argument register: " + a + " → " + save);
         }
     
         // Move callee
-        instrs.add(new Move_Reg_Id(t0, n.callee));
+        if (callee_reg instanceof Identifier){
+            instrs.add(new Move_Reg_Id(t0, n.callee));
+        } else {
+            instrs.add(new Move_Reg_Reg(t0, (Register) callee_reg));
+        }
+
         System.err.println("🔁 Moving callee to t0: " + n.callee + " → t0");
         
-        // NOTE: This assumes the call target uses a2–a7 directly. No argument register optimization yet.
-        instrs.add(new sparrowv.Call(t0, t0, n.args));
-        System.err.println("📲 Executed call with args: " + n.args);
-    
+        // // 🍅 FOR NOW: This assumes the call target uses a2–a7 directly.
+        // // iterate through each arg: if spill -> use it directly (do nothing), if not -> assign the reg to ID
+        // for (Identifier arg : n.args){
+        //     Object arg_reg = lookup(arg);
+
+        //     if (arg_reg instanceof Register){
+        //         // instrs.add(new Move_Reg_Id((Register) arg_reg, arg));
+        //         instrs.add(new Move_Id_Reg(arg, (Register) arg_reg));
+        //     }
+        // }
+        
+        // Move arguments into a2–a7
+        for (int i = 0; i < n.args.size(); i++) {
+            Object argVal = lookup(n.args.get(i));
+            Register target = new Register("a" + (i + 2)); // a2, a3, ..., a7
+
+            moveToReg(target, argVal, instrs);
+            System.err.println("📤 Arg " + n.args.get(i) + " → " + target);
+        }
+
+        Register ret_reg;
         // Move return value to lhs
-        instrs.add(new Move_Id_Reg(n.lhs, t0));
-        System.err.println("📥 Stored return value: t0 → " + n.lhs);
+        if (lhs_reg instanceof Identifier){
+            instrs.add(new sparrowv.Call(t0, t0, n.args));
+            instrs.add(new Move_Id_Reg(n.lhs, t0));
+            ret_reg = t0;
+        } else {
+            instrs.add(new sparrowv.Call((Register) lhs_reg, t0, n.args));
+            ret_reg = (Register) lhs_reg;
+        }
     
         // Restore t0–t5
         for (int i = 0; i <= 5; i++) {
+            if (ret_reg.toString().equals("t" + i)){
+                System.err.println("😭 😭 😭 😭 😭 IT SHOULD GO HERE!!!");
+                continue;
+            }
             Register t = new Register("t" + i);
             Identifier save = new Identifier("save_t" + i);
             instrs.add(new Move_Reg_Id(t, save));
-            System.err.println("🔁 Restoring caller register: " + save + " → " + t);
         }
 
         // Restore a2–a7
@@ -438,7 +648,6 @@ public class TranslationVisitor implements RetVisitor < List<sparrowv.Instructio
             Register a = new Register("a" + i);
             Identifier save = new Identifier("save_a" + i);
             instrs.add(new Move_Reg_Id(a, save));
-            System.err.println("🔁 Restoring argument register: " + save + " → " + a);
         }
     
         return instrs;

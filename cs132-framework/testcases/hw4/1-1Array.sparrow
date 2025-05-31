@@ -1,0 +1,133 @@
+func main()
+   // ========================================
+   // TODO: arr = new int[5];
+   // ========================================
+   v0 = 5 // length of the array
+   v1 = 1
+   v2 = 4 // size of an int
+   v3 = v0 + v1
+   v3 = v3 * v2
+   v4 = alloc(v3) // alloc(v2 * (v0 + v1))
+   if0 v4 goto v4Error // goto where?
+   // ========================================
+   goto v4End
+v4Error:
+   error("null pointer")
+v4End:
+   [v4 + 0] = v0 // where to write the length?
+   // ========================================
+   // TODO: arr[0] = 1;
+   // ========================================
+   arr = v4
+   v5 = 1 // value
+   v6 = 0 // index
+   v7 = 4
+   v8 = 5
+   v9 = v7 - v8 // -1
+   v10 = v9 < v6 // is -1 < index ?
+   v11 = [arr + 0] // length of array
+   v12 = v6 < v11 // is index < length
+   v13 = v10 * v12 // AND
+   if0 v13 goto v10Error // goto where?
+   goto v10End
+v10Error:
+   error("array index out of bounds")
+v10End:
+   v14 = v7 * v6 // size of int * index
+   v14 = v14 + v7 // start of array + 4 (skip over length)
+   v15 = arr + v14 // address of index
+   [v15 + 0] = v5 // write value to address
+   // ========================================
+   // TODO: arr[1] = 2;
+   // ========================================
+   v16 = 2
+   v17 = 1
+   v18 = 4
+   v19 = 5
+   v20 = v18 - v19
+   v21 = v20 < v17
+   v22 = [arr + 0]
+   v23 = v17 < v22
+   v24 = v21 * v23
+   if0 v24 goto v21Error
+   goto v21End
+v21Error:
+   error("array index out of bounds")
+v21End:
+   v25 = v18 * v17
+   v25 = v25 + v18
+   v26 = arr + v25
+   [v26 + 0] = v16
+   // ========================================
+   // TODO: arr[2] = 3;
+   // ========================================
+   v27 = 3
+   v28 = 2
+   v29 = 4
+   v30 = 5
+   v31 = v29 - v30
+   v32 = v31 < v28
+   v33 = [arr + 0]
+   v34 = v28 < v33
+   v35 = v32 * v34
+   if0 v35 goto v32Error
+   goto v32End
+v32Error:
+   error("array index out of bounds")
+v32End:
+   v36 = v29 * v28
+   v36 = v36 + v29
+   v37 = arr + v36
+   [v37 + 0] = v27
+   // ========================================
+   // TODO: System.out.println(arr[2]);
+   // ========================================
+   v38 = 2
+   v39 = 4
+   v40 = 5
+   v41 = v39 - v40
+   v42 = v41 < v38
+   v43 = [arr + 0]
+   v44 = v38 < v43
+   v45 = v42 * v44
+   if0 v45 goto v42Error
+   goto v42End
+v42Error:
+   error("array index out of bounds")
+v42End:
+   v46 = v39 * v38
+   v46 = v46 + v39
+   v47 = arr + v46
+   v47 = [v47 + 0]
+   print(v47)
+   // ========================================
+   // TODO: System.out.println(arr.length);
+   // ========================================
+   v48 = [arr + 0]
+   print(v48)
+   // ========================================
+   // TODO: System.out.println(arr[(0-1)]);
+   // ========================================
+   v49 = 0
+   v50 = 1
+   v51 = v49 - v50
+   v52 = 4
+   v53 = 5
+   v54 = v52 - v53
+   v55 = v54 < v51
+   v56 = [arr + 0]
+   v57 = v51 < v56
+   v58 = v55 * v57
+   if0 v58 goto v55Error
+   goto v55End
+v55Error:
+   error("array index out of bounds")
+v55End:
+   v59 = v52 * v51
+   v59 = v59 + v52
+   v60 = arr + v59
+   v60 = [v60 + 0]
+   print(v60)
+   // ========================================
+   v61 = 0
+   return v61

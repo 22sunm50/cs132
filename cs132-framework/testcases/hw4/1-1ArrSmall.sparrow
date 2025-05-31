@@ -1,0 +1,15 @@
+func main()
+   v0 = 5 // length of the array
+   v1 = 1
+   v2 = 4 // size of an int
+   v3 = v0 + v1
+   v3 = v3 * v2
+   v4 = alloc(v3) // alloc(v2 * (v0 + v1))
+   if0 v4 goto v4Error // goto where?
+   goto v4End
+v4Error:
+   error("null pointer")
+v4End:
+   [v4 + 0] = v0 // where to write the length?
+   arr = v4
+   return v1

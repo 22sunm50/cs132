@@ -1,0 +1,6 @@
+func main()
+   a = 5
+   b = 4
+   c = a + b
+   print(c)
+   return a
