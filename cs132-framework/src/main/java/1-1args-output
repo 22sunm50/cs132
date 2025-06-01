@@ -1,0 +1,294 @@
+🌼 🌼 🌼 🌼 🌼 INPUT SPARROW PROGRAM 🌼 🌼 🌼 🌼 🌼
+func main()
+v0 = 8
+v1 = alloc(v0)
+v2 = 4
+vmt_A = alloc(v2)
+v3 = @A_runA
+[vmt_A + 0] = v3
+[v1 + 0] = vmt_A
+aa = v1
+v4 = 1
+a1 = v4
+v5 = 2
+b = v5
+v6 = 3
+c = v6
+v7 = 4
+d = v7
+v8 = 5
+e = v8
+v9 = 6
+f = v9
+v10 = 7
+g = v10
+v11 = 8
+h = v11
+v12 = 9
+i = v12
+if0 aa goto Lv0_Error
+goto Lv1_End
+Lv0_Error:
+error("null pointer")
+Lv1_End:
+v13 = [aa + 0]
+v14 = [v13 + 0]
+v15 = call v14(aa a1 b c d e f g h i)
+print(v15)
+v16 = 0
+      return v16
+
+func A_runA(this a b c d e f g h i)
+print(a)
+print(b)
+print(c)
+print(d)
+print(e)
+print(f)
+print(g)
+print(h)
+print(i)
+v17 = 111
+      return v17
+
+
+
+
+🏁 Final Register Allocation Result:
+v0 → t5
+v1 → t4
+v2 → t5
+vmt_A → t3
+v3 → t5
+aa → t3
+v4 → t4
+a1 → t5
+v5 → t4
+b → SPILL
+v6 → t4
+c → SPILL
+v7 → t4
+d → SPILL
+v8 → t4
+e → SPILL
+v9 → t4
+f → SPILL
+v10 → t4
+g → SPILL
+v11 → t4
+h → SPILL
+v12 → t4
+i → SPILL
+v13 → t4
+v14 → t2
+v15 → t4
+v16 → t4
+a → t4
+this → t2
+v17 → t4
+🔧 Starting function: main
+📞 Preparing call to: v14 → result in v15
+🔁 Moving callee to t0: v14 → t0
+🧳 Extra Arg i → spill slot stack_arg_3
+🧳 Extra Arg h → spill slot stack_arg_2
+🧳 Extra Arg g → spill slot stack_arg_1
+🧳 Extra Arg f → spill slot stack_arg_0
+📤 Arg e → a7
+📤 Arg d → a6
+📤 Arg c → a5
+📤 Arg b → a4
+📤 Arg a1 → a3
+🔧 Starting function: A_runA
+🪑 Param i from stack slot stack_arg_3
+🪑 Param h from stack slot stack_arg_2
+🪑 Param g from stack slot stack_arg_1
+🪑 Param f from stack slot stack_arg_0
+
+
+🌷 🌷 🌷 🌷 🌷 FINAL PROGRAM!! (.err.) 🌷 🌷 🌷 🌷 🌷
+func main()
+save_s1 = s1
+save_s2 = s2
+save_s3 = s3
+save_s4 = s4
+save_s5 = s5
+save_s6 = s6
+save_s7 = s7
+save_s8 = s8
+save_s9 = s9
+save_s10 = s10
+save_s11 = s11
+t5 = 8
+t0 = t5
+t4 = alloc(t0)
+t5 = 4
+t0 = t5
+t3 = alloc(t0)
+t5 = @A_runA
+t0 = t5
+[t3 + 0] = t0
+t0 = t3
+[t4 + 0] = t0
+t0 = t4
+t3 = t0
+t4 = 1
+t0 = t4
+t5 = t0
+t4 = 2
+t0 = t4
+b = t0
+t4 = 3
+t0 = t4
+c = t0
+t4 = 4
+t0 = t4
+d = t0
+t4 = 5
+t0 = t4
+e = t0
+t4 = 6
+t0 = t4
+f = t0
+t4 = 7
+t0 = t4
+g = t0
+t4 = 8
+t0 = t4
+h = t0
+t4 = 9
+t0 = t4
+i = t0
+if0 t3 goto Lv0_Error
+goto Lv1_End
+Lv0_Error:
+error("null pointer")
+Lv1_End:
+t0 = t3
+t4 = [t0 + 0]
+t0 = t4
+t2 = [t0 + 0]
+save_t0 = t0
+save_t1 = t1
+save_t2 = t2
+save_t3 = t3
+save_t4 = t4
+save_t5 = t5
+save_a2 = a2
+save_a3 = a3
+save_a4 = a4
+save_a5 = a5
+save_a6 = a6
+save_a7 = a7
+t0 = t2
+stack_arg_3 = t0
+t0 = i
+stack_arg_3 = t0
+stack_arg_2 = t0
+t0 = h
+stack_arg_2 = t0
+stack_arg_1 = t0
+t0 = g
+stack_arg_1 = t0
+stack_arg_0 = t0
+t0 = f
+stack_arg_0 = t0
+a7 = e
+a6 = d
+a5 = c
+a4 = b
+a3 = t5
+t4 = call t0(aa a1 b c d e f g h i)
+t0 = save_t0
+t1 = save_t1
+t2 = save_t2
+t3 = save_t3
+t5 = save_t5
+a2 = save_a2
+a3 = save_a3
+a4 = save_a4
+a5 = save_a5
+a6 = save_a6
+a7 = save_a7
+print(t4)
+t4 = 0
+v16 = t4
+s1 = save_s1
+s2 = save_s2
+s3 = save_s3
+s4 = save_s4
+s5 = save_s5
+s6 = save_s6
+s7 = save_s7
+s8 = save_s8
+s9 = save_s9
+s10 = save_s10
+s11 = save_s11
+      return v16
+
+func A_runA(this a b c d e f g h i)
+save_s1 = s1
+save_s2 = s2
+save_s3 = s3
+save_s4 = s4
+save_s5 = s5
+save_s6 = s6
+save_s7 = s7
+save_s8 = s8
+save_s9 = s9
+save_s10 = s10
+save_s11 = s11
+t0 = stack_arg_3
+i = t0
+t0 = stack_arg_2
+h = t0
+t0 = stack_arg_1
+g = t0
+t0 = stack_arg_0
+f = t0
+e = a7
+d = a6
+c = a5
+b = a4
+t4 = a3
+print(t4)
+t0 = b
+print(t0)
+t0 = c
+print(t0)
+t0 = d
+print(t0)
+t0 = e
+print(t0)
+t0 = f
+print(t0)
+t0 = g
+print(t0)
+t0 = h
+print(t0)
+t0 = i
+print(t0)
+t4 = 111
+v17 = t4
+s1 = save_s1
+s2 = save_s2
+s3 = save_s3
+s4 = save_s4
+s5 = save_s5
+s6 = save_s6
+s7 = save_s7
+s8 = save_s8
+s9 = save_s9
+s10 = save_s10
+s11 = save_s11
+      return v17
+
+
+🌷 🌷 🌷 🌷 🌷 FINAL PROGRAM!! (.out.) 🌷 🌷 🌷 🌷 🌷
+Exception in thread "main" java.lang.RuntimeException: Error: t4 = call t0(aa a1 b c d e f g h i)
+Wrong argument type in Call
+        at sparrowv.visitor.Interpreter.visit(Interpreter.java:404)
+        at sparrowv.Call.accept(Call.java:19)
+        at sparrowv.visitor.Interpreter.stepUntilReturn(Interpreter.java:36)
+        at sparrowv.visitor.Interpreter.visit(Interpreter.java:99)
+        at sparrowv.Program.accept(Program.java:15)
+        at Main.main(Main.java:66)

@@ -1,0 +1,709 @@
+func main()
+v0 = 4
+v1 = alloc(v0)
+v2 = 4
+vmt_LL = alloc(v2)
+v3 = @LL_Start
+[vmt_LL + 0] = v3
+[v1 + 0] = vmt_LL
+if0 v1 goto Lv0_Error
+goto Lv1_End
+Lv0_Error:
+error("null pointer")
+Lv1_End:
+v4 = [v1 + 0]
+v5 = [v4 + 0]
+v6 = call v5(v1)
+v7 = 0
+      return v7
+
+func Element_Init(this v_Age v_Salary v_Married)
+[this + 12] = v_Age
+[this + 4] = v_Salary
+[this + 8] = v_Married
+v8 = 1
+      return v8
+
+func Element_GetAge(this)
+v9 = [this + 12]
+      return v9
+
+func Element_GetSalary(this)
+v10 = [this + 4]
+      return v10
+
+func Element_GetMarried(this)
+v11 = [this + 8]
+      return v11
+
+func Element_Equal(this other)
+v12 = 1
+ret_val = v12
+if0 other goto Lv2_Error
+goto Lv3_End
+Lv2_Error:
+error("null pointer")
+Lv3_End:
+v13 = [other + 0]
+v14 = [v13 + 8]
+v15 = call v14(other)
+aux01 = v15
+if0 this goto Lv6_Error
+goto Lv7_End
+Lv6_Error:
+error("null pointer")
+Lv7_End:
+v16 = [this + 0]
+v17 = [v16 + 20]
+v18 = [this + 12]
+v19 = call v17(this aux01 v18)
+v20 = 1
+v21 = v20 - v19
+if0 v21 goto Lv4_Else
+v22 = 0
+ret_val = v22
+goto Lv5_End
+Lv4_Else:
+if0 other goto Lv8_Error
+goto Lv9_End
+Lv8_Error:
+error("null pointer")
+Lv9_End:
+v23 = [other + 0]
+v24 = [v23 + 0]
+v25 = call v24(other)
+aux02 = v25
+if0 this goto Lv12_Error
+goto Lv13_End
+Lv12_Error:
+error("null pointer")
+Lv13_End:
+v26 = [this + 0]
+v27 = [v26 + 20]
+v28 = [this + 4]
+v29 = call v27(this aux02 v28)
+v30 = 1
+v31 = v30 - v29
+if0 v31 goto Lv10_Else
+v32 = 0
+ret_val = v32
+goto Lv11_End
+Lv10_Else:
+v33 = [this + 8]
+if0 v33 goto Lv14_Else
+if0 other goto Lv18_Error
+goto Lv19_End
+Lv18_Error:
+error("null pointer")
+Lv19_End:
+v34 = [other + 0]
+v35 = [v34 + 16]
+v36 = call v35(other)
+v37 = 1
+v38 = v37 - v36
+if0 v38 goto Lv16_Else
+v39 = 0
+ret_val = v39
+goto Lv17_End
+Lv16_Else:
+v40 = 0
+nt = v40
+Lv17_End:
+goto Lv15_End
+Lv14_Else:
+if0 other goto Lv22_Error
+goto Lv23_End
+Lv22_Error:
+error("null pointer")
+Lv23_End:
+v41 = [other + 0]
+v42 = [v41 + 16]
+v43 = call v42(other)
+if0 v43 goto Lv20_Else
+v44 = 0
+ret_val = v44
+goto Lv21_End
+Lv20_Else:
+v45 = 0
+nt = v45
+Lv21_End:
+Lv15_End:
+Lv11_End:
+Lv5_End:
+      return ret_val
+
+func Element_Compare(this num1 num2)
+v46 = 0
+retval = v46
+v47 = 1
+v48 = num2 + v47
+aux02 = v48
+v49 = num1 < num2
+if0 v49 goto Lv24_Else
+v50 = 0
+retval = v50
+goto Lv25_End
+Lv24_Else:
+v51 = num1 < aux02
+v52 = 1
+v53 = v52 - v51
+if0 v53 goto Lv26_Else
+v54 = 0
+retval = v54
+goto Lv27_End
+Lv26_Else:
+v55 = 1
+retval = v55
+Lv27_End:
+Lv25_End:
+      return retval
+
+func List_Init(this)
+v56 = 1
+[this + 12] = v56
+v57 = 1
+      return v57
+
+func List_InitNew(this v_elem v_next v_end)
+[this + 12] = v_end
+[this + 4] = v_elem
+[this + 8] = v_next
+v58 = 1
+      return v58
+
+func List_Insert(this new_elem)
+aux03 = this
+v59 = 16
+v60 = alloc(v59)
+v61 = 40
+vmt_List = alloc(v61)
+v62 = @List_Delete
+[vmt_List + 0] = v62
+v63 = @List_Print
+[vmt_List + 4] = v63
+v64 = @List_Init
+[vmt_List + 8] = v64
+v65 = @List_GetElem
+[vmt_List + 12] = v65
+v66 = @List_GetNext
+[vmt_List + 16] = v66
+v67 = @List_SetNext
+[vmt_List + 20] = v67
+v68 = @List_Search
+[vmt_List + 24] = v68
+v69 = @List_GetEnd
+[vmt_List + 28] = v69
+v70 = @List_InitNew
+[vmt_List + 32] = v70
+v71 = @List_Insert
+[vmt_List + 36] = v71
+[v60 + 0] = vmt_List
+aux02 = v60
+if0 aux02 goto Lv28_Error
+goto Lv29_End
+Lv28_Error:
+error("null pointer")
+Lv29_End:
+v72 = [aux02 + 0]
+v73 = [v72 + 32]
+v74 = 0
+v75 = call v73(aux02 new_elem aux03 v74)
+ret_val = v75
+      return aux02
+
+func List_SetNext(this v_next)
+[this + 8] = v_next
+v76 = 1
+      return v76
+
+func List_Delete(this e)
+my_head = this
+v77 = 0
+ret_val = v77
+v78 = 0
+v79 = 1
+v80 = v78 - v79
+aux04 = v80
+aux01 = this
+prev = this
+v81 = [this + 12]
+var_end = v81
+v82 = [this + 4]
+var_elem = v82
+Lv30_Start:
+v83 = 1
+v84 = v83 - var_end
+if0 v84 goto Lv32_False
+v85 = 1
+v86 = v85 - ret_val
+v87 = v86
+goto Lv33_End
+Lv32_False:
+v87 = 0
+Lv33_End:
+if0 v87 goto Lv31_End
+if0 e goto Lv36_Error
+goto Lv37_End
+Lv36_Error:
+error("null pointer")
+Lv37_End:
+v88 = [e + 0]
+v89 = [v88 + 12]
+v90 = call v89(e var_elem)
+if0 v90 goto Lv34_Else
+v91 = 1
+ret_val = v91
+v92 = 0
+v93 = aux04 < v92
+if0 v93 goto Lv38_Else
+if0 aux01 goto Lv40_Error
+goto Lv41_End
+Lv40_Error:
+error("null pointer")
+Lv41_End:
+v94 = [aux01 + 0]
+v95 = [v94 + 16]
+v96 = call v95(aux01)
+my_head = v96
+goto Lv39_End
+Lv38_Else:
+v97 = 0
+v98 = 555
+v99 = v97 - v98
+print(v99)
+if0 prev goto Lv42_Error
+goto Lv43_End
+Lv42_Error:
+error("null pointer")
+Lv43_End:
+v100 = [prev + 0]
+v101 = [v100 + 20]
+if0 aux01 goto Lv44_Error
+goto Lv45_End
+Lv44_Error:
+error("null pointer")
+Lv45_End:
+v102 = [aux01 + 0]
+v103 = [v102 + 16]
+v104 = call v103(aux01)
+v105 = call v101(prev v104)
+aux05 = v105
+v106 = 0
+v107 = 555
+v108 = v106 - v107
+print(v108)
+Lv39_End:
+goto Lv35_End
+Lv34_Else:
+v109 = 0
+nt = v109
+Lv35_End:
+v110 = 1
+v111 = v110 - ret_val
+if0 v111 goto Lv46_Else
+prev = aux01
+if0 aux01 goto Lv48_Error
+goto Lv49_End
+Lv48_Error:
+error("null pointer")
+Lv49_End:
+v112 = [aux01 + 0]
+v113 = [v112 + 16]
+v114 = call v113(aux01)
+aux01 = v114
+if0 aux01 goto Lv50_Error
+goto Lv51_End
+Lv50_Error:
+error("null pointer")
+Lv51_End:
+v115 = [aux01 + 0]
+v116 = [v115 + 28]
+v117 = call v116(aux01)
+var_end = v117
+if0 aux01 goto Lv52_Error
+goto Lv53_End
+Lv52_Error:
+error("null pointer")
+Lv53_End:
+v118 = [aux01 + 0]
+v119 = [v118 + 12]
+v120 = call v119(aux01)
+var_elem = v120
+v121 = 1
+aux04 = v121
+goto Lv47_End
+Lv46_Else:
+v122 = 0
+nt = v122
+Lv47_End:
+goto Lv30_Start
+Lv31_End:
+      return my_head
+
+func List_Search(this e)
+v123 = 0
+int_ret_val = v123
+aux01 = this
+v124 = [this + 12]
+var_end = v124
+v125 = [this + 4]
+var_elem = v125
+Lv54_Start:
+v126 = 1
+v127 = v126 - var_end
+if0 v127 goto Lv55_End
+if0 e goto Lv58_Error
+goto Lv59_End
+Lv58_Error:
+error("null pointer")
+Lv59_End:
+v128 = [e + 0]
+v129 = [v128 + 12]
+v130 = call v129(e var_elem)
+if0 v130 goto Lv56_Else
+v131 = 1
+int_ret_val = v131
+goto Lv57_End
+Lv56_Else:
+v132 = 0
+nt = v132
+Lv57_End:
+if0 aux01 goto Lv60_Error
+goto Lv61_End
+Lv60_Error:
+error("null pointer")
+Lv61_End:
+v133 = [aux01 + 0]
+v134 = [v133 + 16]
+v135 = call v134(aux01)
+aux01 = v135
+if0 aux01 goto Lv62_Error
+goto Lv63_End
+Lv62_Error:
+error("null pointer")
+Lv63_End:
+v136 = [aux01 + 0]
+v137 = [v136 + 28]
+v138 = call v137(aux01)
+var_end = v138
+if0 aux01 goto Lv64_Error
+goto Lv65_End
+Lv64_Error:
+error("null pointer")
+Lv65_End:
+v139 = [aux01 + 0]
+v140 = [v139 + 12]
+v141 = call v140(aux01)
+var_elem = v141
+goto Lv54_Start
+Lv55_End:
+      return int_ret_val
+
+func List_GetEnd(this)
+v142 = [this + 12]
+      return v142
+
+func List_GetElem(this)
+v143 = [this + 4]
+      return v143
+
+func List_GetNext(this)
+v144 = [this + 8]
+      return v144
+
+func List_Print(this)
+aux01 = this
+v145 = [this + 12]
+var_end = v145
+v146 = [this + 4]
+var_elem = v146
+Lv66_Start:
+v147 = 1
+v148 = v147 - var_end
+if0 v148 goto Lv67_End
+if0 var_elem goto Lv68_Error
+goto Lv69_End
+Lv68_Error:
+error("null pointer")
+Lv69_End:
+v149 = [var_elem + 0]
+v150 = [v149 + 8]
+v151 = call v150(var_elem)
+print(v151)
+if0 aux01 goto Lv70_Error
+goto Lv71_End
+Lv70_Error:
+error("null pointer")
+Lv71_End:
+v152 = [aux01 + 0]
+v153 = [v152 + 16]
+v154 = call v153(aux01)
+aux01 = v154
+if0 aux01 goto Lv72_Error
+goto Lv73_End
+Lv72_Error:
+error("null pointer")
+Lv73_End:
+v155 = [aux01 + 0]
+v156 = [v155 + 28]
+v157 = call v156(aux01)
+var_end = v157
+if0 aux01 goto Lv74_Error
+goto Lv75_End
+Lv74_Error:
+error("null pointer")
+Lv75_End:
+v158 = [aux01 + 0]
+v159 = [v158 + 12]
+v160 = call v159(aux01)
+var_elem = v160
+goto Lv66_Start
+Lv67_End:
+v161 = 1
+      return v161
+
+func LL_Start(this)
+v162 = 16
+v163 = alloc(v162)
+v164 = 40
+vmt_List = alloc(v164)
+v165 = @List_Delete
+[vmt_List + 0] = v165
+v166 = @List_Print
+[vmt_List + 4] = v166
+v167 = @List_Init
+[vmt_List + 8] = v167
+v168 = @List_GetElem
+[vmt_List + 12] = v168
+v169 = @List_GetNext
+[vmt_List + 16] = v169
+v170 = @List_SetNext
+[vmt_List + 20] = v170
+v171 = @List_Search
+[vmt_List + 24] = v171
+v172 = @List_GetEnd
+[vmt_List + 28] = v172
+v173 = @List_InitNew
+[vmt_List + 32] = v173
+v174 = @List_Insert
+[vmt_List + 36] = v174
+[v163 + 0] = vmt_List
+last_elem = v163
+if0 last_elem goto Lv76_Error
+goto Lv77_End
+Lv76_Error:
+error("null pointer")
+Lv77_End:
+v175 = [last_elem + 0]
+v176 = [v175 + 8]
+v177 = call v176(last_elem)
+aux01 = v177
+head = last_elem
+if0 head goto Lv78_Error
+goto Lv79_End
+Lv78_Error:
+error("null pointer")
+Lv79_End:
+v178 = [head + 0]
+v179 = [v178 + 8]
+v180 = call v179(head)
+aux01 = v180
+if0 head goto Lv80_Error
+goto Lv81_End
+Lv80_Error:
+error("null pointer")
+Lv81_End:
+v181 = [head + 0]
+v182 = [v181 + 4]
+v183 = call v182(head)
+aux01 = v183
+v184 = 16
+v185 = alloc(v184)
+v186 = 24
+vmt_Element = alloc(v186)
+v187 = @Element_GetSalary
+[vmt_Element + 0] = v187
+v188 = @Element_Init
+[vmt_Element + 4] = v188
+v189 = @Element_GetAge
+[vmt_Element + 8] = v189
+v190 = @Element_Equal
+[vmt_Element + 12] = v190
+v191 = @Element_GetMarried
+[vmt_Element + 16] = v191
+v192 = @Element_Compare
+[vmt_Element + 20] = v192
+[v185 + 0] = vmt_Element
+el01 = v185
+if0 el01 goto Lv82_Error
+goto Lv83_End
+Lv82_Error:
+error("null pointer")
+Lv83_End:
+v193 = [el01 + 0]
+v194 = [v193 + 4]
+v195 = 25
+v196 = 37000
+v197 = 0
+v198 = call v194(el01 v195 v196 v197)
+aux01 = v198
+if0 head goto Lv84_Error
+goto Lv85_End
+Lv84_Error:
+error("null pointer")
+Lv85_End:
+v199 = [head + 0]
+v200 = [v199 + 36]
+v201 = call v200(head el01)
+head = v201
+if0 head goto Lv86_Error
+goto Lv87_End
+Lv86_Error:
+error("null pointer")
+Lv87_End:
+v202 = [head + 0]
+v203 = [v202 + 4]
+v204 = call v203(head)
+aux01 = v204
+v205 = 10000000
+print(v205)
+v206 = 16
+v207 = alloc(v206)
+v208 = 24
+vmt_Element = alloc(v208)
+v209 = @Element_GetSalary
+[vmt_Element + 0] = v209
+v210 = @Element_Init
+[vmt_Element + 4] = v210
+v211 = @Element_GetAge
+[vmt_Element + 8] = v211
+v212 = @Element_Equal
+[vmt_Element + 12] = v212
+v213 = @Element_GetMarried
+[vmt_Element + 16] = v213
+v214 = @Element_Compare
+[vmt_Element + 20] = v214
+[v207 + 0] = vmt_Element
+el01 = v207
+if0 el01 goto Lv88_Error
+goto Lv89_End
+Lv88_Error:
+error("null pointer")
+Lv89_End:
+v215 = [el01 + 0]
+v216 = [v215 + 4]
+v217 = 39
+v218 = 42000
+v219 = 1
+v220 = call v216(el01 v217 v218 v219)
+aux01 = v220
+el02 = el01
+if0 head goto Lv90_Error
+goto Lv91_End
+Lv90_Error:
+error("null pointer")
+Lv91_End:
+v221 = [head + 0]
+v222 = [v221 + 36]
+v223 = call v222(head el01)
+head = v223
+if0 head goto Lv92_Error
+goto Lv93_End
+Lv92_Error:
+error("null pointer")
+Lv93_End:
+v224 = [head + 0]
+v225 = [v224 + 4]
+v226 = call v225(head)
+aux01 = v226
+v227 = 10000000
+print(v227)
+v228 = 16
+v229 = alloc(v228)
+v230 = 24
+vmt_Element = alloc(v230)
+v231 = @Element_GetSalary
+[vmt_Element + 0] = v231
+v232 = @Element_Init
+[vmt_Element + 4] = v232
+v233 = @Element_GetAge
+[vmt_Element + 8] = v233
+v234 = @Element_Equal
+[vmt_Element + 12] = v234
+v235 = @Element_GetMarried
+[vmt_Element + 16] = v235
+v236 = @Element_Compare
+[vmt_Element + 20] = v236
+[v229 + 0] = vmt_Element
+el01 = v229
+if0 el01 goto Lv94_Error
+goto Lv95_End
+Lv94_Error:
+error("null pointer")
+Lv95_End:
+v237 = [el01 + 0]
+v238 = [v237 + 4]
+v239 = 22
+v240 = 34000
+v241 = 0
+v242 = call v238(el01 v239 v240 v241)
+aux01 = v242
+if0 head goto Lv96_Error
+goto Lv97_End
+Lv96_Error:
+error("null pointer")
+Lv97_End:
+v243 = [head + 0]
+v244 = [v243 + 36]
+v245 = call v244(head el01)
+head = v245
+if0 head goto Lv98_Error
+goto Lv99_End
+Lv98_Error:
+error("null pointer")
+Lv99_End:
+v246 = [head + 0]
+v247 = [v246 + 4]
+v248 = call v247(head)
+aux01 = v248
+v249 = 16
+v250 = alloc(v249)
+v251 = 24
+vmt_Element = alloc(v251)
+v252 = @Element_GetSalary
+[vmt_Element + 0] = v252
+v253 = @Element_Init
+[vmt_Element + 4] = v253
+v254 = @Element_GetAge
+[vmt_Element + 8] = v254
+v255 = @Element_Equal
+[vmt_Element + 12] = v255
+v256 = @Element_GetMarried
+[vmt_Element + 16] = v256
+v257 = @Element_Compare
+[vmt_Element + 20] = v257
+[v250 + 0] = vmt_Element
+el03 = v250
+if0 el03 goto Lv100_Error
+goto Lv101_End
+Lv100_Error:
+error("null pointer")
+Lv101_End:
+v258 = [el03 + 0]
+v259 = [v258 + 4]
+v260 = 27
+v261 = 34000
+v262 = 0
+v263 = call v259(el03 v260 v261 v262)
+aux01 = v263
+if0 head goto Lv102_Error
+goto Lv103_End
+Lv102_Error:
+error("null pointer")
+Lv103_End:
+v264 = [head + 0]
+v265 = [v264 + 24]
+v266 = call v265(head el02)
+print(v266)
+v307 = 0
+      return v307

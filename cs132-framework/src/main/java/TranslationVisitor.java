@@ -98,42 +98,52 @@ public class TranslationVisitor implements RetVisitor < List<sparrowv.Instructio
         List<Instruction> prologue = new ArrayList<>();
         List<Instruction> epilogue = new ArrayList<>();
 
-        // Prologue: Save callee-saved (s1–s11) registers to stack (as identifiers)
-        for (int i = 1; i <= 11; i++) {
-            Register s = new Register("s" + i);
-            Identifier save = new Identifier("save_s" + i);
-            prologue.add(new Move_Id_Reg(save, s));
-        }
+        if (n.functionName.toString() != "main" && n.functionName.toString() != "Main"){
+            // Prologue: Save callee-saved (s1–s11) registers to stack (as identifiers)
+            for (int i = 1; i <= 11; i++) {
+                Register s = new Register("s" + i);
+                Identifier save = new Identifier("save_s" + i);
+                prologue.add(new Move_Id_Reg(save, s));
+            }
 
-        // Epilogue: Restore callee-saved registers from stack
-        for (int i = 1; i <= 11; i++) {
-            Register s = new Register("s" + i);
-            Identifier save = new Identifier("save_s" + i);
-            epilogue.add(new Move_Reg_Id(s, save));
-        }
-
-        // 🍅 : Handle function parameters: move from a2–a7 into allocated space
-        for (int i = 0; i < n.formalParameters.size(); i++) {
-            Identifier param = n.formalParameters.get(i);
-            Object dest = lookup(param);
-            Register argReg = new Register("a" + (i + 2)); // a2–a7
-
-            if (dest instanceof Identifier) {
-                prologue.add(new Move_Id_Reg((Identifier) dest, argReg));
-                System.err.println("📥 Param " + param + " (spill) ← a" + (i + 2));
-            } else {
-                prologue.add(new Move_Reg_Reg((Register) dest, argReg));
-                System.err.println("📥 Param " + param + " ← a" + (i + 2));
+            // Epilogue: Restore callee-saved registers from stack
+            for (int i = 1; i <= 11; i++) {
+                Register s = new Register("s" + i);
+                Identifier save = new Identifier("save_s" + i);
+                epilogue.add(new Move_Reg_Id(s, save));
             }
         }
 
-        // // Append return move and epilogue -> i already do this in visit(Block) I think
-        // epilogue.add(new Move_Reg_Id(t0, ret_id));
-        // System.err.println("🔚 Appending return: " + t0 + " ← " + ret_id);
+        // 🍅 : Handle function parameters: move from a2–a7 into allocated space
+        for (int i = n.formalParameters.size() - 1; i >= 0 ; i--) {
+        // for (int i = 0; i < n.formalParameters.size(); i++) {
+            Identifier param = n.formalParameters.get(i);
+            Object param_reg = lookup(param);
+            if (i < 6){
+                Register a_reg = new Register("a" + (i + 2)); // a2–a7
+
+                if (param_reg instanceof Identifier) {
+                    prologue.add(new Move_Id_Reg((Identifier) param_reg, a_reg));
+                } else {
+                    prologue.add(new Move_Reg_Reg((Register) param_reg, a_reg));
+                }
+            }
+            else {
+                // Identifier stackSlot = new Identifier("stack_arg_" + (i - 6));
+                // prologue.add(new Move_Reg_Id(t0, stackSlot)); // t0 = stack_arg
+                // moveFromReg(param_reg, t0, prologue);              // param_reg = t0
+                if (param_reg instanceof Register){
+                    prologue.add(new Move_Reg_Id(t0, param)); // t0 = stack_arg
+                    moveFromReg(param_reg, t0, prologue);              // param_reg = t0
+                }
+            }
+        }
 
         sparrowv.Block block = new sparrowv.Block(concat(prologue, concat(bodyInstrs, epilogue)), ret_id);
 
+        List<Identifier> empty_params = new ArrayList<>();
         sparrowv.FunctionDecl func = new sparrowv.FunctionDecl(n.functionName, n.formalParameters, block);
+        // sparrowv.FunctionDecl func = new sparrowv.FunctionDecl(n.functionName, empty_params, block);
         func_list.add(func);
         return null;
 
@@ -591,8 +601,48 @@ public class TranslationVisitor implements RetVisitor < List<sparrowv.Instructio
             Identifier save = new Identifier("save_a" + i);
             instrs.add(new Move_Id_Reg(save, a));
         }
-    
-        // Move callee
+        
+        // Move arguments into a2–a7
+        // for (int i = 0; i < n.args.size(); i++) {
+        //     Object argVal = lookup(n.args.get(i));
+        //     Register target = new Register("a" + (i + 2)); // a2, a3, ..., a7
+
+        //     moveToReg(target, argVal, instrs);
+        //     System.err.println("📤 Arg " + n.args.get(i) + " → " + target);
+        // }
+
+        for (int i = n.args.size() - 1; i >= 0; i--) {
+        // for (int i = 0; i < n.args.size(); i++) {
+            Identifier arg = n.args.get(i);
+            Object argVal = lookup(arg);
+        
+            if (i < 6) {
+                // First 6 args → a2–a7
+                Register target = new Register("a" + (i + 2));
+                moveToReg(target, argVal, instrs);
+                System.err.println("📤 Arg " + arg + " → " + target);
+            } else {
+                // // Extra args: write them to named stack slots (simulate)
+                // Identifier stackSlot = new Identifier("stack_arg_" + (i - 6));
+                // moveToReg(t0, argVal, instrs);
+                // instrs.add(new Move_Id_Reg(stackSlot, t0));
+
+                // moveToReg(t0, argVal, instrs);
+                // moveFromReg(argVal, t0, instrs);
+
+                if (argVal instanceof Register){
+                    instrs.add(new Move_Id_Reg(arg, (Register) argVal));
+                    // instrs.add(new Move_Reg_Id((Register) argVal, arg));
+                } else {
+                    
+                }
+            }
+        }
+
+        Register ret_reg;
+        List<Identifier> empty_args = new ArrayList<>();
+
+        // Move callee -> must be after the args are set
         if (callee_reg instanceof Identifier){
             instrs.add(new Move_Reg_Id(t0, n.callee));
         } else {
@@ -600,42 +650,22 @@ public class TranslationVisitor implements RetVisitor < List<sparrowv.Instructio
         }
 
         System.err.println("🔁 Moving callee to t0: " + n.callee + " → t0");
-        
-        // // 🍅 FOR NOW: This assumes the call target uses a2–a7 directly.
-        // // iterate through each arg: if spill -> use it directly (do nothing), if not -> assign the reg to ID
-        // for (Identifier arg : n.args){
-        //     Object arg_reg = lookup(arg);
 
-        //     if (arg_reg instanceof Register){
-        //         // instrs.add(new Move_Reg_Id((Register) arg_reg, arg));
-        //         instrs.add(new Move_Id_Reg(arg, (Register) arg_reg));
-        //     }
-        // }
-        
-        // Move arguments into a2–a7
-        for (int i = 0; i < n.args.size(); i++) {
-            Object argVal = lookup(n.args.get(i));
-            Register target = new Register("a" + (i + 2)); // a2, a3, ..., a7
-
-            moveToReg(target, argVal, instrs);
-            System.err.println("📤 Arg " + n.args.get(i) + " → " + target);
-        }
-
-        Register ret_reg;
         // Move return value to lhs
         if (lhs_reg instanceof Identifier){
             instrs.add(new sparrowv.Call(t0, t0, n.args));
+            // instrs.add(new sparrowv.Call(t0, t0, empty_args));
             instrs.add(new Move_Id_Reg(n.lhs, t0));
             ret_reg = t0;
         } else {
             instrs.add(new sparrowv.Call((Register) lhs_reg, t0, n.args));
+            // instrs.add(new sparrowv.Call((Register) lhs_reg, t0, empty_args));
             ret_reg = (Register) lhs_reg;
         }
     
         // Restore t0–t5
         for (int i = 0; i <= 5; i++) {
             if (ret_reg.toString().equals("t" + i)){
-                System.err.println("😭 😭 😭 😭 😭 IT SHOULD GO HERE!!!");
                 continue;
             }
             Register t = new Register("t" + i);

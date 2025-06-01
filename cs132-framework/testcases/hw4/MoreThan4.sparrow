@@ -1,0 +1,55 @@
+func main()
+v0 = 4
+v1 = alloc(v0)
+v2 = 8
+vmt_MT4 = alloc(v2)
+v3 = @MT4_Start
+[vmt_MT4 + 0] = v3
+v4 = @MT4_Change
+[vmt_MT4 + 4] = v4
+[v1 + 0] = vmt_MT4
+if0 v1 goto Lv0_Error
+goto Lv1_End
+Lv0_Error:
+error("null pointer")
+Lv1_End:
+v5 = [v1 + 0]
+v6 = [v5 + 0]
+v7 = 1
+v8 = 2
+v9 = 3
+v10 = 4
+v11 = 5
+v12 = 6
+v13 = call v6(v1 v7 v8 v9 v10 v11 v12)
+print(v13)
+v14 = 0
+      return v14
+
+func MT4_Start(this p1 p2 p3 p4 p5 p6)
+print(p1)
+print(p2)
+print(p3)
+print(p4)
+print(p5)
+print(p6)
+if0 this goto Lv2_Error
+goto Lv3_End
+Lv2_Error:
+error("null pointer")
+Lv3_End:
+v15 = [this + 0]
+v16 = [v15 + 4]
+v17 = call v16(this p6 p5 p4 p3 p2 p1)
+aux = v17
+      return aux
+
+func MT4_Change(this p1 p2 p3 p4 p5 p6)
+print(p1)
+print(p2)
+print(p3)
+print(p4)
+print(p5)
+print(p6)
+v18 = 0
+      return v18

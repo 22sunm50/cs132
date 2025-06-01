@@ -1,0 +1,51 @@
+func main()
+v0 = 8
+v1 = alloc(v0)
+v2 = 4
+vmt_A = alloc(v2)
+v3 = @A_runA
+[vmt_A + 0] = v3
+[v1 + 0] = vmt_A
+aa = v1
+v4 = 1
+a1 = v4
+v5 = 2
+b = v5
+v6 = 3
+c = v6
+v7 = 4
+d = v7
+v8 = 5
+e = v8
+v9 = 6
+f = v9
+v10 = 7
+g = v10
+v11 = 8
+h = v11
+v12 = 9
+i = v12
+if0 aa goto Lv0_Error
+goto Lv1_End
+Lv0_Error:
+error("null pointer")
+Lv1_End:
+v13 = [aa + 0]
+v14 = [v13 + 0]
+v15 = call v14(aa a1 b c d e f g h i)
+print(v15)
+v16 = 0
+      return v16
+
+func A_runA(this a b c d e f g h i)
+print(a)
+print(b)
+print(c)
+print(d)
+print(e)
+print(f)
+print(g)
+print(h)
+print(i)
+v17 = 111
+      return v17
