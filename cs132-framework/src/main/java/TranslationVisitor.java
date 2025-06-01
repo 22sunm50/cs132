@@ -142,9 +142,7 @@ public class TranslationVisitor implements RetVisitor < List<sparrowv.Instructio
                     LiveInterval varInterval = intervals_map.get(var);
     
                     if (varInterval != null &&
-                        varInterval.start >= funcStart &&
-                        varInterval.end <= funcEnd) {
-                        
+                        varInterval.end >= funcStart){
                         saves.add(new Move_Id_Reg(new Identifier("save_" + sReg), reg));
                         break; // Only save once per register
                     }
@@ -177,9 +175,7 @@ public class TranslationVisitor implements RetVisitor < List<sparrowv.Instructio
                     LiveInterval varInterval = intervals_map.get(var);
     
                     if (varInterval != null &&
-                        varInterval.start >= funcStart &&
-                        varInterval.end <= funcEnd) {
-    
+                        varInterval.end >= funcStart){    
                         restores.add(new Move_Reg_Id(reg, new Identifier("save_" + sReg)));
                         break; // Only restore once per register
                     }
@@ -224,20 +220,20 @@ public class TranslationVisitor implements RetVisitor < List<sparrowv.Instructio
 
         if (n.functionName.toString() != "main" && n.functionName.toString() != "Main"){
             // Prologue: Save callee-saved (s1–s11) registers to stack (as identifiers)
-            // prologue.addAll(saveLiveCalleeRegisters(n.functionName.toString()));
-            for (int i = 1; i <= 11; i++) {
-                Register s = new Register("s" + i);
-                Identifier save = new Identifier("save_s" + i);
-                prologue.add(new Move_Id_Reg(save, s));
-            }
+            prologue.addAll(saveLiveCalleeRegisters(n.functionName.toString()));
+            // for (int i = 1; i <= 11; i++) {
+            //     Register s = new Register("s" + i);
+            //     Identifier save = new Identifier("save_s" + i);
+            //     prologue.add(new Move_Id_Reg(save, s));
+            // }
 
             // Epilogue: Restore callee-saved registers from stack
-            // epilogue.addAll(restoreLiveCalleeRegisters(n.functionName.toString()));
-            for (int i = 1; i <= 11; i++) {
-                Register s = new Register("s" + i);
-                Identifier save = new Identifier("save_s" + i);
-                epilogue.add(new Move_Reg_Id(s, save));
-            }
+            epilogue.addAll(restoreLiveCalleeRegisters(n.functionName.toString()));
+            // for (int i = 1; i <= 11; i++) {
+            //     Register s = new Register("s" + i);
+            //     Identifier save = new Identifier("save_s" + i);
+            //     epilogue.add(new Move_Reg_Id(s, save));
+            // }
         }
 
         // 🍅 : Handle function parameters: move from a2–a7 into allocated space

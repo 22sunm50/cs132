@@ -1,0 +1,1079 @@
+func main()
+v0 = 4
+v1 = alloc(v0)
+v2 = 4
+vmt_BT = alloc(v2)
+v3 = @BT_Start
+[vmt_BT + 0] = v3
+[v1 + 0] = vmt_BT
+if0 v1 goto Lv0_Error
+goto Lv1_End
+Lv0_Error:
+error("null pointer")
+Lv1_End:
+v4 = [v1 + 0]
+v5 = [v4 + 0]
+v6 = call v5(v1)
+print(v6)
+v7 = 0
+      return v7
+
+func BT_Start(this)
+v8 = 28
+v9 = alloc(v8)
+v10 = 80
+vmt_Tree = alloc(v10)
+v11 = @Tree_Delete
+[vmt_Tree + 0] = v11
+v12 = @Tree_SetHas_Left
+[vmt_Tree + 4] = v12
+v13 = @Tree_RemoveLeft
+[vmt_Tree + 8] = v13
+v14 = @Tree_GetKey
+[vmt_Tree + 12] = v14
+v15 = @Tree_SetRight
+[vmt_Tree + 16] = v15
+v16 = @Tree_GetLeft
+[vmt_Tree + 20] = v16
+v17 = @Tree_GetRight
+[vmt_Tree + 24] = v17
+v18 = @Tree_Remove
+[vmt_Tree + 28] = v18
+v19 = @Tree_SetLeft
+[vmt_Tree + 32] = v19
+v20 = @Tree_Insert
+[vmt_Tree + 36] = v20
+v21 = @Tree_Print
+[vmt_Tree + 40] = v21
+v22 = @Tree_Init
+[vmt_Tree + 44] = v22
+v23 = @Tree_GetHas_Right
+[vmt_Tree + 48] = v23
+v24 = @Tree_GetHas_Left
+[vmt_Tree + 52] = v24
+v25 = @Tree_RemoveRight
+[vmt_Tree + 56] = v25
+v26 = @Tree_Search
+[vmt_Tree + 60] = v26
+v27 = @Tree_SetKey
+[vmt_Tree + 64] = v27
+v28 = @Tree_Compare
+[vmt_Tree + 68] = v28
+v29 = @Tree_SetHas_Right
+[vmt_Tree + 72] = v29
+v30 = @Tree_RecPrint
+[vmt_Tree + 76] = v30
+[v9 + 0] = vmt_Tree
+root = v9
+if0 root goto Lv2_Error
+goto Lv3_End
+Lv2_Error:
+error("null pointer")
+Lv3_End:
+v31 = [root + 0]
+v32 = [v31 + 44]
+v33 = 16
+v34 = call v32(root v33)
+ntb = v34
+if0 root goto Lv4_Error
+goto Lv5_End
+Lv4_Error:
+error("null pointer")
+Lv5_End:
+v35 = [root + 0]
+v36 = [v35 + 40]
+v37 = call v36(root)
+ntb = v37
+v38 = 100000000
+print(v38)
+if0 root goto Lv6_Error
+goto Lv7_End
+Lv6_Error:
+error("null pointer")
+Lv7_End:
+v39 = [root + 0]
+v40 = [v39 + 36]
+v41 = 8
+v42 = call v40(root v41)
+ntb = v42
+if0 root goto Lv8_Error
+goto Lv9_End
+Lv8_Error:
+error("null pointer")
+Lv9_End:
+v43 = [root + 0]
+v44 = [v43 + 40]
+v45 = call v44(root)
+ntb = v45
+if0 root goto Lv10_Error
+goto Lv11_End
+Lv10_Error:
+error("null pointer")
+Lv11_End:
+v46 = [root + 0]
+v47 = [v46 + 36]
+v48 = 24
+v49 = call v47(root v48)
+ntb = v49
+if0 root goto Lv12_Error
+goto Lv13_End
+Lv12_Error:
+error("null pointer")
+Lv13_End:
+v50 = [root + 0]
+v51 = [v50 + 36]
+v52 = 4
+v53 = call v51(root v52)
+ntb = v53
+if0 root goto Lv14_Error
+goto Lv15_End
+Lv14_Error:
+error("null pointer")
+Lv15_End:
+v54 = [root + 0]
+v55 = [v54 + 36]
+v56 = 12
+v57 = call v55(root v56)
+ntb = v57
+if0 root goto Lv16_Error
+goto Lv17_End
+Lv16_Error:
+error("null pointer")
+Lv17_End:
+v58 = [root + 0]
+v59 = [v58 + 36]
+v60 = 20
+v61 = call v59(root v60)
+ntb = v61
+if0 root goto Lv18_Error
+goto Lv19_End
+Lv18_Error:
+error("null pointer")
+Lv19_End:
+v62 = [root + 0]
+v63 = [v62 + 36]
+v64 = 28
+v65 = call v63(root v64)
+ntb = v65
+if0 root goto Lv20_Error
+goto Lv21_End
+Lv20_Error:
+error("null pointer")
+Lv21_End:
+v66 = [root + 0]
+v67 = [v66 + 36]
+v68 = 14
+v69 = call v67(root v68)
+ntb = v69
+if0 root goto Lv22_Error
+goto Lv23_End
+Lv22_Error:
+error("null pointer")
+Lv23_End:
+v70 = [root + 0]
+v71 = [v70 + 40]
+v72 = call v71(root)
+ntb = v72
+if0 root goto Lv24_Error
+goto Lv25_End
+Lv24_Error:
+error("null pointer")
+Lv25_End:
+v73 = [root + 0]
+v74 = [v73 + 60]
+v75 = 24
+v76 = call v74(root v75)
+print(v76)
+if0 root goto Lv26_Error
+goto Lv27_End
+Lv26_Error:
+error("null pointer")
+Lv27_End:
+v77 = [root + 0]
+v78 = [v77 + 60]
+v79 = 12
+v80 = call v78(root v79)
+print(v80)
+if0 root goto Lv28_Error
+goto Lv29_End
+Lv28_Error:
+error("null pointer")
+Lv29_End:
+v81 = [root + 0]
+v82 = [v81 + 60]
+v83 = 16
+v84 = call v82(root v83)
+print(v84)
+if0 root goto Lv30_Error
+goto Lv31_End
+Lv30_Error:
+error("null pointer")
+Lv31_End:
+v85 = [root + 0]
+v86 = [v85 + 60]
+v87 = 50
+v88 = call v86(root v87)
+print(v88)
+if0 root goto Lv32_Error
+goto Lv33_End
+Lv32_Error:
+error("null pointer")
+Lv33_End:
+v89 = [root + 0]
+v90 = [v89 + 60]
+v91 = 12
+v92 = call v90(root v91)
+print(v92)
+if0 root goto Lv34_Error
+goto Lv35_End
+Lv34_Error:
+error("null pointer")
+Lv35_End:
+v93 = [root + 0]
+v94 = [v93 + 0]
+v95 = 12
+v96 = call v94(root v95)
+ntb = v96
+if0 root goto Lv36_Error
+goto Lv37_End
+Lv36_Error:
+error("null pointer")
+Lv37_End:
+v97 = [root + 0]
+v98 = [v97 + 40]
+v99 = call v98(root)
+ntb = v99
+if0 root goto Lv38_Error
+goto Lv39_End
+Lv38_Error:
+error("null pointer")
+Lv39_End:
+v100 = [root + 0]
+v101 = [v100 + 60]
+v102 = 12
+v103 = call v101(root v102)
+print(v103)
+v104 = 0
+      return v104
+
+func Tree_Init(this v_key)
+[this + 24] = v_key
+v105 = 0
+[this + 20] = v105
+v106 = 0
+[this + 8] = v106
+v107 = 1
+      return v107
+
+func Tree_SetRight(this rn)
+[this + 16] = rn
+v108 = 1
+      return v108
+
+func Tree_SetLeft(this ln)
+[this + 4] = ln
+v109 = 1
+      return v109
+
+func Tree_GetRight(this)
+v110 = [this + 16]
+      return v110
+
+func Tree_GetLeft(this)
+v111 = [this + 4]
+      return v111
+
+func Tree_GetKey(this)
+v112 = [this + 24]
+      return v112
+
+func Tree_SetKey(this v_key)
+[this + 24] = v_key
+v113 = 1
+      return v113
+
+func Tree_GetHas_Right(this)
+v114 = [this + 8]
+      return v114
+
+func Tree_GetHas_Left(this)
+v115 = [this + 20]
+      return v115
+
+func Tree_SetHas_Left(this val)
+[this + 20] = val
+v116 = 1
+      return v116
+
+func Tree_SetHas_Right(this val)
+[this + 8] = val
+v117 = 1
+      return v117
+
+func Tree_Compare(this num1 num2)
+v118 = 0
+ntb = v118
+v119 = 1
+v120 = num2 + v119
+nti = v120
+v121 = num1 < num2
+if0 v121 goto Lv40_Else
+v122 = 0
+ntb = v122
+goto Lv41_End
+Lv40_Else:
+v123 = num1 < nti
+v124 = 1
+v125 = v124 - v123
+if0 v125 goto Lv42_Else
+v126 = 0
+ntb = v126
+goto Lv43_End
+Lv42_Else:
+v127 = 1
+ntb = v127
+Lv43_End:
+Lv41_End:
+      return ntb
+
+func Tree_Insert(this v_key)
+v128 = 28
+v129 = alloc(v128)
+v130 = 80
+vmt_Tree = alloc(v130)
+v131 = @Tree_Delete
+[vmt_Tree + 0] = v131
+v132 = @Tree_SetHas_Left
+[vmt_Tree + 4] = v132
+v133 = @Tree_RemoveLeft
+[vmt_Tree + 8] = v133
+v134 = @Tree_GetKey
+[vmt_Tree + 12] = v134
+v135 = @Tree_SetRight
+[vmt_Tree + 16] = v135
+v136 = @Tree_GetLeft
+[vmt_Tree + 20] = v136
+v137 = @Tree_GetRight
+[vmt_Tree + 24] = v137
+v138 = @Tree_Remove
+[vmt_Tree + 28] = v138
+v139 = @Tree_SetLeft
+[vmt_Tree + 32] = v139
+v140 = @Tree_Insert
+[vmt_Tree + 36] = v140
+v141 = @Tree_Print
+[vmt_Tree + 40] = v141
+v142 = @Tree_Init
+[vmt_Tree + 44] = v142
+v143 = @Tree_GetHas_Right
+[vmt_Tree + 48] = v143
+v144 = @Tree_GetHas_Left
+[vmt_Tree + 52] = v144
+v145 = @Tree_RemoveRight
+[vmt_Tree + 56] = v145
+v146 = @Tree_Search
+[vmt_Tree + 60] = v146
+v147 = @Tree_SetKey
+[vmt_Tree + 64] = v147
+v148 = @Tree_Compare
+[vmt_Tree + 68] = v148
+v149 = @Tree_SetHas_Right
+[vmt_Tree + 72] = v149
+v150 = @Tree_RecPrint
+[vmt_Tree + 76] = v150
+[v129 + 0] = vmt_Tree
+new_node = v129
+if0 new_node goto Lv44_Error
+goto Lv45_End
+Lv44_Error:
+error("null pointer")
+Lv45_End:
+v151 = [new_node + 0]
+v152 = [v151 + 44]
+v153 = call v152(new_node v_key)
+ntb = v153
+current_node = this
+v154 = 1
+cont = v154
+Lv46_Start:
+if0 cont goto Lv47_End
+if0 current_node goto Lv48_Error
+goto Lv49_End
+Lv48_Error:
+error("null pointer")
+Lv49_End:
+v155 = [current_node + 0]
+v156 = [v155 + 12]
+v157 = call v156(current_node)
+key_aux = v157
+v158 = v_key < key_aux
+if0 v158 goto Lv50_Else
+if0 current_node goto Lv54_Error
+goto Lv55_End
+Lv54_Error:
+error("null pointer")
+Lv55_End:
+v159 = [current_node + 0]
+v160 = [v159 + 52]
+v161 = call v160(current_node)
+if0 v161 goto Lv52_Else
+if0 current_node goto Lv56_Error
+goto Lv57_End
+Lv56_Error:
+error("null pointer")
+Lv57_End:
+v162 = [current_node + 0]
+v163 = [v162 + 20]
+v164 = call v163(current_node)
+current_node = v164
+goto Lv53_End
+Lv52_Else:
+v165 = 0
+cont = v165
+if0 current_node goto Lv58_Error
+goto Lv59_End
+Lv58_Error:
+error("null pointer")
+Lv59_End:
+v166 = [current_node + 0]
+v167 = [v166 + 4]
+v168 = 1
+v169 = call v167(current_node v168)
+ntb = v169
+if0 current_node goto Lv60_Error
+goto Lv61_End
+Lv60_Error:
+error("null pointer")
+Lv61_End:
+v170 = [current_node + 0]
+v171 = [v170 + 32]
+v172 = call v171(current_node new_node)
+ntb = v172
+Lv53_End:
+goto Lv51_End
+Lv50_Else:
+if0 current_node goto Lv64_Error
+goto Lv65_End
+Lv64_Error:
+error("null pointer")
+Lv65_End:
+v173 = [current_node + 0]
+v174 = [v173 + 48]
+v175 = call v174(current_node)
+if0 v175 goto Lv62_Else
+if0 current_node goto Lv66_Error
+goto Lv67_End
+Lv66_Error:
+error("null pointer")
+Lv67_End:
+v176 = [current_node + 0]
+v177 = [v176 + 24]
+v178 = call v177(current_node)
+current_node = v178
+goto Lv63_End
+Lv62_Else:
+v179 = 0
+cont = v179
+if0 current_node goto Lv68_Error
+goto Lv69_End
+Lv68_Error:
+error("null pointer")
+Lv69_End:
+v180 = [current_node + 0]
+v181 = [v180 + 72]
+v182 = 1
+v183 = call v181(current_node v182)
+ntb = v183
+if0 current_node goto Lv70_Error
+goto Lv71_End
+Lv70_Error:
+error("null pointer")
+Lv71_End:
+v184 = [current_node + 0]
+v185 = [v184 + 16]
+v186 = call v185(current_node new_node)
+ntb = v186
+Lv63_End:
+Lv51_End:
+goto Lv46_Start
+Lv47_End:
+v187 = 1
+      return v187
+
+func Tree_Delete(this v_key)
+current_node = this
+parent_node = this
+v188 = 1
+cont = v188
+v189 = 0
+found = v189
+v190 = 1
+is_root = v190
+Lv72_Start:
+if0 cont goto Lv73_End
+if0 current_node goto Lv74_Error
+goto Lv75_End
+Lv74_Error:
+error("null pointer")
+Lv75_End:
+v191 = [current_node + 0]
+v192 = [v191 + 12]
+v193 = call v192(current_node)
+key_aux = v193
+v194 = v_key < key_aux
+if0 v194 goto Lv76_Else
+if0 current_node goto Lv80_Error
+goto Lv81_End
+Lv80_Error:
+error("null pointer")
+Lv81_End:
+v195 = [current_node + 0]
+v196 = [v195 + 52]
+v197 = call v196(current_node)
+if0 v197 goto Lv78_Else
+parent_node = current_node
+if0 current_node goto Lv82_Error
+goto Lv83_End
+Lv82_Error:
+error("null pointer")
+Lv83_End:
+v198 = [current_node + 0]
+v199 = [v198 + 20]
+v200 = call v199(current_node)
+current_node = v200
+goto Lv79_End
+Lv78_Else:
+v201 = 0
+cont = v201
+Lv79_End:
+goto Lv77_End
+Lv76_Else:
+v202 = key_aux < v_key
+if0 v202 goto Lv84_Else
+if0 current_node goto Lv88_Error
+goto Lv89_End
+Lv88_Error:
+error("null pointer")
+Lv89_End:
+v203 = [current_node + 0]
+v204 = [v203 + 48]
+v205 = call v204(current_node)
+if0 v205 goto Lv86_Else
+parent_node = current_node
+if0 current_node goto Lv90_Error
+goto Lv91_End
+Lv90_Error:
+error("null pointer")
+Lv91_End:
+v206 = [current_node + 0]
+v207 = [v206 + 24]
+v208 = call v207(current_node)
+current_node = v208
+goto Lv87_End
+Lv86_Else:
+v209 = 0
+cont = v209
+Lv87_End:
+goto Lv85_End
+Lv84_Else:
+if0 is_root goto Lv92_Else
+if0 current_node goto Lv98_Error
+goto Lv99_End
+Lv98_Error:
+error("null pointer")
+Lv99_End:
+v210 = [current_node + 0]
+v211 = [v210 + 48]
+v212 = call v211(current_node)
+v213 = 1
+v214 = v213 - v212
+if0 v214 goto Lv96_False
+if0 current_node goto Lv100_Error
+goto Lv101_End
+Lv100_Error:
+error("null pointer")
+Lv101_End:
+v215 = [current_node + 0]
+v216 = [v215 + 52]
+v217 = call v216(current_node)
+v218 = 1
+v219 = v218 - v217
+v220 = v219
+goto Lv97_End
+Lv96_False:
+v220 = 0
+Lv97_End:
+if0 v220 goto Lv94_Else
+v221 = 1
+ntb = v221
+goto Lv95_End
+Lv94_Else:
+if0 this goto Lv102_Error
+goto Lv103_End
+Lv102_Error:
+error("null pointer")
+Lv103_End:
+v222 = [this + 0]
+v223 = [v222 + 28]
+v224 = call v223(this parent_node current_node)
+ntb = v224
+Lv95_End:
+goto Lv93_End
+Lv92_Else:
+if0 this goto Lv104_Error
+goto Lv105_End
+Lv104_Error:
+error("null pointer")
+Lv105_End:
+v225 = [this + 0]
+v226 = [v225 + 28]
+v227 = call v226(this parent_node current_node)
+ntb = v227
+Lv93_End:
+v228 = 1
+found = v228
+v229 = 0
+cont = v229
+Lv85_End:
+Lv77_End:
+v230 = 0
+is_root = v230
+goto Lv72_Start
+Lv73_End:
+      return found
+
+func Tree_Remove(this p_node c_node)
+if0 c_node goto Lv108_Error
+goto Lv109_End
+Lv108_Error:
+error("null pointer")
+Lv109_End:
+v231 = [c_node + 0]
+v232 = [v231 + 52]
+v233 = call v232(c_node)
+if0 v233 goto Lv106_Else
+if0 this goto Lv110_Error
+goto Lv111_End
+Lv110_Error:
+error("null pointer")
+Lv111_End:
+v234 = [this + 0]
+v235 = [v234 + 8]
+v236 = call v235(this p_node c_node)
+ntb = v236
+goto Lv107_End
+Lv106_Else:
+if0 c_node goto Lv114_Error
+goto Lv115_End
+Lv114_Error:
+error("null pointer")
+Lv115_End:
+v237 = [c_node + 0]
+v238 = [v237 + 48]
+v239 = call v238(c_node)
+if0 v239 goto Lv112_Else
+if0 this goto Lv116_Error
+goto Lv117_End
+Lv116_Error:
+error("null pointer")
+Lv117_End:
+v240 = [this + 0]
+v241 = [v240 + 56]
+v242 = call v241(this p_node c_node)
+ntb = v242
+goto Lv113_End
+Lv112_Else:
+if0 c_node goto Lv118_Error
+goto Lv119_End
+Lv118_Error:
+error("null pointer")
+Lv119_End:
+v243 = [c_node + 0]
+v244 = [v243 + 12]
+v245 = call v244(c_node)
+auxkey1 = v245
+if0 p_node goto Lv120_Error
+goto Lv121_End
+Lv120_Error:
+error("null pointer")
+Lv121_End:
+v246 = [p_node + 0]
+v247 = [v246 + 20]
+v248 = call v247(p_node)
+if0 v248 goto Lv122_Error
+goto Lv123_End
+Lv122_Error:
+error("null pointer")
+Lv123_End:
+v249 = [v248 + 0]
+v250 = [v249 + 12]
+v251 = call v250(v248)
+auxkey2 = v251
+if0 this goto Lv126_Error
+goto Lv127_End
+Lv126_Error:
+error("null pointer")
+Lv127_End:
+v252 = [this + 0]
+v253 = [v252 + 68]
+v254 = call v253(this auxkey1 auxkey2)
+if0 v254 goto Lv124_Else
+if0 p_node goto Lv128_Error
+goto Lv129_End
+Lv128_Error:
+error("null pointer")
+Lv129_End:
+v255 = [p_node + 0]
+v256 = [v255 + 32]
+v257 = [this + 12]
+v258 = call v256(p_node v257)
+ntb = v258
+if0 p_node goto Lv130_Error
+goto Lv131_End
+Lv130_Error:
+error("null pointer")
+Lv131_End:
+v259 = [p_node + 0]
+v260 = [v259 + 4]
+v261 = 0
+v262 = call v260(p_node v261)
+ntb = v262
+goto Lv125_End
+Lv124_Else:
+if0 p_node goto Lv132_Error
+goto Lv133_End
+Lv132_Error:
+error("null pointer")
+Lv133_End:
+v263 = [p_node + 0]
+v264 = [v263 + 16]
+v265 = [this + 12]
+v266 = call v264(p_node v265)
+ntb = v266
+if0 p_node goto Lv134_Error
+goto Lv135_End
+Lv134_Error:
+error("null pointer")
+Lv135_End:
+v267 = [p_node + 0]
+v268 = [v267 + 72]
+v269 = 0
+v270 = call v268(p_node v269)
+ntb = v270
+Lv125_End:
+Lv113_End:
+Lv107_End:
+v271 = 1
+      return v271
+
+func Tree_RemoveRight(this p_node c_node)
+Lv136_Start:
+if0 c_node goto Lv138_Error
+goto Lv139_End
+Lv138_Error:
+error("null pointer")
+Lv139_End:
+v272 = [c_node + 0]
+v273 = [v272 + 48]
+v274 = call v273(c_node)
+if0 v274 goto Lv137_End
+if0 c_node goto Lv140_Error
+goto Lv141_End
+Lv140_Error:
+error("null pointer")
+Lv141_End:
+v275 = [c_node + 0]
+v276 = [v275 + 64]
+if0 c_node goto Lv142_Error
+goto Lv143_End
+Lv142_Error:
+error("null pointer")
+Lv143_End:
+v277 = [c_node + 0]
+v278 = [v277 + 24]
+v279 = call v278(c_node)
+if0 v279 goto Lv144_Error
+goto Lv145_End
+Lv144_Error:
+error("null pointer")
+Lv145_End:
+v280 = [v279 + 0]
+v281 = [v280 + 12]
+v282 = call v281(v279)
+v283 = call v276(c_node v282)
+ntb = v283
+p_node = c_node
+if0 c_node goto Lv146_Error
+goto Lv147_End
+Lv146_Error:
+error("null pointer")
+Lv147_End:
+v284 = [c_node + 0]
+v285 = [v284 + 24]
+v286 = call v285(c_node)
+c_node = v286
+goto Lv136_Start
+Lv137_End:
+if0 p_node goto Lv148_Error
+goto Lv149_End
+Lv148_Error:
+error("null pointer")
+Lv149_End:
+v287 = [p_node + 0]
+v288 = [v287 + 16]
+v289 = [this + 12]
+v290 = call v288(p_node v289)
+ntb = v290
+if0 p_node goto Lv150_Error
+goto Lv151_End
+Lv150_Error:
+error("null pointer")
+Lv151_End:
+v291 = [p_node + 0]
+v292 = [v291 + 72]
+v293 = 0
+v294 = call v292(p_node v293)
+ntb = v294
+v295 = 1
+      return v295
+
+func Tree_RemoveLeft(this p_node c_node)
+Lv152_Start:
+if0 c_node goto Lv154_Error
+goto Lv155_End
+Lv154_Error:
+error("null pointer")
+Lv155_End:
+v296 = [c_node + 0]
+v297 = [v296 + 52]
+v298 = call v297(c_node)
+if0 v298 goto Lv153_End
+if0 c_node goto Lv156_Error
+goto Lv157_End
+Lv156_Error:
+error("null pointer")
+Lv157_End:
+v299 = [c_node + 0]
+v300 = [v299 + 64]
+if0 c_node goto Lv158_Error
+goto Lv159_End
+Lv158_Error:
+error("null pointer")
+Lv159_End:
+v301 = [c_node + 0]
+v302 = [v301 + 20]
+v303 = call v302(c_node)
+if0 v303 goto Lv160_Error
+goto Lv161_End
+Lv160_Error:
+error("null pointer")
+Lv161_End:
+v304 = [v303 + 0]
+v305 = [v304 + 12]
+v306 = call v305(v303)
+v307 = call v300(c_node v306)
+ntb = v307
+p_node = c_node
+if0 c_node goto Lv162_Error
+goto Lv163_End
+Lv162_Error:
+error("null pointer")
+Lv163_End:
+v308 = [c_node + 0]
+v309 = [v308 + 20]
+v310 = call v309(c_node)
+c_node = v310
+goto Lv152_Start
+Lv153_End:
+if0 p_node goto Lv164_Error
+goto Lv165_End
+Lv164_Error:
+error("null pointer")
+Lv165_End:
+v311 = [p_node + 0]
+v312 = [v311 + 32]
+v313 = [this + 12]
+v314 = call v312(p_node v313)
+ntb = v314
+if0 p_node goto Lv166_Error
+goto Lv167_End
+Lv166_Error:
+error("null pointer")
+Lv167_End:
+v315 = [p_node + 0]
+v316 = [v315 + 4]
+v317 = 0
+v318 = call v316(p_node v317)
+ntb = v318
+v319 = 1
+      return v319
+
+func Tree_Search(this v_key)
+current_node = this
+v320 = 1
+cont = v320
+v321 = 0
+ifound = v321
+Lv168_Start:
+if0 cont goto Lv169_End
+if0 current_node goto Lv170_Error
+goto Lv171_End
+Lv170_Error:
+error("null pointer")
+Lv171_End:
+v322 = [current_node + 0]
+v323 = [v322 + 12]
+v324 = call v323(current_node)
+key_aux = v324
+v325 = v_key < key_aux
+if0 v325 goto Lv172_Else
+if0 current_node goto Lv176_Error
+goto Lv177_End
+Lv176_Error:
+error("null pointer")
+Lv177_End:
+v326 = [current_node + 0]
+v327 = [v326 + 52]
+v328 = call v327(current_node)
+if0 v328 goto Lv174_Else
+if0 current_node goto Lv178_Error
+goto Lv179_End
+Lv178_Error:
+error("null pointer")
+Lv179_End:
+v329 = [current_node + 0]
+v330 = [v329 + 20]
+v331 = call v330(current_node)
+current_node = v331
+goto Lv175_End
+Lv174_Else:
+v332 = 0
+cont = v332
+Lv175_End:
+goto Lv173_End
+Lv172_Else:
+v333 = key_aux < v_key
+if0 v333 goto Lv180_Else
+if0 current_node goto Lv184_Error
+goto Lv185_End
+Lv184_Error:
+error("null pointer")
+Lv185_End:
+v334 = [current_node + 0]
+v335 = [v334 + 48]
+v336 = call v335(current_node)
+if0 v336 goto Lv182_Else
+if0 current_node goto Lv186_Error
+goto Lv187_End
+Lv186_Error:
+error("null pointer")
+Lv187_End:
+v337 = [current_node + 0]
+v338 = [v337 + 24]
+v339 = call v338(current_node)
+current_node = v339
+goto Lv183_End
+Lv182_Else:
+v340 = 0
+cont = v340
+Lv183_End:
+goto Lv181_End
+Lv180_Else:
+v341 = 1
+ifound = v341
+v342 = 0
+cont = v342
+Lv181_End:
+Lv173_End:
+goto Lv168_Start
+Lv169_End:
+      return ifound
+
+func Tree_Print(this)
+current_node = this
+if0 this goto Lv188_Error
+goto Lv189_End
+Lv188_Error:
+error("null pointer")
+Lv189_End:
+v343 = [this + 0]
+v344 = [v343 + 76]
+v345 = call v344(this current_node)
+ntb = v345
+v346 = 1
+      return v346
+
+func Tree_RecPrint(this node)
+if0 node goto Lv192_Error
+goto Lv193_End
+Lv192_Error:
+error("null pointer")
+Lv193_End:
+v347 = [node + 0]
+v348 = [v347 + 52]
+v349 = call v348(node)
+if0 v349 goto Lv190_Else
+if0 this goto Lv194_Error
+goto Lv195_End
+Lv194_Error:
+error("null pointer")
+Lv195_End:
+v350 = [this + 0]
+v351 = [v350 + 76]
+if0 node goto Lv196_Error
+goto Lv197_End
+Lv196_Error:
+error("null pointer")
+Lv197_End:
+v352 = [node + 0]
+v353 = [v352 + 20]
+v354 = call v353(node)
+v355 = call v351(this v354)
+ntb = v355
+goto Lv191_End
+Lv190_Else:
+v356 = 1
+ntb = v356
+Lv191_End:
+if0 node goto Lv198_Error
+goto Lv199_End
+Lv198_Error:
+error("null pointer")
+Lv199_End:
+v357 = [node + 0]
+v358 = [v357 + 12]
+v359 = call v358(node)
+print(v359)
+if0 node goto Lv202_Error
+goto Lv203_End
+Lv202_Error:
+error("null pointer")
+Lv203_End:
+v360 = [node + 0]
+v361 = [v360 + 48]
+v362 = call v361(node)
+if0 v362 goto Lv200_Else
+if0 this goto Lv204_Error
+goto Lv205_End
+Lv204_Error:
+error("null pointer")
+Lv205_End:
+v363 = [this + 0]
+v364 = [v363 + 76]
+if0 node goto Lv206_Error
+goto Lv207_End
+Lv206_Error:
+error("null pointer")
+Lv207_End:
+v365 = [node + 0]
+v366 = [v365 + 24]
+v367 = call v366(node)
+v368 = call v364(this v367)
+ntb = v368
+goto Lv201_End
+Lv200_Else:
+v369 = 1
+ntb = v369
+Lv201_End:
+v370 = 1
+      return v370
