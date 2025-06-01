@@ -8,10 +8,13 @@ public class LinearScanRegisterAllocator {
     private final Map<String, String> registerMap = new HashMap<>();
     private final Set<String> spilled = new HashSet<>();
 
-    public LinearScanRegisterAllocator(List<LiveInterval> intervals, Integer numRegisters, List<String> availableRegisters) {
+    ArrayList<Integer> f_call_lines = new ArrayList<Integer>();
+
+    public LinearScanRegisterAllocator(List<LiveInterval> intervals, Integer numRegisters, List<String> availableRegisters, ArrayList<Integer> f_call_lines) {
         this.intervals = new ArrayList<>(intervals);
         this.NUM_REGS = numRegisters;
         this.registerPool = new ArrayList<>(availableRegisters);
+        this.f_call_lines = f_call_lines;
     }
 
     public void allocate() {
@@ -21,18 +24,76 @@ public class LinearScanRegisterAllocator {
             System.err.println("\n🔹Processing: " + i.name + " [" + i.start + ", " + i.end + "]");
 
             expireOldIntervals(i);
-            if (active.size() == NUM_REGS) {
+            if (active.size() == NUM_REGS) { // SPILL
                 System.err.println("  💥 No free registers. Need to spill.");
                 spillAtInterval(i);
-            } else {
-                // String reg = registerPool.remove(registerPool.size() - 1);
-                String reg = registerPool.remove(0);
-                registerMap.put(i.name, reg);
-                active.add(i);
-                active.sort(Comparator.comparingInt(j -> j.end));
+            } else { // there are available regs
+                // Determine if this interval spans a function call line
+                boolean containsCall = false;
+                for (int line : f_call_lines) {
+                    // if (i.start <= line && line <= i.end) {
+                    if (i.start < line && line < i.end) { // 🍅 🍅 : GOT ME TO 61 BUT FAILING 2 TEST CASES
+                        containsCall = true;
+                        break;
+                    }
+                }
 
-                System.err.println("  ✅ Allocated " + reg + " to " + i.name);
-                printActive();
+                // 🍒 Try to get a register based on call containment
+                String selectedReg = null;
+
+                if (containsCall) {
+                    // Prefer s-registers
+                    for (String r : registerPool) {
+                        if (r.startsWith("s")) {
+                            selectedReg = r;
+                            break;
+                        }
+                    }
+                    if (selectedReg == null) {
+                        for (String r : registerPool) {
+                            if (r.startsWith("t")) {
+                                selectedReg = r;
+                                break;
+                            }
+                        }
+                    }
+                } else {
+                    // Prefer t-registers
+                    for (String r : registerPool) {
+                        if (r.startsWith("t")) {
+                            selectedReg = r;
+                            break;
+                        }
+                    }
+                    if (selectedReg == null) {
+                        for (String r : registerPool) {
+                            if (r.startsWith("s")) {
+                                selectedReg = r;
+                                break;
+                            }
+                        }
+                    }
+                }
+
+                if (selectedReg != null) {
+                    registerPool.remove(selectedReg);
+                    registerMap.put(i.name, selectedReg);
+                    active.add(i);
+                    active.sort(Comparator.comparingInt(j -> j.end));
+            
+                    System.err.println("  ✅ Allocated " + selectedReg + " to " + i.name);
+                    printActive();
+                } else {
+                    System.err.println("  🧨 Logic error: no register found but active.size() < NUM_REGS?");
+                }
+
+                // String reg = registerPool.remove(0);
+                // registerMap.put(i.name, reg);
+                // active.add(i);
+                // active.sort(Comparator.comparingInt(j -> j.end));
+
+                // System.err.println("  ✅ Allocated " + reg + " to " + i.name);
+                // printActive();
             }
         }
     }

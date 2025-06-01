@@ -128,6 +128,7 @@ public class TranslationVisitor implements RetVisitor < List<sparrowv.Instructio
         if (funcInterval == null) return saves;
     
         int funcStart = funcInterval.start;
+        int funcEnd = funcInterval.end;
     
         for (int i = 1; i <= 11; i++) {
             String sReg = "s" + i;
@@ -160,6 +161,7 @@ public class TranslationVisitor implements RetVisitor < List<sparrowv.Instructio
         if (funcInterval == null) return restores;
     
         int funcStart = funcInterval.start;
+        int funcEnd = funcInterval.end;
     
         for (int i = 1; i <= 11; i++) {
             String sReg = "s" + i;
@@ -219,19 +221,10 @@ public class TranslationVisitor implements RetVisitor < List<sparrowv.Instructio
         if (n.functionName.toString() != "main" && n.functionName.toString() != "Main"){
             // Prologue: Save callee-saved (s1–s11) registers to stack (as identifiers)
             prologue.addAll(saveLiveCalleeRegisters(n.functionName.toString()));
-            // for (int i = 1; i <= 11; i++) {
-            //     Register s = new Register("s" + i);
-            //     Identifier save = new Identifier("save_s" + i);
-            //     prologue.add(new Move_Id_Reg(save, s));
-            // }
 
             // Epilogue: Restore callee-saved registers from stack
             epilogue.addAll(restoreLiveCalleeRegisters(n.functionName.toString()));
-            // for (int i = 1; i <= 11; i++) {
-            //     Register s = new Register("s" + i);
-            //     Identifier save = new Identifier("save_s" + i);
-            //     epilogue.add(new Move_Reg_Id(s, save));
-            // }
+
         }
 
         // 🍅 : Handle function parameters: move from a2–a7 into allocated space

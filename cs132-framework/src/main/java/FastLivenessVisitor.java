@@ -11,6 +11,7 @@ public class FastLivenessVisitor implements Visitor {
     HashMap<String, Integer> labelToLine = new HashMap<String, Integer>();
     ArrayList<LoopRange> loopRanges = new ArrayList<LoopRange>();
     HashMap<String, LiveInterval> func_interval_map = new HashMap<String, LiveInterval>();
+    ArrayList<Integer> f_call_lines = new ArrayList<Integer>();
 
     Integer currentLine = 1;
 
@@ -244,6 +245,7 @@ public class FastLivenessVisitor implements Visitor {
         for (Identifier arg : n.args) {
             use(arg.toString());
         }
+        f_call_lines.add(currentLine);
         currentLine++;
     }
 }
