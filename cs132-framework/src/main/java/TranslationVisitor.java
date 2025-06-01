@@ -4,6 +4,7 @@ import IR.token.*;
 import sparrow.visitor.RetVisitor;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -17,12 +18,14 @@ public class TranslationVisitor implements RetVisitor < List<sparrowv.Instructio
     Identifier ret_id = null;
 
     Map<String, String> registerMap;
-    Set<String> spilledVars;
+    HashMap<String, LiveInterval> intervals_map;
+
+    Integer currentLine = 1;
 
     // constructor
-    public TranslationVisitor(Map<String, String> registerMap, Set<String> spilledVars) {
+    public TranslationVisitor(Map<String, String> registerMap, HashMap<String, LiveInterval> intervals_map) {
         this.registerMap = registerMap;
-        this.spilledVars = spilledVars;
+        this.intervals_map = intervals_map;
     }
 
     // wrap an instr w a list
@@ -51,21 +54,31 @@ public class TranslationVisitor implements RetVisitor < List<sparrowv.Instructio
         return lookup(id.toString());
     }
 
-    private void moveToReg(Register dest, Object src, List<Instruction> list) {
-        if (src instanceof Identifier) { //spill
-            list.add(new Move_Reg_Id(dest, (Identifier)src));
-        } else if (!dest.toString().equals(src.toString())) {
-            list.add(new Move_Reg_Reg(dest, (Register)src));
+    private List<Instruction> saveLiveCallerRegisters() {
+        List<Instruction> saves = new ArrayList<>();
+    
+        for (int i = 2; i <= 5; i++) {
+            String regName = "t" + i;
+            Register reg = new Register(regName);
+    
+            for (Map.Entry<String, String> entry : registerMap.entrySet()) {
+                String var = entry.getKey();
+                String assignedReg = entry.getValue();
+    
+                if (assignedReg.equals(regName)) {
+                    LiveInterval interval = intervals_map.get(var);
+    
+                    if (interval != null && interval.end > currentLine) {
+                        saves.add(new Move_Id_Reg(new Identifier("save_" + regName), reg));
+                        break; // Only need to save once if any variable maps to this register
+                    }
+                }
+            }
         }
+    
+        return saves;
     }
     
-    private void moveFromReg(Object dest, Register src, List<Instruction> list) {
-        if (dest instanceof Identifier) {
-            list.add(new Move_Id_Reg((Identifier)dest, src));
-        } else {
-            list.add(new Move_Reg_Reg((Register)dest, src));
-        }
-    }
 
     // VISIT METHODS START HERE
     
@@ -93,6 +106,9 @@ public class TranslationVisitor implements RetVisitor < List<sparrowv.Instructio
     @Override
     public List<Instruction> visit(sparrow.FunctionDecl n){
         List<Instruction> bodyInstrs = n.block.accept(this);
+
+        currentLine++;
+
         List<Instruction> prologue = new ArrayList<>();
         List<Instruction> epilogue = new ArrayList<>();
 
@@ -171,7 +187,10 @@ public class TranslationVisitor implements RetVisitor < List<sparrowv.Instructio
     /*   Label label; */
     @Override
     public List<Instruction> visit(sparrow.LabelInstr n){
-        return wrap(new sparrowv.LabelInstr(n.label));
+        List<Instruction> instrs = new ArrayList<>();
+        instrs.add(new sparrowv.LabelInstr(n.label));
+        currentLine++;
+        return instrs;
     }
 
     /*   Identifier lhs;
@@ -187,7 +206,7 @@ public class TranslationVisitor implements RetVisitor < List<sparrowv.Instructio
         } else {
             instrs.add(new Move_Reg_Integer((Register) lhs, n.rhs));
         }
-    
+        currentLine++;
         return instrs;
     }
 
@@ -205,7 +224,7 @@ public class TranslationVisitor implements RetVisitor < List<sparrowv.Instructio
             instrs.add(new Move_Reg_FuncName((Register) lhs, n.rhs));
             // instrs.add(new Move_Id_Reg(n.lhs, (Register) lhs)); // 🍅 🍅 🍅 : only so other code works for now i think
         }
-    
+        currentLine++;
         return instrs;
     }
 
@@ -241,7 +260,7 @@ public class TranslationVisitor implements RetVisitor < List<sparrowv.Instructio
             instrs.add(new sparrowv.Add(t0, t0, t1));
             instrs.add(new Move_Id_Reg(n.lhs, t0));
         }
-
+        currentLine++;
         return instrs;
 
         // List<Instruction> instrs = new ArrayList<>();
@@ -284,7 +303,7 @@ public class TranslationVisitor implements RetVisitor < List<sparrowv.Instructio
             instrs.add(new sparrowv.Subtract(t0, t0, t1));
             instrs.add(new Move_Id_Reg(n.lhs, t0));
         }
-        
+        currentLine++;
         return instrs;
         // List<Instruction> instrs = new ArrayList<>();
         // instrs.add(new Move_Reg_Id(t0, n.arg1));
@@ -326,7 +345,7 @@ public class TranslationVisitor implements RetVisitor < List<sparrowv.Instructio
             instrs.add(new sparrowv.Multiply(t0, t0, t1));
             instrs.add(new Move_Id_Reg(n.lhs, t0));
         }
-        
+        currentLine++;
         return instrs;
 
         // List<Instruction> instrs = new ArrayList<>();
@@ -369,7 +388,7 @@ public class TranslationVisitor implements RetVisitor < List<sparrowv.Instructio
             instrs.add(new sparrowv.LessThan(t0, t0, t1));
             instrs.add(new Move_Id_Reg(n.lhs, t0));
         }
-        
+        currentLine++;
         return instrs;
         // List<Instruction> instrs = new ArrayList<>();
         // instrs.add(new Move_Reg_Id(t0, n.arg1));
@@ -403,7 +422,7 @@ public class TranslationVisitor implements RetVisitor < List<sparrowv.Instructio
             // instrs.add(new Load(t0, t0, n.offset));
             // instrs.add(new Move_Reg_Reg((Register) lhs_reg, t0));
         }
-
+        currentLine++;
         return instrs; 
         // return List.of(
         //     new Move_Reg_Id(t0, n.base),
@@ -434,7 +453,7 @@ public class TranslationVisitor implements RetVisitor < List<sparrowv.Instructio
         } else {
             instrs.add(new Store((Register) base_reg, n.offset, t0));
         }
-
+        currentLine++;
         return instrs;
         // return List.of(
         //     new Move_Reg_Id(t0, n.base),
@@ -473,7 +492,7 @@ public class TranslationVisitor implements RetVisitor < List<sparrowv.Instructio
         } else {
             instrs.add(new Move_Id_Reg(n.lhs, t0));
         }
-    
+        currentLine++;
         return instrs;
 
 
@@ -505,7 +524,7 @@ public class TranslationVisitor implements RetVisitor < List<sparrowv.Instructio
         } else {
             instrs.add(new sparrowv.Alloc((Register) lhs, t0));
         }
-
+        currentLine++;
         return instrs;
         // return List.of(
         //     new Move_Reg_Id(t0, n.size),
@@ -526,7 +545,7 @@ public class TranslationVisitor implements RetVisitor < List<sparrowv.Instructio
         } else {
             instrs.add(new Print((Register) content));
         }
-
+        currentLine++;
         return instrs;
 
         // return List.of(
@@ -538,12 +557,14 @@ public class TranslationVisitor implements RetVisitor < List<sparrowv.Instructio
     /*   String msg; */
     @Override
     public List<Instruction> visit(sparrow.ErrorMessage n){
+        currentLine++;
         return wrap(new sparrowv.ErrorMessage(n.msg));
     }
 
     /*   Label label; */
     @Override
     public List<Instruction> visit(sparrow.Goto n){
+        currentLine++;
         return wrap(new sparrowv.Goto(n.label));
     }
 
@@ -560,7 +581,7 @@ public class TranslationVisitor implements RetVisitor < List<sparrowv.Instructio
         } else {
             instrs.add(new sparrowv.IfGoto((Register) cond_reg, n.label));
         }
-
+        currentLine++;
         return instrs;
         // return List.of(
         //     new Move_Reg_Id(t0, n.condition),
@@ -578,11 +599,12 @@ public class TranslationVisitor implements RetVisitor < List<sparrowv.Instructio
         Object lhs_reg = lookup(n.lhs);
 
         // Save caller (t0–t5) to identifiers
-        for (int i = 0; i <= 5; i++) {
-            Register t = new Register("t" + i);
-            Identifier save = new Identifier("save_t" + i);
-            instrs.add(new Move_Id_Reg(save, t));
-        }
+        instrs.addAll(saveLiveCallerRegisters());
+        // for (int i = 0; i <= 5; i++) {
+        //     Register t = new Register("t" + i);
+        //     Identifier save = new Identifier("save_t" + i);
+        //     instrs.add(new Move_Id_Reg(save, t));
+        // }
 
         // Save a2–a7
         for (int i = 2; i <= 7; i++) {
@@ -650,7 +672,7 @@ public class TranslationVisitor implements RetVisitor < List<sparrowv.Instructio
             Identifier save = new Identifier("save_a" + i);
             instrs.add(new Move_Reg_Id(a, save));
         }
-    
+        currentLine++;
         return instrs;
 
         // List<Instruction> instrs = new ArrayList<>();

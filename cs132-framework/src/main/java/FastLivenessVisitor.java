@@ -81,7 +81,7 @@ public class FastLivenessVisitor implements Visitor {
     @Override
     public void visit(LabelInstr n){
         labelToLine.put(n.label.toString(), currentLine);
-        // currentLine++; // label only, no variables
+        currentLine++; // label only, no variables
     }
 
     /*   Identifier lhs;

@@ -61,7 +61,7 @@ public class S2SV {
         // its just a flag, and just go to first pass and hit a call and iterate through all the ur variable intervals and check them off
         // if you can multiple calls to a funct, if you save to a callee save register, then you have less calls to the stack
 
-        TranslationVisitor tv = new TranslationVisitor(allocator.getRegisterMap(), allocator.getSpilledVars());
+        TranslationVisitor tv = new TranslationVisitor(allocator.getRegisterMap(), intervals_map);
         tv.visit(program);
     }
 }
