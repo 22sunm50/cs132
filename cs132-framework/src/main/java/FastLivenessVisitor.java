@@ -13,18 +13,14 @@ public class FastLivenessVisitor implements Visitor {
     Integer currentLine = 1;
 
     private void def(String id) {
-        if (intervals_map.putIfAbsent(id, new LiveInterval(id, currentLine)) != null){
-            System.err.println("🚨 def() in lv: try to def (" + id + ") already in the intervals_map");
-        }
+        intervals_map.putIfAbsent(id, new LiveInterval(id, currentLine));
         // want to keep the earliest def
         intervals_map.get(id).start = Math.min(intervals_map.get(id).start, currentLine);
     }
 
     private void use(String id) {
-        if (!id.matches("\\d+")) { // id is a number, not a variable, skip constants
-            intervals_map.putIfAbsent(id, new LiveInterval(id, currentLine));
-            intervals_map.get(id).updateEnd(currentLine);
-        }
+        // intervals_map.putIfAbsent(id, new LiveInterval(id, currentLine));
+        intervals_map.get(id).updateEnd(currentLine);
     }
 
     /*   List<FunctionDecl> funDecls; */
@@ -57,11 +53,12 @@ public class FastLivenessVisitor implements Visitor {
     public void visit(Block n){
         for (Instruction instr : n.instructions) {
             instr.accept(this);
+            // currentLine++;
         }
     
         // Treat return as use
         use(n.return_id.toString());
-        currentLine++;
+        // currentLine++;
     
         // === Loop-aware live range extension ===
         for (LoopRange loop : loopRanges) {
@@ -84,7 +81,7 @@ public class FastLivenessVisitor implements Visitor {
     @Override
     public void visit(LabelInstr n){
         labelToLine.put(n.label.toString(), currentLine);
-        currentLine++; // label only, no variables
+        // currentLine++; // label only, no variables
     }
 
     /*   Identifier lhs;

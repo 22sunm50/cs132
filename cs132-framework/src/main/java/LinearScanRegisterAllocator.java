@@ -25,7 +25,8 @@ public class LinearScanRegisterAllocator {
                 System.err.println("  💥 No free registers. Need to spill.");
                 spillAtInterval(i);
             } else {
-                String reg = registerPool.remove(registerPool.size() - 1);
+                // String reg = registerPool.remove(registerPool.size() - 1);
+                String reg = registerPool.remove(0);
                 registerMap.put(i.name, reg);
                 active.add(i);
                 active.sort(Comparator.comparingInt(j -> j.end));
@@ -50,6 +51,33 @@ public class LinearScanRegisterAllocator {
         }
     }
 
+    // private void expireOldIntervals(LiveInterval current) {
+    //     // 1) Collect every interval whose end < current.start
+    //     List<LiveInterval> toRemove = new ArrayList<>();
+    //     for (LiveInterval iv : active) {
+    //         if (iv.end < current.start) {
+    //             toRemove.add(iv);
+    //         }
+    //     }
+    
+    //     // 2) Remove them from active, free their registers
+    //     for (LiveInterval iv : toRemove) {
+    //         active.remove(iv);
+            
+    //         // registerPool.add(freedReg);
+
+    //         if (!spilled.contains(iv.name)){
+    //         // if (freedReg != null) {
+    //             String freedReg = registerMap.get(iv.name);
+    //             registerPool.add(freedReg);
+    //             System.err.println("  ⏳ Expired " + iv.name + ", released " + freedReg);
+    //         }
+    //     }
+    
+    //     // 3) Re-sort the remaining active set by end time
+    //     active.sort(Comparator.comparingInt(j -> j.end));
+    // }
+
     private void spillAtInterval(LiveInterval i) {
         LiveInterval spill = active.get(active.size() - 1); // last = largest end
         if (spill.end > i.end) {
@@ -66,6 +94,7 @@ public class LinearScanRegisterAllocator {
         } else {
             // i is spilled
             spilled.add(i.name);
+
             System.err.println("  🚫 Spilling " + i.name + " (no register assigned)");
         }
     }

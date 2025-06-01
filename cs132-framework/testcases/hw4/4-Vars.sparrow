@@ -19,7 +19,6 @@ v7 = call v6(v1)
 print(v7)
 v8 = 0
       return v8
-
 func A_run(this)
 if0 this goto Lv2_Error
 goto Lv3_End
@@ -43,7 +42,6 @@ v16 = call v14(this v15)
 b = v16
 v17 = a + b
       return v17
-
 func A_helper(this param)
 x = param
 v18 = 1

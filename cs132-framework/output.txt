@@ -1,0 +1,2376 @@
+func main()
+t2 = 4
+t0 = t2
+t3 = alloc(t0)
+t4 = 4
+t0 = t4
+t5 = alloc(t0)
+s1 = @LL_Start
+t0 = s1
+[t5 + 0] = t0
+t0 = t5
+[t3 + 0] = t0
+if0 t3 goto Lv0_Error
+goto Lv1_End
+Lv0_Error:
+error("null pointer")
+Lv1_End:
+t0 = t3
+s2 = [t0 + 0]
+t0 = s2
+s3 = [t0 + 0]
+save_t0 = t0
+save_t1 = t1
+save_t2 = t2
+save_t3 = t3
+save_t4 = t4
+save_t5 = t5
+save_a2 = a2
+save_a3 = a3
+save_a4 = a4
+save_a5 = a5
+save_a6 = a6
+save_a7 = a7
+a2 = t3
+t0 = s3
+s4 = call t0(v1)
+t0 = save_t0
+t1 = save_t1
+t2 = save_t2
+t3 = save_t3
+t4 = save_t4
+t5 = save_t5
+a2 = save_a2
+a3 = save_a3
+a4 = save_a4
+a5 = save_a5
+a6 = save_a6
+a7 = save_a7
+s5 = 0
+v7 = s5
+      return v7
+
+func Element_Init(this v_Age v_Salary v_Married)
+save_s1 = s1
+save_s2 = s2
+save_s3 = s3
+save_s4 = s4
+save_s5 = s5
+save_s6 = s6
+save_s7 = s7
+save_s8 = s8
+save_s9 = s9
+save_s10 = s10
+save_s11 = s11
+s6 = a2
+s7 = a3
+s8 = a4
+s9 = a5
+t0 = s7
+[s6 + 12] = t0
+t0 = s8
+[s6 + 4] = t0
+t0 = s9
+[s6 + 8] = t0
+s10 = 1
+v8 = s10
+s1 = save_s1
+s2 = save_s2
+s3 = save_s3
+s4 = save_s4
+s5 = save_s5
+s6 = save_s6
+s7 = save_s7
+s8 = save_s8
+s9 = save_s9
+s10 = save_s10
+s11 = save_s11
+      return v8
+
+func Element_GetAge(this)
+save_s1 = s1
+save_s2 = s2
+save_s3 = s3
+save_s4 = s4
+save_s5 = s5
+save_s6 = s6
+save_s7 = s7
+save_s8 = s8
+save_s9 = s9
+save_s10 = s10
+save_s11 = s11
+s6 = a2
+t0 = s6
+s11 = [t0 + 12]
+v9 = s11
+s1 = save_s1
+s2 = save_s2
+s3 = save_s3
+s4 = save_s4
+s5 = save_s5
+s6 = save_s6
+s7 = save_s7
+s8 = save_s8
+s9 = save_s9
+s10 = save_s10
+s11 = save_s11
+      return v9
+
+func Element_GetSalary(this)
+save_s1 = s1
+save_s2 = s2
+save_s3 = s3
+save_s4 = s4
+save_s5 = s5
+save_s6 = s6
+save_s7 = s7
+save_s8 = s8
+save_s9 = s9
+save_s10 = s10
+save_s11 = s11
+s6 = a2
+t0 = s6
+t2 = [t0 + 4]
+v10 = t2
+s1 = save_s1
+s2 = save_s2
+s3 = save_s3
+s4 = save_s4
+s5 = save_s5
+s6 = save_s6
+s7 = save_s7
+s8 = save_s8
+s9 = save_s9
+s10 = save_s10
+s11 = save_s11
+      return v10
+
+func Element_GetMarried(this)
+save_s1 = s1
+save_s2 = s2
+save_s3 = s3
+save_s4 = s4
+save_s5 = s5
+save_s6 = s6
+save_s7 = s7
+save_s8 = s8
+save_s9 = s9
+save_s10 = s10
+save_s11 = s11
+s6 = a2
+t0 = s6
+t4 = [t0 + 8]
+v11 = t4
+s1 = save_s1
+s2 = save_s2
+s3 = save_s3
+s4 = save_s4
+s5 = save_s5
+s6 = save_s6
+s7 = save_s7
+s8 = save_s8
+s9 = save_s9
+s10 = save_s10
+s11 = save_s11
+      return v11
+
+func Element_Equal(this other)
+save_s1 = s1
+save_s2 = s2
+save_s3 = s3
+save_s4 = s4
+save_s5 = s5
+save_s6 = s6
+save_s7 = s7
+save_s8 = s8
+save_s9 = s9
+save_s10 = s10
+save_s11 = s11
+s6 = a2
+s1 = a3
+t5 = 1
+t0 = t5
+s2 = t0
+if0 s1 goto Lv2_Error
+goto Lv3_End
+Lv2_Error:
+error("null pointer")
+Lv3_End:
+t0 = s1
+s4 = [t0 + 0]
+t0 = s4
+t3 = [t0 + 8]
+save_t0 = t0
+save_t1 = t1
+save_t2 = t2
+save_t3 = t3
+save_t4 = t4
+save_t5 = t5
+save_a2 = a2
+save_a3 = a3
+save_a4 = a4
+save_a5 = a5
+save_a6 = a6
+save_a7 = a7
+a2 = s1
+t0 = t3
+s3 = call t0(other)
+t0 = save_t0
+t1 = save_t1
+t2 = save_t2
+t3 = save_t3
+t4 = save_t4
+t5 = save_t5
+a2 = save_a2
+a3 = save_a3
+a4 = save_a4
+a5 = save_a5
+a6 = save_a6
+a7 = save_a7
+t0 = s3
+s5 = t0
+if0 s6 goto Lv6_Error
+goto Lv7_End
+Lv6_Error:
+error("null pointer")
+Lv7_End:
+t0 = s6
+s7 = [t0 + 0]
+t0 = s7
+s8 = [t0 + 20]
+t0 = s6
+s9 = [t0 + 12]
+save_t0 = t0
+save_t1 = t1
+save_t2 = t2
+save_t3 = t3
+save_t4 = t4
+save_t5 = t5
+save_a2 = a2
+save_a3 = a3
+save_a4 = a4
+save_a5 = a5
+save_a6 = a6
+save_a7 = a7
+a2 = s6
+a3 = s5
+a4 = s9
+t0 = s8
+s10 = call t0(this aux01 v18)
+t0 = save_t0
+t1 = save_t1
+t2 = save_t2
+t3 = save_t3
+t4 = save_t4
+t5 = save_t5
+a2 = save_a2
+a3 = save_a3
+a4 = save_a4
+a5 = save_a5
+a6 = save_a6
+a7 = save_a7
+s11 = 1
+t0 = s11
+t1 = s10
+t2 = t0 - t1
+if0 t2 goto Lv4_Else
+t4 = 0
+t0 = t4
+s2 = t0
+goto Lv5_End
+Lv4_Else:
+if0 s1 goto Lv8_Error
+goto Lv9_End
+Lv8_Error:
+error("null pointer")
+Lv9_End:
+t0 = s1
+t5 = [t0 + 0]
+t0 = t5
+s4 = [t0 + 0]
+save_t0 = t0
+save_t1 = t1
+save_t2 = t2
+save_t3 = t3
+save_t4 = t4
+save_t5 = t5
+save_a2 = a2
+save_a3 = a3
+save_a4 = a4
+save_a5 = a5
+save_a6 = a6
+save_a7 = a7
+a2 = s1
+t0 = s4
+t3 = call t0(other)
+t0 = save_t0
+t1 = save_t1
+t2 = save_t2
+t4 = save_t4
+t5 = save_t5
+a2 = save_a2
+a3 = save_a3
+a4 = save_a4
+a5 = save_a5
+a6 = save_a6
+a7 = save_a7
+t0 = t3
+s3 = t0
+if0 s6 goto Lv12_Error
+goto Lv13_End
+Lv12_Error:
+error("null pointer")
+Lv13_End:
+t0 = s6
+s7 = [t0 + 0]
+t0 = s7
+s8 = [t0 + 20]
+t0 = s6
+s9 = [t0 + 4]
+save_t0 = t0
+save_t1 = t1
+save_t2 = t2
+save_t3 = t3
+save_t4 = t4
+save_t5 = t5
+save_a2 = a2
+save_a3 = a3
+save_a4 = a4
+save_a5 = a5
+save_a6 = a6
+save_a7 = a7
+a2 = s6
+a3 = s3
+a4 = s9
+t0 = s8
+s10 = call t0(this aux02 v28)
+t0 = save_t0
+t1 = save_t1
+t2 = save_t2
+t3 = save_t3
+t4 = save_t4
+t5 = save_t5
+a2 = save_a2
+a3 = save_a3
+a4 = save_a4
+a5 = save_a5
+a6 = save_a6
+a7 = save_a7
+s11 = 1
+t0 = s11
+t1 = s10
+t2 = t0 - t1
+if0 t2 goto Lv10_Else
+t4 = 0
+t0 = t4
+s2 = t0
+goto Lv11_End
+Lv10_Else:
+t0 = s6
+t5 = [t0 + 8]
+if0 t5 goto Lv14_Else
+if0 s1 goto Lv18_Error
+goto Lv19_End
+Lv18_Error:
+error("null pointer")
+Lv19_End:
+t0 = s1
+s4 = [t0 + 0]
+t0 = s4
+t3 = [t0 + 16]
+save_t0 = t0
+save_t1 = t1
+save_t2 = t2
+save_t3 = t3
+save_t4 = t4
+save_t5 = t5
+save_a2 = a2
+save_a3 = a3
+save_a4 = a4
+save_a5 = a5
+save_a6 = a6
+save_a7 = a7
+a2 = s1
+t0 = t3
+s7 = call t0(other)
+t0 = save_t0
+t1 = save_t1
+t2 = save_t2
+t3 = save_t3
+t4 = save_t4
+t5 = save_t5
+a2 = save_a2
+a3 = save_a3
+a4 = save_a4
+a5 = save_a5
+a6 = save_a6
+a7 = save_a7
+s8 = 1
+t0 = s8
+t1 = s7
+s9 = t0 - t1
+if0 s9 goto Lv16_Else
+s10 = 0
+t0 = s10
+s2 = t0
+goto Lv17_End
+Lv16_Else:
+s11 = 0
+t0 = s11
+t2 = t0
+Lv17_End:
+goto Lv15_End
+Lv14_Else:
+if0 s1 goto Lv22_Error
+goto Lv23_End
+Lv22_Error:
+error("null pointer")
+Lv23_End:
+t0 = s1
+t4 = [t0 + 0]
+t0 = t4
+t5 = [t0 + 16]
+save_t0 = t0
+save_t1 = t1
+save_t2 = t2
+save_t3 = t3
+save_t4 = t4
+save_t5 = t5
+save_a2 = a2
+save_a3 = a3
+save_a4 = a4
+save_a5 = a5
+save_a6 = a6
+save_a7 = a7
+a2 = s1
+t0 = t5
+s4 = call t0(other)
+t0 = save_t0
+t1 = save_t1
+t2 = save_t2
+t3 = save_t3
+t4 = save_t4
+t5 = save_t5
+a2 = save_a2
+a3 = save_a3
+a4 = save_a4
+a5 = save_a5
+a6 = save_a6
+a7 = save_a7
+if0 s4 goto Lv20_Else
+t3 = 0
+t0 = t3
+s2 = t0
+goto Lv21_End
+Lv20_Else:
+s7 = 0
+t0 = s7
+t2 = t0
+Lv21_End:
+Lv15_End:
+Lv11_End:
+Lv5_End:
+ret_val = s2
+s1 = save_s1
+s2 = save_s2
+s3 = save_s3
+s4 = save_s4
+s5 = save_s5
+s6 = save_s6
+s7 = save_s7
+s8 = save_s8
+s9 = save_s9
+s10 = save_s10
+s11 = save_s11
+      return ret_val
+
+func Element_Compare(this num1 num2)
+save_s1 = s1
+save_s2 = s2
+save_s3 = s3
+save_s4 = s4
+save_s5 = s5
+save_s6 = s6
+save_s7 = s7
+save_s8 = s8
+save_s9 = s9
+save_s10 = s10
+save_s11 = s11
+s6 = a2
+s8 = a3
+s9 = a4
+s10 = 0
+t0 = s10
+t2 = t0
+s11 = 1
+t0 = s9
+t1 = s11
+t4 = t0 + t1
+t0 = t4
+s3 = t0
+t0 = s8
+t1 = s9
+s1 = t0 < t1
+if0 s1 goto Lv24_Else
+t5 = 0
+t0 = t5
+t2 = t0
+goto Lv25_End
+Lv24_Else:
+t0 = s8
+t1 = s3
+s4 = t0 < t1
+t3 = 1
+t0 = t3
+t1 = s4
+s7 = t0 - t1
+if0 s7 goto Lv26_Else
+s10 = 0
+t0 = s10
+t2 = t0
+goto Lv27_End
+Lv26_Else:
+s11 = 1
+t0 = s11
+t2 = t0
+Lv27_End:
+Lv25_End:
+retval = t2
+s1 = save_s1
+s2 = save_s2
+s3 = save_s3
+s4 = save_s4
+s5 = save_s5
+s6 = save_s6
+s7 = save_s7
+s8 = save_s8
+s9 = save_s9
+s10 = save_s10
+s11 = save_s11
+      return retval
+
+func List_Init(this)
+save_s1 = s1
+save_s2 = s2
+save_s3 = s3
+save_s4 = s4
+save_s5 = s5
+save_s6 = s6
+save_s7 = s7
+save_s8 = s8
+save_s9 = s9
+save_s10 = s10
+save_s11 = s11
+s6 = a2
+t4 = 1
+t0 = t4
+[s6 + 12] = t0
+s9 = 1
+v57 = s9
+s1 = save_s1
+s2 = save_s2
+s3 = save_s3
+s4 = save_s4
+s5 = save_s5
+s6 = save_s6
+s7 = save_s7
+s8 = save_s8
+s9 = save_s9
+s10 = save_s10
+s11 = save_s11
+      return v57
+
+func List_InitNew(this v_elem v_next v_end)
+save_s1 = s1
+save_s2 = s2
+save_s3 = s3
+save_s4 = s4
+save_s5 = s5
+save_s6 = s6
+save_s7 = s7
+save_s8 = s8
+save_s9 = s9
+save_s10 = s10
+save_s11 = s11
+s6 = a2
+t5 = a3
+s8 = a4
+s1 = a5
+t0 = s1
+[s6 + 12] = t0
+t0 = t5
+[s6 + 4] = t0
+t0 = s8
+[s6 + 8] = t0
+s4 = 1
+v58 = s4
+s1 = save_s1
+s2 = save_s2
+s3 = save_s3
+s4 = save_s4
+s5 = save_s5
+s6 = save_s6
+s7 = save_s7
+s8 = save_s8
+s9 = save_s9
+s10 = save_s10
+s11 = save_s11
+      return v58
+
+func List_Insert(this new_elem)
+save_s1 = s1
+save_s2 = s2
+save_s3 = s3
+save_s4 = s4
+save_s5 = s5
+save_s6 = s6
+save_s7 = s7
+save_s8 = s8
+save_s9 = s9
+save_s10 = s10
+save_s11 = s11
+s6 = a2
+t3 = a3
+t0 = s6
+s7 = t0
+s10 = 16
+t0 = s10
+s11 = alloc(t0)
+t2 = 40
+t0 = t2
+t4 = alloc(t0)
+s9 = @List_Delete
+t0 = s9
+[t4 + 0] = t0
+s1 = @List_Print
+t0 = s1
+[t4 + 4] = t0
+t5 = @List_Init
+t0 = t5
+[t4 + 8] = t0
+s4 = @List_GetElem
+t0 = s4
+[t4 + 12] = t0
+s10 = @List_GetNext
+t0 = s10
+[t4 + 16] = t0
+t2 = @List_SetNext
+t0 = t2
+[t4 + 20] = t0
+s9 = @List_Search
+t0 = s9
+[t4 + 24] = t0
+s1 = @List_GetEnd
+t0 = s1
+[t4 + 28] = t0
+t5 = @List_InitNew
+t0 = t5
+[t4 + 32] = t0
+s4 = @List_Insert
+t0 = s4
+[t4 + 36] = t0
+t0 = t4
+[s11 + 0] = t0
+t0 = s11
+s3 = t0
+if0 s3 goto Lv28_Error
+goto Lv29_End
+Lv28_Error:
+error("null pointer")
+Lv29_End:
+t0 = s3
+s10 = [t0 + 0]
+t0 = s10
+t2 = [t0 + 32]
+s9 = 0
+save_t0 = t0
+save_t1 = t1
+save_t2 = t2
+save_t3 = t3
+save_t4 = t4
+save_t5 = t5
+save_a2 = a2
+save_a3 = a3
+save_a4 = a4
+save_a5 = a5
+save_a6 = a6
+save_a7 = a7
+a2 = s3
+a3 = t3
+a4 = s7
+a5 = s9
+t0 = t2
+s1 = call t0(aux02 new_elem aux03 v74)
+t0 = save_t0
+t1 = save_t1
+t2 = save_t2
+t3 = save_t3
+t4 = save_t4
+t5 = save_t5
+a2 = save_a2
+a3 = save_a3
+a4 = save_a4
+a5 = save_a5
+a6 = save_a6
+a7 = save_a7
+t0 = s1
+s2 = t0
+aux02 = s3
+s1 = save_s1
+s2 = save_s2
+s3 = save_s3
+s4 = save_s4
+s5 = save_s5
+s6 = save_s6
+s7 = save_s7
+s8 = save_s8
+s9 = save_s9
+s10 = save_s10
+s11 = save_s11
+      return aux02
+
+func List_SetNext(this v_next)
+save_s1 = s1
+save_s2 = s2
+save_s3 = s3
+save_s4 = s4
+save_s5 = s5
+save_s6 = s6
+save_s7 = s7
+save_s8 = s8
+save_s9 = s9
+save_s10 = s10
+save_s11 = s11
+s6 = a2
+s8 = a3
+t0 = s8
+[s6 + 8] = t0
+t5 = 1
+v76 = t5
+s1 = save_s1
+s2 = save_s2
+s3 = save_s3
+s4 = save_s4
+s5 = save_s5
+s6 = save_s6
+s7 = save_s7
+s8 = save_s8
+s9 = save_s9
+s10 = save_s10
+s11 = save_s11
+      return v76
+
+func List_Delete(this e)
+save_s1 = s1
+save_s2 = s2
+save_s3 = s3
+save_s4 = s4
+save_s5 = s5
+save_s6 = s6
+save_s7 = s7
+save_s8 = s8
+save_s9 = s9
+save_s10 = s10
+save_s11 = s11
+s6 = a2
+s4 = a3
+t0 = s6
+s11 = t0
+s10 = 0
+t0 = s10
+s2 = t0
+t3 = 0
+s7 = 1
+t0 = t3
+t1 = s7
+t2 = t0 - t1
+t0 = t2
+s9 = t0
+t0 = s6
+s5 = t0
+t0 = s6
+s1 = t0
+t0 = s6
+s3 = [t0 + 12]
+t0 = s3
+s8 = t0
+t0 = s6
+t5 = [t0 + 4]
+t0 = t5
+s10 = t0
+Lv30_Start:
+t3 = 1
+t0 = t3
+t1 = s8
+s7 = t0 - t1
+if0 s7 goto Lv32_False
+t2 = 1
+t0 = t2
+t1 = s2
+s3 = t0 - t1
+t0 = s3
+t5 = t0
+goto Lv33_End
+Lv32_False:
+t5 = 0
+Lv33_End:
+if0 t5 goto Lv31_End
+if0 s4 goto Lv36_Error
+goto Lv37_End
+Lv36_Error:
+error("null pointer")
+Lv37_End:
+t0 = s4
+t3 = [t0 + 0]
+t0 = t3
+s7 = [t0 + 12]
+save_t0 = t0
+save_t1 = t1
+save_t2 = t2
+save_t3 = t3
+save_t4 = t4
+save_t5 = t5
+save_a2 = a2
+save_a3 = a3
+save_a4 = a4
+save_a5 = a5
+save_a6 = a6
+save_a7 = a7
+a2 = s4
+a3 = s10
+t0 = s7
+t2 = call t0(e var_elem)
+t0 = save_t0
+t1 = save_t1
+t3 = save_t3
+t4 = save_t4
+t5 = save_t5
+a2 = save_a2
+a3 = save_a3
+a4 = save_a4
+a5 = save_a5
+a6 = save_a6
+a7 = save_a7
+if0 t2 goto Lv34_Else
+s3 = 1
+t0 = s3
+s2 = t0
+t5 = 0
+t0 = s9
+t1 = t5
+t3 = t0 < t1
+if0 t3 goto Lv38_Else
+if0 s5 goto Lv40_Error
+goto Lv41_End
+Lv40_Error:
+error("null pointer")
+Lv41_End:
+t0 = s5
+s7 = [t0 + 0]
+t0 = s7
+t2 = [t0 + 16]
+save_t0 = t0
+save_t1 = t1
+save_t2 = t2
+save_t3 = t3
+save_t4 = t4
+save_t5 = t5
+save_a2 = a2
+save_a3 = a3
+save_a4 = a4
+save_a5 = a5
+save_a6 = a6
+save_a7 = a7
+a2 = s5
+t0 = t2
+s3 = call t0(aux01)
+t0 = save_t0
+t1 = save_t1
+t2 = save_t2
+t3 = save_t3
+t4 = save_t4
+t5 = save_t5
+a2 = save_a2
+a3 = save_a3
+a4 = save_a4
+a5 = save_a5
+a6 = save_a6
+a7 = save_a7
+t0 = s3
+s11 = t0
+goto Lv39_End
+Lv38_Else:
+t5 = 0
+t3 = 555
+t0 = t5
+t1 = t3
+s7 = t0 - t1
+print(s7)
+if0 s1 goto Lv42_Error
+goto Lv43_End
+Lv42_Error:
+error("null pointer")
+Lv43_End:
+t0 = s1
+t2 = [t0 + 0]
+t0 = t2
+s3 = [t0 + 20]
+if0 s5 goto Lv44_Error
+goto Lv45_End
+Lv44_Error:
+error("null pointer")
+Lv45_End:
+t0 = s5
+t5 = [t0 + 0]
+t0 = t5
+t3 = [t0 + 16]
+save_t0 = t0
+save_t1 = t1
+save_t2 = t2
+save_t3 = t3
+save_t4 = t4
+save_t5 = t5
+save_a2 = a2
+save_a3 = a3
+save_a4 = a4
+save_a5 = a5
+save_a6 = a6
+save_a7 = a7
+a2 = s5
+t0 = t3
+s7 = call t0(aux01)
+t0 = save_t0
+t1 = save_t1
+t2 = save_t2
+t3 = save_t3
+t4 = save_t4
+t5 = save_t5
+a2 = save_a2
+a3 = save_a3
+a4 = save_a4
+a5 = save_a5
+a6 = save_a6
+a7 = save_a7
+save_t0 = t0
+save_t1 = t1
+save_t2 = t2
+save_t3 = t3
+save_t4 = t4
+save_t5 = t5
+save_a2 = a2
+save_a3 = a3
+save_a4 = a4
+save_a5 = a5
+save_a6 = a6
+save_a7 = a7
+a2 = s1
+a3 = s7
+t0 = s3
+t2 = call t0(prev v104)
+t0 = save_t0
+t1 = save_t1
+t3 = save_t3
+t4 = save_t4
+t5 = save_t5
+a2 = save_a2
+a3 = save_a3
+a4 = save_a4
+a5 = save_a5
+a6 = save_a6
+a7 = save_a7
+t0 = t2
+t5 = t0
+t3 = 0
+s3 = 555
+t0 = t3
+t1 = s3
+s7 = t0 - t1
+print(s7)
+Lv39_End:
+goto Lv35_End
+Lv34_Else:
+t5 = 0
+t0 = t5
+t2 = t0
+Lv35_End:
+t2 = 1
+t0 = t2
+t1 = s2
+t3 = t0 - t1
+if0 t3 goto Lv46_Else
+t0 = s5
+s1 = t0
+if0 s5 goto Lv48_Error
+goto Lv49_End
+Lv48_Error:
+error("null pointer")
+Lv49_End:
+t0 = s5
+s3 = [t0 + 0]
+t0 = s3
+s7 = [t0 + 16]
+save_t0 = t0
+save_t1 = t1
+save_t2 = t2
+save_t3 = t3
+save_t4 = t4
+save_t5 = t5
+save_a2 = a2
+save_a3 = a3
+save_a4 = a4
+save_a5 = a5
+save_a6 = a6
+save_a7 = a7
+a2 = s5
+t0 = s7
+t5 = call t0(aux01)
+t0 = save_t0
+t1 = save_t1
+t2 = save_t2
+t3 = save_t3
+t4 = save_t4
+a2 = save_a2
+a3 = save_a3
+a4 = save_a4
+a5 = save_a5
+a6 = save_a6
+a7 = save_a7
+t0 = t5
+s5 = t0
+if0 s5 goto Lv50_Error
+goto Lv51_End
+Lv50_Error:
+error("null pointer")
+Lv51_End:
+t0 = s5
+t2 = [t0 + 0]
+t0 = t2
+t3 = [t0 + 28]
+save_t0 = t0
+save_t1 = t1
+save_t2 = t2
+save_t3 = t3
+save_t4 = t4
+save_t5 = t5
+save_a2 = a2
+save_a3 = a3
+save_a4 = a4
+save_a5 = a5
+save_a6 = a6
+save_a7 = a7
+a2 = s5
+t0 = t3
+s3 = call t0(aux01)
+t0 = save_t0
+t1 = save_t1
+t2 = save_t2
+t3 = save_t3
+t4 = save_t4
+t5 = save_t5
+a2 = save_a2
+a3 = save_a3
+a4 = save_a4
+a5 = save_a5
+a6 = save_a6
+a7 = save_a7
+t0 = s3
+s8 = t0
+if0 s5 goto Lv52_Error
+goto Lv53_End
+Lv52_Error:
+error("null pointer")
+Lv53_End:
+t0 = s5
+s7 = [t0 + 0]
+t0 = s7
+t5 = [t0 + 12]
+save_t0 = t0
+save_t1 = t1
+save_t2 = t2
+save_t3 = t3
+save_t4 = t4
+save_t5 = t5
+save_a2 = a2
+save_a3 = a3
+save_a4 = a4
+save_a5 = a5
+save_a6 = a6
+save_a7 = a7
+a2 = s5
+t0 = t5
+t2 = call t0(aux01)
+t0 = save_t0
+t1 = save_t1
+t3 = save_t3
+t4 = save_t4
+t5 = save_t5
+a2 = save_a2
+a3 = save_a3
+a4 = save_a4
+a5 = save_a5
+a6 = save_a6
+a7 = save_a7
+t0 = t2
+s10 = t0
+t3 = 1
+t0 = t3
+s9 = t0
+goto Lv47_End
+Lv46_Else:
+s3 = 0
+t0 = s3
+t2 = t0
+Lv47_End:
+goto Lv30_Start
+Lv31_End:
+my_head = s11
+s1 = save_s1
+s2 = save_s2
+s3 = save_s3
+s4 = save_s4
+s5 = save_s5
+s6 = save_s6
+s7 = save_s7
+s8 = save_s8
+s9 = save_s9
+s10 = save_s10
+s11 = save_s11
+      return my_head
+
+func List_Search(this e)
+save_s1 = s1
+save_s2 = s2
+save_s3 = s3
+save_s4 = s4
+save_s5 = s5
+save_s6 = s6
+save_s7 = s7
+save_s8 = s8
+save_s9 = s9
+save_s10 = s10
+save_s11 = s11
+s6 = a2
+s4 = a3
+s7 = 0
+t0 = s7
+t5 = t0
+t0 = s6
+s5 = t0
+t0 = s6
+t2 = [t0 + 12]
+t0 = t2
+s8 = t0
+t0 = s6
+t3 = [t0 + 4]
+t0 = t3
+s10 = t0
+Lv54_Start:
+s3 = 1
+t0 = s3
+t1 = s8
+s2 = t0 - t1
+if0 s2 goto Lv55_End
+if0 s4 goto Lv58_Error
+goto Lv59_End
+Lv58_Error:
+error("null pointer")
+Lv59_End:
+t0 = s4
+s9 = [t0 + 0]
+t0 = s9
+s1 = [t0 + 12]
+save_t0 = t0
+save_t1 = t1
+save_t2 = t2
+save_t3 = t3
+save_t4 = t4
+save_t5 = t5
+save_a2 = a2
+save_a3 = a3
+save_a4 = a4
+save_a5 = a5
+save_a6 = a6
+save_a7 = a7
+a2 = s4
+a3 = s10
+t0 = s1
+s11 = call t0(e var_elem)
+t0 = save_t0
+t1 = save_t1
+t2 = save_t2
+t3 = save_t3
+t4 = save_t4
+t5 = save_t5
+a2 = save_a2
+a3 = save_a3
+a4 = save_a4
+a5 = save_a5
+a6 = save_a6
+a7 = save_a7
+if0 s11 goto Lv56_Else
+s7 = 1
+t0 = s7
+t5 = t0
+goto Lv57_End
+Lv56_Else:
+t2 = 0
+t0 = t2
+t2 = t0
+Lv57_End:
+if0 s5 goto Lv60_Error
+goto Lv61_End
+Lv60_Error:
+error("null pointer")
+Lv61_End:
+t0 = s5
+t3 = [t0 + 0]
+t0 = t3
+s3 = [t0 + 16]
+save_t0 = t0
+save_t1 = t1
+save_t2 = t2
+save_t3 = t3
+save_t4 = t4
+save_t5 = t5
+save_a2 = a2
+save_a3 = a3
+save_a4 = a4
+save_a5 = a5
+save_a6 = a6
+save_a7 = a7
+a2 = s5
+t0 = s3
+s2 = call t0(aux01)
+t0 = save_t0
+t1 = save_t1
+t2 = save_t2
+t3 = save_t3
+t4 = save_t4
+t5 = save_t5
+a2 = save_a2
+a3 = save_a3
+a4 = save_a4
+a5 = save_a5
+a6 = save_a6
+a7 = save_a7
+t0 = s2
+s5 = t0
+if0 s5 goto Lv62_Error
+goto Lv63_End
+Lv62_Error:
+error("null pointer")
+Lv63_End:
+t0 = s5
+s9 = [t0 + 0]
+t0 = s9
+s1 = [t0 + 28]
+save_t0 = t0
+save_t1 = t1
+save_t2 = t2
+save_t3 = t3
+save_t4 = t4
+save_t5 = t5
+save_a2 = a2
+save_a3 = a3
+save_a4 = a4
+save_a5 = a5
+save_a6 = a6
+save_a7 = a7
+a2 = s5
+t0 = s1
+s11 = call t0(aux01)
+t0 = save_t0
+t1 = save_t1
+t2 = save_t2
+t3 = save_t3
+t4 = save_t4
+t5 = save_t5
+a2 = save_a2
+a3 = save_a3
+a4 = save_a4
+a5 = save_a5
+a6 = save_a6
+a7 = save_a7
+t0 = s11
+s8 = t0
+if0 s5 goto Lv64_Error
+goto Lv65_End
+Lv64_Error:
+error("null pointer")
+Lv65_End:
+t0 = s5
+s7 = [t0 + 0]
+t0 = s7
+t2 = [t0 + 12]
+save_t0 = t0
+save_t1 = t1
+save_t2 = t2
+save_t3 = t3
+save_t4 = t4
+save_t5 = t5
+save_a2 = a2
+save_a3 = a3
+save_a4 = a4
+save_a5 = a5
+save_a6 = a6
+save_a7 = a7
+a2 = s5
+t0 = t2
+t3 = call t0(aux01)
+t0 = save_t0
+t1 = save_t1
+t2 = save_t2
+t4 = save_t4
+t5 = save_t5
+a2 = save_a2
+a3 = save_a3
+a4 = save_a4
+a5 = save_a5
+a6 = save_a6
+a7 = save_a7
+t0 = t3
+s10 = t0
+goto Lv54_Start
+Lv55_End:
+int_ret_val = t5
+s1 = save_s1
+s2 = save_s2
+s3 = save_s3
+s4 = save_s4
+s5 = save_s5
+s6 = save_s6
+s7 = save_s7
+s8 = save_s8
+s9 = save_s9
+s10 = save_s10
+s11 = save_s11
+      return int_ret_val
+
+func List_GetEnd(this)
+save_s1 = s1
+save_s2 = s2
+save_s3 = s3
+save_s4 = s4
+save_s5 = s5
+save_s6 = s6
+save_s7 = s7
+save_s8 = s8
+save_s9 = s9
+save_s10 = s10
+save_s11 = s11
+s6 = a2
+t0 = s6
+s3 = [t0 + 12]
+v142 = s3
+s1 = save_s1
+s2 = save_s2
+s3 = save_s3
+s4 = save_s4
+s5 = save_s5
+s6 = save_s6
+s7 = save_s7
+s8 = save_s8
+s9 = save_s9
+s10 = save_s10
+s11 = save_s11
+      return v142
+
+func List_GetElem(this)
+save_s1 = s1
+save_s2 = s2
+save_s3 = s3
+save_s4 = s4
+save_s5 = s5
+save_s6 = s6
+save_s7 = s7
+save_s8 = s8
+save_s9 = s9
+save_s10 = s10
+save_s11 = s11
+s6 = a2
+t0 = s6
+s2 = [t0 + 4]
+v143 = s2
+s1 = save_s1
+s2 = save_s2
+s3 = save_s3
+s4 = save_s4
+s5 = save_s5
+s6 = save_s6
+s7 = save_s7
+s8 = save_s8
+s9 = save_s9
+s10 = save_s10
+s11 = save_s11
+      return v143
+
+func List_GetNext(this)
+save_s1 = s1
+save_s2 = s2
+save_s3 = s3
+save_s4 = s4
+save_s5 = s5
+save_s6 = s6
+save_s7 = s7
+save_s8 = s8
+save_s9 = s9
+save_s10 = s10
+save_s11 = s11
+s6 = a2
+t0 = s6
+s9 = [t0 + 8]
+v144 = s9
+s1 = save_s1
+s2 = save_s2
+s3 = save_s3
+s4 = save_s4
+s5 = save_s5
+s6 = save_s6
+s7 = save_s7
+s8 = save_s8
+s9 = save_s9
+s10 = save_s10
+s11 = save_s11
+      return v144
+
+func List_Print(this)
+save_s1 = s1
+save_s2 = s2
+save_s3 = s3
+save_s4 = s4
+save_s5 = s5
+save_s6 = s6
+save_s7 = s7
+save_s8 = s8
+save_s9 = s9
+save_s10 = s10
+save_s11 = s11
+s6 = a2
+t0 = s6
+s5 = t0
+t0 = s6
+s1 = [t0 + 12]
+t0 = s1
+s8 = t0
+t0 = s6
+s11 = [t0 + 4]
+t0 = s11
+s10 = t0
+Lv66_Start:
+s7 = 1
+t0 = s7
+t1 = s8
+t2 = t0 - t1
+if0 t2 goto Lv67_End
+if0 s10 goto Lv68_Error
+goto Lv69_End
+Lv68_Error:
+error("null pointer")
+Lv69_End:
+t0 = s10
+t3 = [t0 + 0]
+t0 = t3
+s4 = [t0 + 8]
+save_t0 = t0
+save_t1 = t1
+save_t2 = t2
+save_t3 = t3
+save_t4 = t4
+save_t5 = t5
+save_a2 = a2
+save_a3 = a3
+save_a4 = a4
+save_a5 = a5
+save_a6 = a6
+save_a7 = a7
+a2 = s10
+t0 = s4
+t5 = call t0(var_elem)
+t0 = save_t0
+t1 = save_t1
+t2 = save_t2
+t3 = save_t3
+t4 = save_t4
+a2 = save_a2
+a3 = save_a3
+a4 = save_a4
+a5 = save_a5
+a6 = save_a6
+a7 = save_a7
+print(t5)
+if0 s5 goto Lv70_Error
+goto Lv71_End
+Lv70_Error:
+error("null pointer")
+Lv71_End:
+t0 = s5
+s3 = [t0 + 0]
+t0 = s3
+s2 = [t0 + 16]
+save_t0 = t0
+save_t1 = t1
+save_t2 = t2
+save_t3 = t3
+save_t4 = t4
+save_t5 = t5
+save_a2 = a2
+save_a3 = a3
+save_a4 = a4
+save_a5 = a5
+save_a6 = a6
+save_a7 = a7
+a2 = s5
+t0 = s2
+s9 = call t0(aux01)
+t0 = save_t0
+t1 = save_t1
+t2 = save_t2
+t3 = save_t3
+t4 = save_t4
+t5 = save_t5
+a2 = save_a2
+a3 = save_a3
+a4 = save_a4
+a5 = save_a5
+a6 = save_a6
+a7 = save_a7
+t0 = s9
+s5 = t0
+if0 s5 goto Lv72_Error
+goto Lv73_End
+Lv72_Error:
+error("null pointer")
+Lv73_End:
+t0 = s5
+s1 = [t0 + 0]
+t0 = s1
+s6 = [t0 + 28]
+save_t0 = t0
+save_t1 = t1
+save_t2 = t2
+save_t3 = t3
+save_t4 = t4
+save_t5 = t5
+save_a2 = a2
+save_a3 = a3
+save_a4 = a4
+save_a5 = a5
+save_a6 = a6
+save_a7 = a7
+a2 = s5
+t0 = s6
+s11 = call t0(aux01)
+t0 = save_t0
+t1 = save_t1
+t2 = save_t2
+t3 = save_t3
+t4 = save_t4
+t5 = save_t5
+a2 = save_a2
+a3 = save_a3
+a4 = save_a4
+a5 = save_a5
+a6 = save_a6
+a7 = save_a7
+t0 = s11
+s8 = t0
+if0 s5 goto Lv74_Error
+goto Lv75_End
+Lv74_Error:
+error("null pointer")
+Lv75_End:
+t0 = s5
+s7 = [t0 + 0]
+t0 = s7
+t2 = [t0 + 12]
+save_t0 = t0
+save_t1 = t1
+save_t2 = t2
+save_t3 = t3
+save_t4 = t4
+save_t5 = t5
+save_a2 = a2
+save_a3 = a3
+save_a4 = a4
+save_a5 = a5
+save_a6 = a6
+save_a7 = a7
+a2 = s5
+t0 = t2
+t3 = call t0(aux01)
+t0 = save_t0
+t1 = save_t1
+t2 = save_t2
+t4 = save_t4
+t5 = save_t5
+a2 = save_a2
+a3 = save_a3
+a4 = save_a4
+a5 = save_a5
+a6 = save_a6
+a7 = save_a7
+t0 = t3
+s10 = t0
+goto Lv66_Start
+Lv67_End:
+s4 = 1
+v161 = s4
+s1 = save_s1
+s2 = save_s2
+s3 = save_s3
+s4 = save_s4
+s5 = save_s5
+s6 = save_s6
+s7 = save_s7
+s8 = save_s8
+s9 = save_s9
+s10 = save_s10
+s11 = save_s11
+      return v161
+
+func LL_Start(this)
+save_s1 = s1
+save_s2 = s2
+save_s3 = s3
+save_s4 = s4
+save_s5 = s5
+save_s6 = s6
+save_s7 = s7
+save_s8 = s8
+save_s9 = s9
+save_s10 = s10
+save_s11 = s11
+s6 = a2
+t5 = 16
+t0 = t5
+s3 = alloc(t0)
+s2 = 40
+t0 = s2
+t4 = alloc(t0)
+s9 = @List_Delete
+t0 = s9
+[t4 + 0] = t0
+s1 = @List_Print
+t0 = s1
+[t4 + 4] = t0
+s6 = @List_Init
+t0 = s6
+[t4 + 8] = t0
+s11 = @List_GetElem
+t0 = s11
+[t4 + 12] = t0
+s7 = @List_GetNext
+t0 = s7
+[t4 + 16] = t0
+t2 = @List_SetNext
+t0 = t2
+[t4 + 20] = t0
+t3 = @List_Search
+t0 = t3
+[t4 + 24] = t0
+s5 = @List_GetEnd
+t0 = s5
+[t4 + 28] = t0
+s8 = @List_InitNew
+t0 = s8
+[t4 + 32] = t0
+s10 = @List_Insert
+t0 = s10
+[t4 + 36] = t0
+t0 = t4
+[s3 + 0] = t0
+t0 = s3
+s4 = t0
+if0 s4 goto Lv76_Error
+goto Lv77_End
+Lv76_Error:
+error("null pointer")
+Lv77_End:
+t0 = s4
+t5 = [t0 + 0]
+t0 = t5
+s2 = [t0 + 8]
+save_t0 = t0
+save_t1 = t1
+save_t2 = t2
+save_t3 = t3
+save_t4 = t4
+save_t5 = t5
+save_a2 = a2
+save_a3 = a3
+save_a4 = a4
+save_a5 = a5
+save_a6 = a6
+save_a7 = a7
+a2 = s4
+t0 = s2
+s9 = call t0(last_elem)
+t0 = save_t0
+t1 = save_t1
+t2 = save_t2
+t3 = save_t3
+t4 = save_t4
+t5 = save_t5
+a2 = save_a2
+a3 = save_a3
+a4 = save_a4
+a5 = save_a5
+a6 = save_a6
+a7 = save_a7
+t0 = s9
+s5 = t0
+t0 = s4
+s1 = t0
+if0 s1 goto Lv78_Error
+goto Lv79_End
+Lv78_Error:
+error("null pointer")
+Lv79_End:
+t0 = s1
+s6 = [t0 + 0]
+t0 = s6
+s11 = [t0 + 8]
+save_t0 = t0
+save_t1 = t1
+save_t2 = t2
+save_t3 = t3
+save_t4 = t4
+save_t5 = t5
+save_a2 = a2
+save_a3 = a3
+save_a4 = a4
+save_a5 = a5
+save_a6 = a6
+save_a7 = a7
+a2 = s1
+t0 = s11
+s7 = call t0(head)
+t0 = save_t0
+t1 = save_t1
+t2 = save_t2
+t3 = save_t3
+t4 = save_t4
+t5 = save_t5
+a2 = save_a2
+a3 = save_a3
+a4 = save_a4
+a5 = save_a5
+a6 = save_a6
+a7 = save_a7
+t0 = s7
+s5 = t0
+if0 s1 goto Lv80_Error
+goto Lv81_End
+Lv80_Error:
+error("null pointer")
+Lv81_End:
+t0 = s1
+t2 = [t0 + 0]
+t0 = t2
+t3 = [t0 + 4]
+save_t0 = t0
+save_t1 = t1
+save_t2 = t2
+save_t3 = t3
+save_t4 = t4
+save_t5 = t5
+save_a2 = a2
+save_a3 = a3
+save_a4 = a4
+save_a5 = a5
+save_a6 = a6
+save_a7 = a7
+a2 = s1
+t0 = t3
+s5 = call t0(head)
+t0 = save_t0
+t1 = save_t1
+t2 = save_t2
+t3 = save_t3
+t4 = save_t4
+t5 = save_t5
+a2 = save_a2
+a3 = save_a3
+a4 = save_a4
+a5 = save_a5
+a6 = save_a6
+a7 = save_a7
+t0 = s5
+s5 = t0
+s8 = 16
+t0 = s8
+s10 = alloc(t0)
+t4 = 24
+t0 = t4
+s3 = alloc(t0)
+t5 = @Element_GetSalary
+t0 = t5
+[s3 + 0] = t0
+s2 = @Element_Init
+t0 = s2
+[s3 + 4] = t0
+s9 = @Element_GetAge
+t0 = s9
+[s3 + 8] = t0
+s4 = @Element_Equal
+t0 = s4
+[s3 + 12] = t0
+s6 = @Element_GetMarried
+t0 = s6
+[s3 + 16] = t0
+s11 = @Element_Compare
+t0 = s11
+[s3 + 20] = t0
+t0 = s3
+[s10 + 0] = t0
+t0 = s10
+s7 = t0
+if0 s7 goto Lv82_Error
+goto Lv83_End
+Lv82_Error:
+error("null pointer")
+Lv83_End:
+t0 = s7
+t2 = [t0 + 0]
+t0 = t2
+t3 = [t0 + 4]
+s5 = 25
+s8 = 37000
+t4 = 0
+save_t0 = t0
+save_t1 = t1
+save_t2 = t2
+save_t3 = t3
+save_t4 = t4
+save_t5 = t5
+save_a2 = a2
+save_a3 = a3
+save_a4 = a4
+save_a5 = a5
+save_a6 = a6
+save_a7 = a7
+a2 = s7
+a3 = s5
+a4 = s8
+a5 = t4
+t0 = t3
+t5 = call t0(el01 v195 v196 v197)
+t0 = save_t0
+t1 = save_t1
+t2 = save_t2
+t3 = save_t3
+t4 = save_t4
+a2 = save_a2
+a3 = save_a3
+a4 = save_a4
+a5 = save_a5
+a6 = save_a6
+a7 = save_a7
+t0 = t5
+s5 = t0
+if0 s1 goto Lv84_Error
+goto Lv85_End
+Lv84_Error:
+error("null pointer")
+Lv85_End:
+t0 = s1
+s2 = [t0 + 0]
+t0 = s2
+s9 = [t0 + 36]
+save_t0 = t0
+save_t1 = t1
+save_t2 = t2
+save_t3 = t3
+save_t4 = t4
+save_t5 = t5
+save_a2 = a2
+save_a3 = a3
+save_a4 = a4
+save_a5 = a5
+save_a6 = a6
+save_a7 = a7
+a2 = s1
+a3 = s7
+t0 = s9
+s4 = call t0(head el01)
+t0 = save_t0
+t1 = save_t1
+t2 = save_t2
+t3 = save_t3
+t4 = save_t4
+t5 = save_t5
+a2 = save_a2
+a3 = save_a3
+a4 = save_a4
+a5 = save_a5
+a6 = save_a6
+a7 = save_a7
+t0 = s4
+s1 = t0
+if0 s1 goto Lv86_Error
+goto Lv87_End
+Lv86_Error:
+error("null pointer")
+Lv87_End:
+t0 = s1
+s6 = [t0 + 0]
+t0 = s6
+s11 = [t0 + 4]
+save_t0 = t0
+save_t1 = t1
+save_t2 = t2
+save_t3 = t3
+save_t4 = t4
+save_t5 = t5
+save_a2 = a2
+save_a3 = a3
+save_a4 = a4
+save_a5 = a5
+save_a6 = a6
+save_a7 = a7
+a2 = s1
+t0 = s11
+s10 = call t0(head)
+t0 = save_t0
+t1 = save_t1
+t2 = save_t2
+t3 = save_t3
+t4 = save_t4
+t5 = save_t5
+a2 = save_a2
+a3 = save_a3
+a4 = save_a4
+a5 = save_a5
+a6 = save_a6
+a7 = save_a7
+t0 = s10
+s5 = t0
+t2 = 10000000
+print(t2)
+t3 = 16
+t0 = t3
+s5 = alloc(t0)
+s8 = 24
+t0 = s8
+s3 = alloc(t0)
+t4 = @Element_GetSalary
+t0 = t4
+[s3 + 0] = t0
+t5 = @Element_Init
+t0 = t5
+[s3 + 4] = t0
+s2 = @Element_GetAge
+t0 = s2
+[s3 + 8] = t0
+s9 = @Element_Equal
+t0 = s9
+[s3 + 12] = t0
+s4 = @Element_GetMarried
+t0 = s4
+[s3 + 16] = t0
+s6 = @Element_Compare
+t0 = s6
+[s3 + 20] = t0
+t0 = s3
+[s5 + 0] = t0
+t0 = s5
+s7 = t0
+if0 s7 goto Lv88_Error
+goto Lv89_End
+Lv88_Error:
+error("null pointer")
+Lv89_End:
+t0 = s7
+s11 = [t0 + 0]
+t0 = s11
+s10 = [t0 + 4]
+t2 = 39
+t3 = 42000
+s8 = 1
+save_t0 = t0
+save_t1 = t1
+save_t2 = t2
+save_t3 = t3
+save_t4 = t4
+save_t5 = t5
+save_a2 = a2
+save_a3 = a3
+save_a4 = a4
+save_a5 = a5
+save_a6 = a6
+save_a7 = a7
+a2 = s7
+a3 = t2
+a4 = t3
+a5 = s8
+t0 = s10
+t4 = call t0(el01 v217 v218 v219)
+t0 = save_t0
+t1 = save_t1
+t2 = save_t2
+t3 = save_t3
+t5 = save_t5
+a2 = save_a2
+a3 = save_a3
+a4 = save_a4
+a5 = save_a5
+a6 = save_a6
+a7 = save_a7
+t0 = t4
+s5 = t0
+t0 = s7
+t5 = t0
+if0 s1 goto Lv90_Error
+goto Lv91_End
+Lv90_Error:
+error("null pointer")
+Lv91_End:
+t0 = s1
+s2 = [t0 + 0]
+t0 = s2
+s9 = [t0 + 36]
+save_t0 = t0
+save_t1 = t1
+save_t2 = t2
+save_t3 = t3
+save_t4 = t4
+save_t5 = t5
+save_a2 = a2
+save_a3 = a3
+save_a4 = a4
+save_a5 = a5
+save_a6 = a6
+save_a7 = a7
+a2 = s1
+a3 = s7
+t0 = s9
+s4 = call t0(head el01)
+t0 = save_t0
+t1 = save_t1
+t2 = save_t2
+t3 = save_t3
+t4 = save_t4
+t5 = save_t5
+a2 = save_a2
+a3 = save_a3
+a4 = save_a4
+a5 = save_a5
+a6 = save_a6
+a7 = save_a7
+t0 = s4
+s1 = t0
+if0 s1 goto Lv92_Error
+goto Lv93_End
+Lv92_Error:
+error("null pointer")
+Lv93_End:
+t0 = s1
+s6 = [t0 + 0]
+t0 = s6
+s5 = [t0 + 4]
+save_t0 = t0
+save_t1 = t1
+save_t2 = t2
+save_t3 = t3
+save_t4 = t4
+save_t5 = t5
+save_a2 = a2
+save_a3 = a3
+save_a4 = a4
+save_a5 = a5
+save_a6 = a6
+save_a7 = a7
+a2 = s1
+t0 = s5
+s11 = call t0(head)
+t0 = save_t0
+t1 = save_t1
+t2 = save_t2
+t3 = save_t3
+t4 = save_t4
+t5 = save_t5
+a2 = save_a2
+a3 = save_a3
+a4 = save_a4
+a5 = save_a5
+a6 = save_a6
+a7 = save_a7
+t0 = s11
+s5 = t0
+s10 = 10000000
+print(s10)
+t2 = 16
+t0 = t2
+t3 = alloc(t0)
+s8 = 24
+t0 = s8
+s3 = alloc(t0)
+t4 = @Element_GetSalary
+t0 = t4
+[s3 + 0] = t0
+s2 = @Element_Init
+t0 = s2
+[s3 + 4] = t0
+s9 = @Element_GetAge
+t0 = s9
+[s3 + 8] = t0
+s4 = @Element_Equal
+t0 = s4
+[s3 + 12] = t0
+s6 = @Element_GetMarried
+t0 = s6
+[s3 + 16] = t0
+s5 = @Element_Compare
+t0 = s5
+[s3 + 20] = t0
+t0 = s3
+[t3 + 0] = t0
+t0 = t3
+s7 = t0
+if0 s7 goto Lv94_Error
+goto Lv95_End
+Lv94_Error:
+error("null pointer")
+Lv95_End:
+t0 = s7
+s11 = [t0 + 0]
+t0 = s11
+s10 = [t0 + 4]
+t2 = 22
+s8 = 34000
+t4 = 0
+save_t0 = t0
+save_t1 = t1
+save_t2 = t2
+save_t3 = t3
+save_t4 = t4
+save_t5 = t5
+save_a2 = a2
+save_a3 = a3
+save_a4 = a4
+save_a5 = a5
+save_a6 = a6
+save_a7 = a7
+a2 = s7
+a3 = t2
+a4 = s8
+a5 = t4
+t0 = s10
+s2 = call t0(el01 v239 v240 v241)
+t0 = save_t0
+t1 = save_t1
+t2 = save_t2
+t3 = save_t3
+t4 = save_t4
+t5 = save_t5
+a2 = save_a2
+a3 = save_a3
+a4 = save_a4
+a5 = save_a5
+a6 = save_a6
+a7 = save_a7
+t0 = s2
+s5 = t0
+if0 s1 goto Lv96_Error
+goto Lv97_End
+Lv96_Error:
+error("null pointer")
+Lv97_End:
+t0 = s1
+s9 = [t0 + 0]
+t0 = s9
+s4 = [t0 + 36]
+save_t0 = t0
+save_t1 = t1
+save_t2 = t2
+save_t3 = t3
+save_t4 = t4
+save_t5 = t5
+save_a2 = a2
+save_a3 = a3
+save_a4 = a4
+save_a5 = a5
+save_a6 = a6
+save_a7 = a7
+a2 = s1
+a3 = s7
+t0 = s4
+s6 = call t0(head el01)
+t0 = save_t0
+t1 = save_t1
+t2 = save_t2
+t3 = save_t3
+t4 = save_t4
+t5 = save_t5
+a2 = save_a2
+a3 = save_a3
+a4 = save_a4
+a5 = save_a5
+a6 = save_a6
+a7 = save_a7
+t0 = s6
+s1 = t0
+if0 s1 goto Lv98_Error
+goto Lv99_End
+Lv98_Error:
+error("null pointer")
+Lv99_End:
+t0 = s1
+s5 = [t0 + 0]
+t0 = s5
+t3 = [t0 + 4]
+save_t0 = t0
+save_t1 = t1
+save_t2 = t2
+save_t3 = t3
+save_t4 = t4
+save_t5 = t5
+save_a2 = a2
+save_a3 = a3
+save_a4 = a4
+save_a5 = a5
+save_a6 = a6
+save_a7 = a7
+a2 = s1
+t0 = t3
+s11 = call t0(head)
+t0 = save_t0
+t1 = save_t1
+t2 = save_t2
+t3 = save_t3
+t4 = save_t4
+t5 = save_t5
+a2 = save_a2
+a3 = save_a3
+a4 = save_a4
+a5 = save_a5
+a6 = save_a6
+a7 = save_a7
+t0 = s11
+s5 = t0
+s10 = 16
+t0 = s10
+t2 = alloc(t0)
+s8 = 24
+t0 = s8
+s3 = alloc(t0)
+t4 = @Element_GetSalary
+t0 = t4
+[s3 + 0] = t0
+s2 = @Element_Init
+t0 = s2
+[s3 + 4] = t0
+s9 = @Element_GetAge
+t0 = s9
+[s3 + 8] = t0
+s7 = @Element_Equal
+t0 = s7
+[s3 + 12] = t0
+s4 = @Element_GetMarried
+t0 = s4
+[s3 + 16] = t0
+s6 = @Element_Compare
+t0 = s6
+[s3 + 20] = t0
+t0 = s3
+[t2 + 0] = t0
+t0 = t2
+s5 = t0
+if0 s5 goto Lv100_Error
+goto Lv101_End
+Lv100_Error:
+error("null pointer")
+Lv101_End:
+t0 = s5
+t3 = [t0 + 0]
+t0 = t3
+s11 = [t0 + 4]
+s10 = 27
+s8 = 34000
+t4 = 0
+save_t0 = t0
+save_t1 = t1
+save_t2 = t2
+save_t3 = t3
+save_t4 = t4
+save_t5 = t5
+save_a2 = a2
+save_a3 = a3
+save_a4 = a4
+save_a5 = a5
+save_a6 = a6
+save_a7 = a7
+a2 = s5
+a3 = s10
+a4 = s8
+a5 = t4
+t0 = s11
+s2 = call t0(el03 v260 v261 v262)
+t0 = save_t0
+t1 = save_t1
+t2 = save_t2
+t3 = save_t3
+t4 = save_t4
+t5 = save_t5
+a2 = save_a2
+a3 = save_a3
+a4 = save_a4
+a5 = save_a5
+a6 = save_a6
+a7 = save_a7
+t0 = s2
+s5 = t0
+if0 s1 goto Lv102_Error
+goto Lv103_End
+Lv102_Error:
+error("null pointer")
+Lv103_End:
+t0 = s1
+s9 = [t0 + 0]
+t0 = s9
+s7 = [t0 + 24]
+save_t0 = t0
+save_t1 = t1
+save_t2 = t2
+save_t3 = t3
+save_t4 = t4
+save_t5 = t5
+save_a2 = a2
+save_a3 = a3
+save_a4 = a4
+save_a5 = a5
+save_a6 = a6
+save_a7 = a7
+a2 = s1
+a3 = t5
+t0 = s7
+s4 = call t0(head el02)
+t0 = save_t0
+t1 = save_t1
+t2 = save_t2
+t3 = save_t3
+t4 = save_t4
+t5 = save_t5
+a2 = save_a2
+a3 = save_a3
+a4 = save_a4
+a5 = save_a5
+a6 = save_a6
+a7 = save_a7
+print(s4)
+s6 = 0
+v307 = s6
+s1 = save_s1
+s2 = save_s2
+s3 = save_s3
+s4 = save_s4
+s5 = save_s5
+s6 = save_s6
+s7 = save_s7
+s8 = save_s8
+s9 = save_s9
+s10 = save_s10
+s11 = save_s11
+      return v307
+
+

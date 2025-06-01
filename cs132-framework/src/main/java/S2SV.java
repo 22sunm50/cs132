@@ -49,13 +49,10 @@ public class S2SV {
         }
 
         // choose 3 registers: t0, t1, t2
-        List<String> regs = new ArrayList<>(List.of("t2", "t3", "t4", "t5"));
-        // List<String> regs = new ArrayList<>(List.of("a2", "a3", "a4", "a5", "a6", "a7", 
-        //                                                         "s1", "s2", "s3", "s4", "s5", "s6", "s7", "s8", "s9", "s10", "s11",
-        //                                                         "t0", "t1", "t2", "t3", "t4", "t5"));
-        // List<String> regs = new ArrayList<>(List.of("s1", "s2", "s3", "s4", "s5", "s6", "s7", "s8", "s9", "s10", "s11",
-                                                                // "t2", "t3", "t4", "t5"));
-        LinearScanRegisterAllocator allocator = new LinearScanRegisterAllocator(intervalList, 4, regs);
+        // List<String> regs = new ArrayList<>(List.of("t2", "t3", "t4", "t5"));
+        List<String> regs = new ArrayList<>(List.of("t2", "t3", "t4", "t5", "s1", "s2", "s3", "s4", "s5", "s6", "s7", "s8", "s9", "s10", "s11"
+                                                                ));
+        LinearScanRegisterAllocator allocator = new LinearScanRegisterAllocator(intervalList, 15, regs);
         allocator.allocate();
         allocator.printResult();
 
