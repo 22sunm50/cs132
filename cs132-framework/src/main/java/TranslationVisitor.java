@@ -128,7 +128,6 @@ public class TranslationVisitor implements RetVisitor < List<sparrowv.Instructio
         if (funcInterval == null) return saves;
     
         int funcStart = funcInterval.start;
-        int funcEnd = funcInterval.end;
     
         for (int i = 1; i <= 11; i++) {
             String sReg = "s" + i;
@@ -161,7 +160,6 @@ public class TranslationVisitor implements RetVisitor < List<sparrowv.Instructio
         if (funcInterval == null) return restores;
     
         int funcStart = funcInterval.start;
-        int funcEnd = funcInterval.end;
     
         for (int i = 1; i <= 11; i++) {
             String sReg = "s" + i;
