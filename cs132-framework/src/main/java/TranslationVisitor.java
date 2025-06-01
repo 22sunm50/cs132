@@ -19,13 +19,15 @@ public class TranslationVisitor implements RetVisitor < List<sparrowv.Instructio
 
     Map<String, String> registerMap;
     HashMap<String, LiveInterval> intervals_map;
+    HashMap<String, LiveInterval> func_interval_map = new HashMap<String, LiveInterval>();
 
     Integer currentLine = 1;
 
     // constructor
-    public TranslationVisitor(Map<String, String> registerMap, HashMap<String, LiveInterval> intervals_map) {
+    public TranslationVisitor(Map<String, String> registerMap, HashMap<String, LiveInterval> intervals_map, HashMap<String, LiveInterval> func_interval_map) {
         this.registerMap = registerMap;
         this.intervals_map = intervals_map;
+        this.func_interval_map = func_interval_map;
     }
 
     // wrap an instr w a list
@@ -78,6 +80,115 @@ public class TranslationVisitor implements RetVisitor < List<sparrowv.Instructio
     
         return saves;
     }
+
+    private List<Instruction> restoreLiveCallerRegisters(Register ret_reg) {
+        List<Instruction> restores = new ArrayList<>();
+    
+        for (int i = 2; i <= 5; i++) {
+            String regName = "t" + i;
+            Register reg = new Register(regName);
+    
+            for (Map.Entry<String, String> entry : registerMap.entrySet()) {
+                String var = entry.getKey();
+                String assignedReg = entry.getValue();
+    
+                if (assignedReg.equals(regName)) {
+                    LiveInterval interval = intervals_map.get(var);
+
+                    if (ret_reg != null && !ret_reg.toString().equals("t" + i)){
+                        if (interval != null && interval.end > currentLine) {
+                            restores.add(new Move_Reg_Id(reg, new Identifier("save_" + regName)));
+                            break; // Only restore once per register
+                        }
+                    }
+
+                    if (ret_reg == null && i != 0){
+                        if (interval != null && interval.end >= currentLine) {
+                            restores.add(new Move_Reg_Id(reg, new Identifier("save_" + regName)));
+                            break; // Only restore once per register
+                        }
+                    }
+
+                    // if (interval != null && interval.end > currentLine) {
+                    //     restores.add(new Move_Reg_Id(reg, new Identifier("save_" + regName)));
+                    //     break; // Only restore once per register
+                    // }
+                }
+            }
+        }
+    
+        return restores;
+    }
+
+    private List<Instruction> saveLiveCalleeRegisters(String funcName) {
+        List<Instruction> saves = new ArrayList<>();
+    
+        // Get the function's start and end lines
+        LiveInterval funcInterval = func_interval_map.get(funcName);
+        if (funcInterval == null) return saves;
+    
+        int funcStart = funcInterval.start;
+        int funcEnd = funcInterval.end;
+    
+        for (int i = 1; i <= 11; i++) {
+            String sReg = "s" + i;
+            Register reg = new Register(sReg);
+    
+            for (Map.Entry<String, String> entry : registerMap.entrySet()) {
+                String var = entry.getKey();
+                String assignedReg = entry.getValue();
+    
+                if (assignedReg.equals(sReg)) {
+                    LiveInterval varInterval = intervals_map.get(var);
+    
+                    if (varInterval != null &&
+                        varInterval.start >= funcStart &&
+                        varInterval.end <= funcEnd) {
+                        
+                        saves.add(new Move_Id_Reg(new Identifier("save_" + sReg), reg));
+                        break; // Only save once per register
+                    }
+                }
+            }
+        }
+    
+        return saves;
+    }
+    
+    private List<Instruction> restoreLiveCalleeRegisters(String funcName) {
+        List<Instruction> restores = new ArrayList<>();
+    
+        // Get the function's live interval
+        LiveInterval funcInterval = func_interval_map.get(funcName);
+        if (funcInterval == null) return restores;
+    
+        int funcStart = funcInterval.start;
+        int funcEnd = funcInterval.end;
+    
+        for (int i = 1; i <= 11; i++) {
+            String sReg = "s" + i;
+            Register reg = new Register(sReg);
+    
+            for (Map.Entry<String, String> entry : registerMap.entrySet()) {
+                String var = entry.getKey();
+                String assignedReg = entry.getValue();
+    
+                if (assignedReg.equals(sReg)) {
+                    LiveInterval varInterval = intervals_map.get(var);
+    
+                    if (varInterval != null &&
+                        varInterval.start >= funcStart &&
+                        varInterval.end <= funcEnd) {
+    
+                        restores.add(new Move_Reg_Id(reg, new Identifier("save_" + sReg)));
+                        break; // Only restore once per register
+                    }
+                }
+            }
+        }
+    
+        return restores;
+    }
     
 
     // VISIT METHODS START HERE
@@ -105,15 +216,15 @@ public class TranslationVisitor implements RetVisitor < List<sparrowv.Instructio
     *   Block block; */
     @Override
     public List<Instruction> visit(sparrow.FunctionDecl n){
-        List<Instruction> bodyInstrs = n.block.accept(this);
-
         currentLine++;
+        List<Instruction> bodyInstrs = n.block.accept(this);
 
         List<Instruction> prologue = new ArrayList<>();
         List<Instruction> epilogue = new ArrayList<>();
 
         if (n.functionName.toString() != "main" && n.functionName.toString() != "Main"){
             // Prologue: Save callee-saved (s1–s11) registers to stack (as identifiers)
+            // prologue.addAll(saveLiveCalleeRegisters(n.functionName.toString()));
             for (int i = 1; i <= 11; i++) {
                 Register s = new Register("s" + i);
                 Identifier save = new Identifier("save_s" + i);
@@ -121,6 +232,7 @@ public class TranslationVisitor implements RetVisitor < List<sparrowv.Instructio
             }
 
             // Epilogue: Restore callee-saved registers from stack
+            // epilogue.addAll(restoreLiveCalleeRegisters(n.functionName.toString()));
             for (int i = 1; i <= 11; i++) {
                 Register s = new Register("s" + i);
                 Identifier save = new Identifier("save_s" + i);
@@ -652,19 +764,20 @@ public class TranslationVisitor implements RetVisitor < List<sparrowv.Instructio
         }
     
         // // Restore t0–t5
-        for (int i = 0; i <= 5; i++) {
-            if (ret_reg != null && !ret_reg.toString().equals("t" + i)){
-                Register t = new Register("t" + i);
-                Identifier save = new Identifier("save_t" + i);
-                instrs.add(new Move_Reg_Id(t, save));
-            }
+        instrs.addAll(restoreLiveCallerRegisters(ret_reg));
+        // for (int i = 0; i <= 5; i++) {
+        //     if (ret_reg != null && !ret_reg.toString().equals("t" + i)){
+        //         Register t = new Register("t" + i);
+        //         Identifier save = new Identifier("save_t" + i);
+        //         instrs.add(new Move_Reg_Id(t, save));
+        //     }
 
-            if (ret_reg == null && i != 0){
-                Register t = new Register("t" + i);
-                Identifier save = new Identifier("save_t" + i);
-                instrs.add(new Move_Reg_Id(t, save));
-            }
-        }
+        //     if (ret_reg == null && i != 0){
+        //         Register t = new Register("t" + i);
+        //         Identifier save = new Identifier("save_t" + i);
+        //         instrs.add(new Move_Reg_Id(t, save));
+        //     }
+        // }
 
         // Restore a2–a7
         for (int i = 2; i <= 7; i++) {

@@ -1,5 +1,6 @@
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Map;
 
 import sparrow.visitor.*;
 import sparrow.*;
@@ -9,6 +10,7 @@ public class FastLivenessVisitor implements Visitor {
     HashMap<String, LiveInterval> intervals_map = new HashMap<String, LiveInterval>();
     HashMap<String, Integer> labelToLine = new HashMap<String, Integer>();
     ArrayList<LoopRange> loopRanges = new ArrayList<LoopRange>();
+    HashMap<String, LiveInterval> func_interval_map = new HashMap<String, LiveInterval>();
 
     Integer currentLine = 1;
 
@@ -21,6 +23,15 @@ public class FastLivenessVisitor implements Visitor {
     private void use(String id) {
         // intervals_map.putIfAbsent(id, new LiveInterval(id, currentLine));
         intervals_map.get(id).updateEnd(currentLine);
+    }
+
+    public void printFuncIntervalMap() {
+        System.err.println("\n \n 🥳🗺️ Function Intervals:");
+        for (Map.Entry<String, LiveInterval> entry : func_interval_map.entrySet()) {
+            String functionName = entry.getKey();
+            LiveInterval interval = entry.getValue();
+            System.err.println(functionName + " -> [" + interval.start + ", " + interval.end + "]");
+        }
     }
 
     /*   List<FunctionDecl> funDecls; */
@@ -42,8 +53,13 @@ public class FastLivenessVisitor implements Visitor {
                 def(id.toString());  // parameters are defined at the start
             }
         }
+        Integer start_line = currentLine;
         currentLine++;
         n.block.accept(this);
+
+        Integer end_line = currentLine;
+        LiveInterval func_interval = new LiveInterval(n.functionName.toString(), start_line, end_line);
+        func_interval_map.put(n.functionName.toString(), func_interval);
     }
 
     /*   FunctionDecl parent;

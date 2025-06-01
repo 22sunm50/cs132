@@ -56,12 +56,14 @@ public class S2SV {
         allocator.allocate();
         allocator.printResult();
 
+        lv.printFuncIntervalMap();
+
         //// TRANSLATION
         // in a variables liveness variable, if u can track a func call, then alloc to a callee save register so you don't have to do reallocation
         // its just a flag, and just go to first pass and hit a call and iterate through all the ur variable intervals and check them off
         // if you can multiple calls to a funct, if you save to a callee save register, then you have less calls to the stack
 
-        TranslationVisitor tv = new TranslationVisitor(allocator.getRegisterMap(), intervals_map);
+        TranslationVisitor tv = new TranslationVisitor(allocator.getRegisterMap(), intervals_map, lv.func_interval_map);
         tv.visit(program);
     }
 }
