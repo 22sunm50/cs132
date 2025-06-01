@@ -706,19 +706,8 @@ public class TranslationVisitor implements RetVisitor < List<sparrowv.Instructio
 
         // Save caller (t0–t5) to identifiers
         instrs.addAll(saveLiveCallerRegisters());
-        // for (int i = 0; i <= 5; i++) {
-        //     Register t = new Register("t" + i);
-        //     Identifier save = new Identifier("save_t" + i);
-        //     instrs.add(new Move_Id_Reg(save, t));
-        // }
 
-        // Save a2–a7
-        for (int i = 2; i <= 7; i++) {
-            Register a = new Register("a" + i);
-            Identifier save = new Identifier("save_a" + i);
-            instrs.add(new Move_Id_Reg(save, a));
-        }
-
+        List<Instruction> saved_a_instrs = new ArrayList<>();
         // for (int i = n.args.size() - 1; i >= 0; i--) {
         for (int i = 0; i < n.args.size(); i++) {
             Identifier arg = n.args.get(i);
@@ -727,6 +716,14 @@ public class TranslationVisitor implements RetVisitor < List<sparrowv.Instructio
             if (i < 6) {
                 // First 6 args → a2–a7
                 Register a_reg = new Register("a" + (i + 2));
+
+                // save necessary ones to the stack
+                Identifier save = new Identifier("save_a" + (i + 2));
+                instrs.add(new Move_Id_Reg(save, a_reg));
+
+                // use for restoring later:
+                saved_a_instrs.add(new Move_Reg_Id(a_reg, save));
+
                 if (argVal instanceof Identifier){
                     instrs.add(new Move_Reg_Id(a_reg, arg));
                 } else {
@@ -759,26 +756,10 @@ public class TranslationVisitor implements RetVisitor < List<sparrowv.Instructio
     
         // // Restore t0–t5
         instrs.addAll(restoreLiveCallerRegisters(ret_reg));
-        // for (int i = 0; i <= 5; i++) {
-        //     if (ret_reg != null && !ret_reg.toString().equals("t" + i)){
-        //         Register t = new Register("t" + i);
-        //         Identifier save = new Identifier("save_t" + i);
-        //         instrs.add(new Move_Reg_Id(t, save));
-        //     }
 
-        //     if (ret_reg == null && i != 0){
-        //         Register t = new Register("t" + i);
-        //         Identifier save = new Identifier("save_t" + i);
-        //         instrs.add(new Move_Reg_Id(t, save));
-        //     }
-        // }
+        // // Restore a2–a7
+        instrs.addAll(saved_a_instrs);
 
-        // Restore a2–a7
-        for (int i = 2; i <= 7; i++) {
-            Register a = new Register("a" + i);
-            Identifier save = new Identifier("save_a" + i);
-            instrs.add(new Move_Reg_Id(a, save));
-        }
         currentLine++;
         return instrs;
 
