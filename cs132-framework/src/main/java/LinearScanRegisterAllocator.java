@@ -1,5 +1,7 @@
 import java.util.*;
 
+import IR.token.Register;
+
 public class LinearScanRegisterAllocator {
     private final Integer NUM_REGS;
     private final List<String> registerPool;
@@ -31,12 +33,15 @@ public class LinearScanRegisterAllocator {
             expireOldIntervals(i);
             if (active.size() == NUM_REGS) { // SPILL
                 System.err.println("  💥 No free registers. Need to spill.");
-                spillAtInterval(i);
-            } else { // there are available regs
-                // Determine if this interval spans a function call lineAdd commentMore actions
+                if (i.end == -1){
+                    registerMap.put(i.name, "t0");
+                } else {
+                    spillAtInterval(i);
+                }
+            } 
+            else { // there are available regs
                 boolean containsCall = false;
                 for (int line : f_call_lines) {
-                    // if (i.start <= line && line <= i.end) {
                     if (i.start < line && line < i.end) { // 🍅 🍅 : GOT ME TO 61 BUT FAILING 2 TEST CASES
                         containsCall = true;
                         break;
@@ -98,33 +103,6 @@ public class LinearScanRegisterAllocator {
             System.err.println("  ⏳ Expired " + j.name + ", released " + freedReg);
         }
     }
-
-    // private void expireOldIntervals(LiveInterval current) {
-    //     // 1) Collect every interval whose end < current.start
-    //     List<LiveInterval> toRemove = new ArrayList<>();
-    //     for (LiveInterval iv : active) {
-    //         if (iv.end < current.start) {
-    //             toRemove.add(iv);
-    //         }
-    //     }
-    
-    //     // 2) Remove them from active, free their registers
-    //     for (LiveInterval iv : toRemove) {
-    //         active.remove(iv);
-            
-    //         // registerPool.add(freedReg);
-
-    //         if (!spilled.contains(iv.name)){
-    //         // if (freedReg != null) {
-    //             String freedReg = registerMap.get(iv.name);
-    //             registerPool.add(freedReg);
-    //             System.err.println("  ⏳ Expired " + iv.name + ", released " + freedReg);
-    //         }
-    //     }
-    
-    //     // 3) Re-sort the remaining active set by end time
-    //     active.sort(Comparator.comparingInt(j -> j.end));
-    // }
 
     private void spillAtInterval(LiveInterval i) {
         LiveInterval spill = active.get(active.size() - 1); // last = largest end
