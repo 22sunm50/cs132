@@ -70,7 +70,7 @@ public class TranslationVisitor implements RetVisitor < List<sparrowv.Instructio
                 if (assignedReg.equals(regName)) {
                     LiveInterval interval = intervals_map.get(var);
     
-                    if (interval != null && interval.end > currentLine) {
+                    if (interval != null && interval.end > currentLine && interval.start < currentLine) {
                         saves.add(new Move_Id_Reg(new Identifier("save_" + regName), reg));
                         break; // Only need to save once if any variable maps to this register
                     }
@@ -88,31 +88,26 @@ public class TranslationVisitor implements RetVisitor < List<sparrowv.Instructio
             String regName = "t" + i;
             Register reg = new Register(regName);
     
-            for (Map.Entry<String, String> entry : registerMap.entrySet()) {
+            for (Map.Entry<String, String> entry : registerMap.entrySet()) { // look at var -> reg
                 String var = entry.getKey();
                 String assignedReg = entry.getValue();
     
-                if (assignedReg.equals(regName)) {
+                if (assignedReg.equals(regName)) { // if reg is assigned
                     LiveInterval interval = intervals_map.get(var);
 
                     if (ret_reg != null && !ret_reg.toString().equals("t" + i)){
-                        if (interval != null && interval.end > currentLine) {
+                        if (interval != null && interval.end > currentLine && interval.start < currentLine) { // save if end > call line #
                             restores.add(new Move_Reg_Id(reg, new Identifier("save_" + regName)));
                             break; // Only restore once per register
                         }
                     }
 
                     if (ret_reg == null && i != 0){
-                        if (interval != null && interval.end >= currentLine) {
+                        if (interval != null && interval.end > currentLine && interval.start < currentLine) {
                             restores.add(new Move_Reg_Id(reg, new Identifier("save_" + regName)));
                             break; // Only restore once per register
                         }
                     }
-
-                    // if (interval != null && interval.end > currentLine) {
-                    //     restores.add(new Move_Reg_Id(reg, new Identifier("save_" + regName)));
-                    //     break; // Only restore once per register
-                    // }
                 }
             }
         }
@@ -142,7 +137,8 @@ public class TranslationVisitor implements RetVisitor < List<sparrowv.Instructio
                     LiveInterval varInterval = intervals_map.get(var);
     
                     if (varInterval != null &&
-                        varInterval.end >= funcStart){
+                        varInterval.end >= funcStart &&
+                        varInterval.start <= funcEnd){
                         saves.add(new Move_Id_Reg(new Identifier("save_" + sReg), reg));
                         break; // Only save once per register
                     }
@@ -175,7 +171,8 @@ public class TranslationVisitor implements RetVisitor < List<sparrowv.Instructio
                     LiveInterval varInterval = intervals_map.get(var);
     
                     if (varInterval != null &&
-                        varInterval.end >= funcStart){    
+                        varInterval.end >= funcStart &&
+                        varInterval.start <= funcEnd){    
                         restores.add(new Move_Reg_Id(reg, new Identifier("save_" + sReg)));
                         break; // Only restore once per register
                     }
@@ -710,12 +707,12 @@ public class TranslationVisitor implements RetVisitor < List<sparrowv.Instructio
                 // First 6 args → a2–a7
                 Register a_reg = new Register("a" + (i + 2));
 
-                // save necessary ones to the stack
-                Identifier save = new Identifier("save_a" + (i + 2));
-                instrs.add(new Move_Id_Reg(save, a_reg));
+                // // save necessary ones to the stack
+                // Identifier save = new Identifier("save_a" + (i + 2));
+                // instrs.add(new Move_Id_Reg(save, a_reg));
 
-                // use for restoring later:
-                saved_a_instrs.add(new Move_Reg_Id(a_reg, save));
+                // // use for restoring later:
+                // saved_a_instrs.add(new Move_Reg_Id(a_reg, save));
 
                 if (argVal instanceof Identifier){
                     instrs.add(new Move_Reg_Id(a_reg, arg));
@@ -751,7 +748,7 @@ public class TranslationVisitor implements RetVisitor < List<sparrowv.Instructio
         instrs.addAll(restoreLiveCallerRegisters(ret_reg));
 
         // // Restore a2–a7
-        instrs.addAll(saved_a_instrs);
+        // instrs.addAll(saved_a_instrs);
 
         currentLine++;
         return instrs;

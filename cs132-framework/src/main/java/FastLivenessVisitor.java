@@ -10,8 +10,10 @@ public class FastLivenessVisitor implements Visitor {
     HashMap<String, LiveInterval> intervals_map = new HashMap<String, LiveInterval>();
     HashMap<String, Integer> labelToLine = new HashMap<String, Integer>();
     ArrayList<LoopRange> loopRanges = new ArrayList<LoopRange>();
-    HashMap<String, LiveInterval> func_interval_map = new HashMap<String, LiveInterval>();
+    HashMap<String, LiveInterval> func_interval_map = new HashMap<String, LiveInterval>(); // intervals of func decls
     ArrayList<Integer> f_call_lines = new ArrayList<Integer>();
+    HashMap<String, Integer> func_arg_count_map = new HashMap<>();
+
 
     Integer currentLine = 1;
 
@@ -53,6 +55,9 @@ public class FastLivenessVisitor implements Visitor {
             for (Identifier id : n.formalParameters) {
                 def(id.toString());  // parameters are defined at the start
             }
+            func_arg_count_map.put(n.functionName.toString(), n.formalParameters.size());
+        } else {
+            func_arg_count_map.put(n.functionName.toString(), 0);
         }
         Integer start_line = currentLine;
         currentLine++;

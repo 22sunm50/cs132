@@ -52,7 +52,7 @@ public class S2SV {
         // List<String> regs = new ArrayList<>(List.of("t2", "t3", "t4", "t5"));
         List<String> regs = new ArrayList<>(List.of("t2", "t3", "t4", "t5", "s1", "s2", "s3", "s4", "s5", "s6", "s7", "s8", "s9", "s10", "s11"
                                                                 ));
-        LinearScanRegisterAllocator allocator = new LinearScanRegisterAllocator(intervalList, 15, regs, lv.f_call_lines);
+        LinearScanRegisterAllocator allocator = new LinearScanRegisterAllocator(intervalList, 15, regs, lv.f_call_lines, lv.func_arg_count_map, lv.func_interval_map);
         allocator.allocate();
         allocator.printResult();
 
