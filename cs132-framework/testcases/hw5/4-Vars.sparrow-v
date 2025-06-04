@@ -1,0 +1,221 @@
+func main()
+save_s1 = s1
+save_s2 = s2
+save_s3 = s3
+save_s4 = s4
+save_s5 = s5
+save_s6 = s6
+save_s7 = s7
+save_s8 = s8
+save_s9 = s9
+save_s10 = s10
+save_s11 = s11
+t5 = 4
+t0 = t5
+t4 = alloc(t0)
+t5 = 8
+t0 = t5
+t3 = alloc(t0)
+t5 = @A_helper
+t0 = t5
+[t3 + 0] = t0
+t5 = @A_run
+t0 = t5
+[t3 + 4] = t0
+t0 = t3
+[t4 + 0] = t0
+if0 t4 goto Lv0_Error
+goto Lv1_End
+Lv0_Error:
+error("null pointer")
+Lv1_End:
+t0 = t4
+t3 = [t0 + 0]
+t0 = t3
+t5 = [t0 + 4]
+save_t0 = t0
+save_t1 = t1
+save_t2 = t2
+save_t3 = t3
+save_t4 = t4
+save_t5 = t5
+save_a2 = a2
+save_a3 = a3
+save_a4 = a4
+save_a5 = a5
+save_a6 = a6
+save_a7 = a7
+t0 = t5
+a2 = t4
+t3 = call t0(v1)
+t0 = save_t0
+t1 = save_t1
+t2 = save_t2
+t4 = save_t4
+t5 = save_t5
+a2 = save_a2
+a3 = save_a3
+a4 = save_a4
+a5 = save_a5
+a6 = save_a6
+a7 = save_a7
+print(t3)
+t3 = 0
+v8 = t3
+s1 = save_s1
+s2 = save_s2
+s3 = save_s3
+s4 = save_s4
+s5 = save_s5
+s6 = save_s6
+s7 = save_s7
+s8 = save_s8
+s9 = save_s9
+s10 = save_s10
+s11 = save_s11
+      return v8
+
+func A_run(this)
+save_s1 = s1
+save_s2 = s2
+save_s3 = s3
+save_s4 = s4
+save_s5 = s5
+save_s6 = s6
+save_s7 = s7
+save_s8 = s8
+save_s9 = s9
+save_s10 = s10
+save_s11 = s11
+t3 = a2
+if0 t3 goto Lv2_Error
+goto Lv3_End
+Lv2_Error:
+error("null pointer")
+Lv3_End:
+t0 = t3
+t5 = [t0 + 0]
+t0 = t5
+t4 = [t0 + 0]
+t5 = 12
+save_t0 = t0
+save_t1 = t1
+save_t2 = t2
+save_t3 = t3
+save_t4 = t4
+save_t5 = t5
+save_a2 = a2
+save_a3 = a3
+save_a4 = a4
+save_a5 = a5
+save_a6 = a6
+save_a7 = a7
+t0 = t4
+a2 = t3
+a3 = t5
+t2 = call t0(this v11)
+t0 = save_t0
+t1 = save_t1
+t3 = save_t3
+t4 = save_t4
+t5 = save_t5
+a2 = save_a2
+a3 = save_a3
+a4 = save_a4
+a5 = save_a5
+a6 = save_a6
+a7 = save_a7
+t0 = t2
+a = t0
+if0 t3 goto Lv4_Error
+goto Lv5_End
+Lv4_Error:
+error("null pointer")
+Lv5_End:
+t0 = t3
+t2 = [t0 + 0]
+t0 = t2
+t4 = [t0 + 0]
+t2 = 15
+save_t0 = t0
+save_t1 = t1
+save_t2 = t2
+save_t3 = t3
+save_t4 = t4
+save_t5 = t5
+save_a2 = a2
+save_a3 = a3
+save_a4 = a4
+save_a5 = a5
+save_a6 = a6
+save_a7 = a7
+t0 = t4
+a2 = t3
+a3 = t2
+t5 = call t0(this v15)
+t0 = save_t0
+t1 = save_t1
+t2 = save_t2
+t3 = save_t3
+t4 = save_t4
+a2 = save_a2
+a3 = save_a3
+a4 = save_a4
+a5 = save_a5
+a6 = save_a6
+a7 = save_a7
+t0 = t5
+t2 = t0
+t0 = a
+t1 = t2
+t5 = t0 + t1
+v17 = t5
+s1 = save_s1
+s2 = save_s2
+s3 = save_s3
+s4 = save_s4
+s5 = save_s5
+s6 = save_s6
+s7 = save_s7
+s8 = save_s8
+s9 = save_s9
+s10 = save_s10
+s11 = save_s11
+      return v17
+
+func A_helper(this param)
+save_s1 = s1
+save_s2 = s2
+save_s3 = s3
+save_s4 = s4
+save_s5 = s5
+save_s6 = s6
+save_s7 = s7
+save_s8 = s8
+save_s9 = s9
+save_s10 = s10
+save_s11 = s11
+t3 = a2
+t5 = a3
+t0 = t5
+t2 = t0
+t4 = 1
+t0 = t5
+t1 = t4
+t3 = t0 + t1
+t0 = t3
+t5 = t0
+print(t2)
+x = t2
+s1 = save_s1
+s2 = save_s2
+s3 = save_s3
+s4 = save_s4
+s5 = save_s5
+s6 = save_s6
+s7 = save_s7
+s8 = save_s8
+s9 = save_s9
+s10 = save_s10
+s11 = save_s11
+      return x
